@@ -67,10 +67,10 @@ import com.littleforge.server.LittleForgeServer;
 public class LittleForge
 {
 	
-	@SidedProxy(clientSide = "com.LittleForge.client.LittleForgeClient", serverSide = "com.LittleForge.server.LittleForgeServer")
+	@SidedProxy(clientSide = "com.littleforge.client.LittleForgeClient", serverSide = "com.littleforge.server.LittleForgeServer")
 	public static CommonProxy proxy;
 	
-    public static final String MODID = "LittleForge";
+    public static final String MODID = "littleforge";
     public static final String NAME = "Little Forge";
     public static final String VERSION = "1.0";
     
