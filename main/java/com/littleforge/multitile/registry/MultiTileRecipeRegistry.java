@@ -1,4 +1,4 @@
-package com.littleforge.multitile;
+package com.littleforge.multitile.registry;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -17,6 +17,7 @@ import com.creativemd.littletiles.common.util.ingredient.StackIngredient;
 import com.creativemd.littletiles.common.util.ingredient.StackIngredientEntry;
 import com.creativemd.littletiles.common.util.tooltip.ActionMessage;
 import com.littleforge.LittleForge;
+import com.littleforge.multitile.strucutres.MultiTileDummyStructure;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,10 +32,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentString;
 
-public abstract class MultiTileStructureRegistry {
+public abstract class MultiTileRecipeRegistry {
 
 	private static HashMap<String, ItemStack> recipeDict = new HashMap<>();
-	private static HashMap<String, Integer> multiTileStructLimitDict = new HashMap<>();
 	private static HashMap<ItemStack, Integer> inventoryDict = new HashMap<>();
 	
 	/**
@@ -61,39 +61,6 @@ public abstract class MultiTileStructureRegistry {
 		recipeDict.put(id, new ItemStack(ingredient,count));
 	}
 	
-	/**
-	 * Structures should be labeled the same name Plus "_#" # will be the order it goes in
-	 * The first structure should be labeled as "Structure_1" This will the starting 
-	 * structure that will be built into the next Structure.
-	 * @param id
-	 * ID of the premade Structure minus the "_#"
-	 * @param modid
-	 * The ID of your (my) Mod
-	 * @param classStructure
-	 * The Class in which you want the last Premade Structure to use. Think of it as a Block Class
-	 */
-/*	public static void registerPremadeStructureType(String id, String modid, Class<? extends LittleStructurePremade> classStructure, int limit) {
-    	int i;
-		for(i=1;i<limit;i++) {
-    		LittleStructurePremade.registerPremadeStructureType(id+"_"+i, modid, MultiTileStructure.class);
-    		multiTileStructLimitDict.put(id+"_"+i, limit);
-    	}
-		LittleStructurePremade.registerPremadeStructureType(id+"_"+i, modid, classStructure);
-    	
-    }*/
-	
-	public static int findLimit(String id) {
-		Set set = multiTileStructLimitDict.entrySet();
-		Iterator iterator = set.iterator();
-		while(iterator.hasNext()) {
-			Map.Entry mentry = (Map.Entry)iterator.next();
-			if(mentry.getKey().equals(id)) {
-				return (int) mentry.getValue();
-			}
-		}
-		return 0;
-	}
-	
 	public static ItemStack findRecipe(String id) {
 		Set set = recipeDict.entrySet();
 		Iterator iterator = set.iterator();
@@ -108,7 +75,7 @@ public abstract class MultiTileStructureRegistry {
 	
 	public static boolean takeIngredients(EntityPlayer playerIn, LittleStructureType type) {
 		if (!playerIn.world.isRemote) {
-			ItemStack ingredient = MultiTileStructureRegistry.findRecipe(type.id);
+			ItemStack ingredient = MultiTileRecipeRegistry.findRecipe(type.id);
 			
 			StackIngredient stacks = new StackIngredient();
 			stacks.add(new StackIngredientEntry(ingredient, ingredient.getCount()));
@@ -131,64 +98,3 @@ public abstract class MultiTileStructureRegistry {
 	}
 	
 }
-
-
-
-
-/*
-
-		
-		HashMap<ItemStack, Integer> invDict = new HashMap<>();
-		HashMap<String, Integer> invTotalDict = new HashMap<>();
-
-		ItemStack ingredient = MultiTileStructureRecipe.findRecipe(type.id);
-		ItemStack test = new ItemStack(Items.APPLE, 128);
-		playerIn.sendStatusMessage(new TextComponentString(ingredient.toString()), true);
-		
-		ItemStack heldItem = playerIn.getHeldItemMainhand();
-		Iterator iterator = playerIn.inventoryContainer.inventoryItemStacks.iterator();
-		System.out.println(playerIn.inventory.getStackInSlot(0));
-
-		int counter = 0;
-		while(iterator.hasNext()) {
-			ItemStack itemStack = (ItemStack) iterator.next();
-			invDict.put(itemStack, counter);
-			counter++;
-		}
-		
-		Set set = invDict.entrySet();
-		iterator = set.iterator();
-		
-		while(iterator.hasNext()) {
-			Map.Entry mentry = (Map.Entry)iterator.next();
-			//System.out.println(mentry.getKey()+" : "+mentry.getValue());
-			
-			ItemStack itemKey = (ItemStack) mentry.getKey();
-			int meta = itemKey.getMetadata();
-			String item = itemKey.getItem().getRegistryName().toString();
-			int count = itemKey.getCount();
-			
-			String stackT = item+"`"+meta;
-
-			if(invTotalDict.containsKey(stackT)) {
-				System.out.println("da");
-				invTotalDict.put(stackT, invTotalDict.get(stackT) + count);
-			}else {
-				System.out.println("fe");
-				invTotalDict.put(stackT, count);
-
-			}
-		}
-
-		set = invTotalDict.entrySet();
-		iterator = set.iterator();
-		
-		while(iterator.hasNext()) {
-			Map.Entry mentry = (Map.Entry)iterator.next();
-			String[] split = mentry.getKey().toString().split("`");
-			Item item = Item.getByNameOrId(split[0]);
-			int meta = Integer.parseInt(split[1]);
-			ItemStack stackType = new ItemStack(item, (int) mentry.getValue(), meta);
-			System.out.println(stackType);
-		}
-*/

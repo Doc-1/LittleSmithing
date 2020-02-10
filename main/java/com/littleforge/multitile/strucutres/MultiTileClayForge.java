@@ -1,5 +1,5 @@
 
-package com.littleforge.multitile;
+package com.littleforge.multitile.strucutres;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,5 +1,5 @@
 
-package com.littleforge.multitile;
+package com.littleforge.multitile.strucutres;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +28,7 @@ import com.creativemd.littletiles.common.util.grid.LittleGridContext;
 import com.creativemd.littletiles.common.util.place.PlacementMode;
 import com.creativemd.littletiles.common.util.vec.SurroundingBox;
 import com.littleforge.LittleForge;
+import com.littleforge.multitile.registry.MultiTileRecipeRegistry;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -46,12 +47,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import scala.reflect.internal.Trees.This;
 
-public class MultiTileStructure extends LittleStructurePremade {
+public class MultiTileDummyStructure extends LittleStructurePremade {
 	
 	private int seriesIndex = 13;
 	private String seriesName = type.id.toString().split("_")[0];
 
-	public MultiTileStructure(LittleStructureType type) {
+	public MultiTileDummyStructure(LittleStructureType type) {
 		super(type);
 	}
 	
@@ -77,7 +78,7 @@ public class MultiTileStructure extends LittleStructurePremade {
 		System.out.println(this.getAttribute());
 		String next = nextSeries();
 		if(!next.isEmpty()) {
-			if(MultiTileStructureRegistry.takeIngredients(playerIn, type)) {
+			if(MultiTileRecipeRegistry.takeIngredients(playerIn, type)) {
 
 				SurroundingBox box = new SurroundingBox(false).add(tiles.entrySet());
 				long minX = box.getMinX();
