@@ -8,18 +8,17 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.creativemd.creativecore.common.utils.type.HashMapList;
+import com.creativemd.littletiles.common.action.LittleActionException;
 import com.creativemd.littletiles.common.action.block.LittleActionActivated;
 import com.creativemd.littletiles.common.action.block.LittleActionPlaceStack;
-import com.creativemd.littletiles.common.structure.connection.IStructureChildConnector;
-import com.creativemd.littletiles.common.structure.exception.MissingTileEntity;
-import com.creativemd.littletiles.common.structure.premade.LittleStructurePremade;
 import com.creativemd.littletiles.common.structure.registry.LittleStructureRegistry;
 import com.creativemd.littletiles.common.structure.registry.LittleStructureType;
+import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
 import com.creativemd.littletiles.common.tile.LittleTile;
 import com.creativemd.littletiles.common.tile.math.vec.LittleVec;
 import com.creativemd.littletiles.common.tile.math.vec.LittleVecContext;
+import com.creativemd.littletiles.common.tile.parent.IStructureTileList;
 import com.creativemd.littletiles.common.tile.place.PlacePreview;
-import com.creativemd.littletiles.common.tile.place.PlacePreviews;
 import com.creativemd.littletiles.common.tile.preview.LittlePreview;
 import com.creativemd.littletiles.common.tile.preview.LittlePreviews;
 import com.creativemd.littletiles.common.tileentity.TileEntityLittleTiles;
@@ -52,8 +51,8 @@ public class MultiTileDummyStructure extends LittleStructurePremade {
 	private int seriesIndex = 13;
 	private String seriesName = type.id.toString().split("_")[0];
 
-	public MultiTileDummyStructure(LittleStructureType type) {
-		super(type);
+	public MultiTileDummyStructure(LittleStructureType type, IStructureTileList mainBlock) {
+		super(type, mainBlock);
 	}
 	
 	@Override
@@ -71,7 +70,8 @@ public class MultiTileDummyStructure extends LittleStructurePremade {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World worldIn, LittleTile tile, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ, LittleActionActivated action) {
+	public boolean onBlockActivated(World worldIn, LittleTile tile, BlockPos pos, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ, LittleActionActivated action) throws LittleActionException {
+		/*
 		if (getWorld().isRemote)
 			return true;
 		
@@ -80,7 +80,7 @@ public class MultiTileDummyStructure extends LittleStructurePremade {
 		if(!next.isEmpty()) {
 			if(MultiTileRecipeRegistry.takeIngredients(playerIn, type)) {
 
-				SurroundingBox box = new SurroundingBox(false).add(tiles.entrySet());
+				SurroundingBox box = new SurroundingBox(false, null).add(this.mainBlock);
 				long minX = box.getMinX();
 				long minY = box.getMinY();
 				long minZ = box.getMinZ();
@@ -101,9 +101,9 @@ public class MultiTileDummyStructure extends LittleStructurePremade {
 				previews.convertToSmallest();
 				
 				List<PlacePreview> placePreviews = new ArrayList<>();
-				previews.getPlacePreviews(placePreviews, null, true, LittleVec.ZERO);
+				previews.getPlacePreviews(LittleVec.ZERO);
 				
-				HashMap<BlockPos, PlacePreviews> splitted = LittleActionPlaceStack.getSplittedTiles(previews.context, placePreviews, min);
+				//HashMap<BlockPos, PlacePreviews> splitted = LittleActionPlaceStack.getSplittedTiles(previews.getContext(), placePreviews, min);
 				//Test if the structure can be placed.
 				if (LittleActionPlaceStack.canPlaceTiles(null, worldIn, splitted, PlacementMode.overwrite.getCoordsToCheck(splitted, min), PlacementMode.overwrite, (LittleTile x) -> !x.isChildOfStructure(this), false)) {
 					// Remove existing structure
@@ -114,7 +114,9 @@ public class MultiTileDummyStructure extends LittleStructurePremade {
 					playerIn.sendStatusMessage(new TextComponentString("Not enough space!"), true);
 				}
 			}
-		}
+		}*/
 		return true;
 	}
+	
+	
 }

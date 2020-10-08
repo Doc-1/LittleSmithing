@@ -8,7 +8,6 @@ import com.creativemd.creativecore.common.packet.PacketHandler;
 import com.creativemd.littletiles.client.LittleTilesClient;
 import com.creativemd.littletiles.common.action.LittleAction;
 import com.creativemd.littletiles.common.packet.LittleActionMessagePacket;
-import com.creativemd.littletiles.common.structure.premade.LittleStructurePremade;
 import com.creativemd.littletiles.common.structure.registry.LittleStructureType;
 import com.creativemd.littletiles.common.util.ingredient.LittleIngredients;
 import com.creativemd.littletiles.common.util.ingredient.LittleInventory;

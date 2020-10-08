@@ -41,7 +41,6 @@ import javax.annotation.Nonnull;
 
 import org.lwjgl.opengl.GL11;
 
-import com.littleforge.config.IGCMLoader;
 import com.littleforge.multitile.registry.MultiTileRecipeRegistry;
 import com.littleforge.multitile.strucutres.MultiTileClayForge;
 import com.littleforge.multitile.strucutres.MultiTileDummyStructure;
@@ -56,10 +55,10 @@ import com.creativemd.littletiles.common.container.SubContainerRecipeAdvanced;
 import com.creativemd.littletiles.common.item.ItemRecipeAdvanced;
 import com.creativemd.littletiles.common.structure.LittleStructure;
 import com.creativemd.littletiles.common.structure.attribute.LittleStructureAttribute;
-import com.creativemd.littletiles.common.structure.premade.LittleStructurePremade;
 import com.creativemd.littletiles.common.structure.registry.LittleStructureRegistry;
 import com.creativemd.littletiles.common.structure.type.LittleBed;
 import com.creativemd.littletiles.common.structure.type.door.LittleAxisDoor;
+import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
 import com.littleforge.server.LittleForgeServer;
 
 @Mod(modid = LittleForge.MODID, name = LittleForge.NAME, version = LittleForge.VERSION)
@@ -129,8 +128,6 @@ public class LittleForge
     	MultiTileRecipeRegistry.addRecipe("clayForge_6", Blocks.IRON_ORE, 1);
     	MultiTileRecipeRegistry.addRecipe("clayForge_7", Items.STICK, 64);
     	
-    	if (Loader.isModLoaded("igcm"))
-			IGCMLoader.initIGCM();
     }
     
     @EventHandler

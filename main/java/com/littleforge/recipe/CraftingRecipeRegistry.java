@@ -6,6 +6,6 @@ public class CraftingRecipeRegistry {
 
 	
 	public void test() {
-		StackCollector
+		
 	}
 }

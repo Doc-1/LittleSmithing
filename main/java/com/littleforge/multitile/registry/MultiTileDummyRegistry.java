@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.creativemd.littletiles.common.structure.premade.LittleStructurePremade;
+import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
 import com.littleforge.multitile.strucutres.MultiTileDummyStructure;
 
 public class MultiTileDummyRegistry {
