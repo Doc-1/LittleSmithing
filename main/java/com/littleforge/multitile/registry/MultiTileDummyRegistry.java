@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
-import com.littleforge.multitile.strucutres.MultiTileDummyStructure;
 
 public class MultiTileDummyRegistry {
 
@@ -19,7 +18,7 @@ public class MultiTileDummyRegistry {
 	 * @param id
 	 * ID of the premade Structure minus the "_#"
 	 * @param modid
-	 * The ID of your (my) Mod
+	 * The ID of your Mod
 	 * @param classStructure
 	 * The Class in which you want the last Premade Structure to use. Think of it as a Block Class
 	 * @param count
@@ -28,17 +27,14 @@ public class MultiTileDummyRegistry {
 	 * @param ticking
 	 * If ticking = true then the all these dummy structures will run a method each time a tick occurs 
 	 */
+	/*
 	public static void registerPremadeStructureDummy(String id, String modid, Class<? extends LittleStructurePremade> classStructure, int count, boolean ticking) {
     	int i;
 		for(i=1;i<=count;i++) {
     		LittleStructurePremade.registerPremadeStructureType(id+"_"+i, modid, MultiTileDummyStructure.class);
     	}    	
     }
-	
-	public static void setLimit() {
-		
-	}
-	
+	*/
 	public static int findLimit(String id) {
 		Set set = multiTileStructLimitDict.entrySet();
 		Iterator iterator = set.iterator();
