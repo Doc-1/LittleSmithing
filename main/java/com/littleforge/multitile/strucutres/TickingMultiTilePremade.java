@@ -31,20 +31,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class MultiTileTickingStructurePremade extends MultiTileStructurePremade{
+public abstract class TickingMultiTilePremade extends MultiTilePremade{
 	
 	private int tick = 0;
 	protected int tickMax;
 	
-	public MultiTileTickingStructurePremade(LittleStructureType type, IStructureTileList mainBlock, int tickMaxium, int seriesMaxium) {
+	public TickingMultiTilePremade(LittleStructureType type, IStructureTileList mainBlock, int tickMaxium, int seriesMax) {
 		super(type, mainBlock);
 		tickMax = tickMaxium;
-		seriesMax = seriesMaxium;
-	}
-
-	@Override
-	public ItemStack getStructureDrop() {
-		return new ItemStack(Items.COAL, 10);
+		seriesMaxium = seriesMax;
 	}
 	
 	@Override
@@ -56,7 +51,7 @@ public abstract class MultiTileTickingStructurePremade extends MultiTileStructur
 	protected void writeToNBTExtra(NBTTagCompound nbt) {
 		nbt.setInteger("tick", tick);
 	}
-	
+
 	@Override
 	public void tick() {
 		if (getWorld().isRemote)

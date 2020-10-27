@@ -65,10 +65,11 @@ import scala.reflect.internal.Trees.This;
  * @author _Doc
  * 
  */
-public abstract class MultiTileInteractiveStructurePremade extends MultiTileStructurePremade {
+public abstract class InteractiveMultiTilePremade extends MultiTilePremade {
 	
-	public MultiTileInteractiveStructurePremade(LittleStructureType type, IStructureTileList mainBlock) {
+	public InteractiveMultiTilePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
+		seriesMaxium = 7;
 	}
 	
 	@Override
@@ -106,10 +107,7 @@ public abstract class MultiTileInteractiveStructurePremade extends MultiTileStru
 				}
 				previews.convertToSmallest();
 				previews = updateStructureDirection(previews, box, min);
-				IStructureTileList list = this.mainBlock;
-				list.getTe().updateTiles((x) -> {
-					IStructureTileList realList = x.get(list);
-				});
+				
 				PlacementPreview nextPremade = new PlacementPreview(this.getWorld(), previews, PlacementMode.normal, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);
 				Placement place = new Placement(null, nextPremade);
 				if(place.canPlace()) {

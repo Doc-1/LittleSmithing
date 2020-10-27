@@ -15,15 +15,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
-public abstract class MultiTileStructurePremade extends LittleStructurePremade{
+public abstract class MultiTilePremade extends LittleStructurePremade{
 	
-	protected int seriesIndex;
-	protected int seriesMax;
-	protected String seriesName = type.id.toString().split("_")[0];
-	
+	protected int seriesMaxium;
+	protected String seriesName;
+	protected int seriesAt;
 
-	public MultiTileStructurePremade(LittleStructureType type, IStructureTileList mainBlock) {
+
+	public MultiTilePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
+		seriesName = type.id.toString().split("_")[0];
+		seriesAt = Integer.parseInt(this.type.id.toString().split("_")[1]);
 	}
 
 	@StructureDirectional
@@ -56,9 +58,7 @@ public abstract class MultiTileStructurePremade extends LittleStructurePremade{
 	}
 	
 	protected String nextSeries() {
-		
-		int seriesAt = Integer.parseInt(type.id.toString().split("_")[1]);
-		if(seriesIndex > seriesAt) {
+		if(seriesMaxium > seriesAt) {
 			return seriesName + "_" + (seriesAt+1);
 		}
 		return "";

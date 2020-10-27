@@ -1,6 +1,7 @@
 package com.littleforge.common.item;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import com.creativemd.littletiles.client.gui.SubGuiChisel;
 import com.creativemd.littletiles.client.gui.SubGuiMarkMode;
 import com.creativemd.littletiles.client.gui.configure.SubGuiConfigure;
 import com.creativemd.littletiles.client.gui.configure.SubGuiModeSelector;
+import com.creativemd.littletiles.client.render.cache.ItemModelCache;
 import com.creativemd.littletiles.client.render.overlay.PreviewRenderer;
 import com.creativemd.littletiles.common.action.LittleAction;
 import com.creativemd.littletiles.common.api.ILittleTile;
@@ -33,11 +35,16 @@ import com.creativemd.littletiles.common.packet.LittleBlockPacket;
 import com.creativemd.littletiles.common.packet.LittleBlockPacket.BlockPacketAction;
 import com.creativemd.littletiles.common.packet.LittleVanillaBlockPacket;
 import com.creativemd.littletiles.common.packet.LittleVanillaBlockPacket.VanillaBlockAction;
+import com.creativemd.littletiles.common.structure.registry.LittleStructureRegistry;
+import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
+import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade.LittleStructurePremadeEntry;
+import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade.LittleStructureTypePremade;
 import com.creativemd.littletiles.common.tile.LittleTile;
 import com.creativemd.littletiles.common.tile.LittleTileColored;
 import com.creativemd.littletiles.common.tile.math.box.LittleBox;
 import com.creativemd.littletiles.common.tile.math.box.LittleBoxes;
 import com.creativemd.littletiles.common.tile.math.vec.LittleAbsoluteVec;
+import com.creativemd.littletiles.common.tile.math.vec.LittleVec;
 import com.creativemd.littletiles.common.tile.preview.LittleAbsolutePreviews;
 import com.creativemd.littletiles.common.tile.preview.LittlePreview;
 import com.creativemd.littletiles.common.tile.preview.LittlePreviews;
@@ -54,18 +61,22 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.EnumFacing.AxisDirection;
@@ -78,17 +89,28 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TestRenderItem extends Item implements ICreativeRendered, ILittleTile {
+public class PremadeItemSword extends ItemSword implements ICreativeRendered {
 	
-	public TestRenderItem() {
+	String registryName;
+	
+	public PremadeItemSword(ToolMaterial material, String unlocalizedName, String registryNm) {
+		super(material);
+		registryName = registryNm;
+		setUnlocalizedName(unlocalizedName);
+		setRegistryName(registryNm);
 		setCreativeTab(LittleTiles.littleTab);
-		hasSubtypes = true;
 		setMaxStackSize(1);
-	}
+	}	
 	
 	@Override
 	public float getDestroySpeed(ItemStack stack, IBlockState state) {
 		return 0F;
+	}
+
+	@Override
+	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
+
+		return super.onLeftClickEntity(stack, player, entity);
 	}
 	
 	@Override
@@ -98,27 +120,24 @@ public class TestRenderItem extends Item implements ICreativeRendered, ILittleTi
 	
 	@Override
 	public boolean canDestroyBlockInCreative(World world, BlockPos pos, ItemStack stack, EntityPlayer player) {
-		return false;
+		return true;
 	}
-	
 	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public List<RenderBox> getRenderingCubes(IBlockState state, TileEntity te, ItemStack stack) {
-		return Collections.emptyList();
+		LittleStructureTypePremade premade = (LittleStructureTypePremade) LittleStructureRegistry.getStructureType(registryName);
+		LittlePreviews previews = LittleStructurePremade.getPreviews(premade.id).copy();
+		List<RenderBox> cubes = premade.getRenderingCubes(previews);
+		if (cubes == null) {
+			cubes = new ArrayList<>();
+			
+			for (LittlePreview preview : previews.allPreviews())
+				cubes.add(preview.getCubeBlock(previews.getContext()));
+		}
+		return cubes;	
 	}
 
-	@Override
-	public boolean onRightClick(World world, EntityPlayer player, ItemStack stack, PlacementPosition position, RayTraceResult result) {
-		
-		return false;
-	}
-	
-	@Override
-	public boolean onClickBlock(World world, EntityPlayer player, ItemStack stack, PlacementPosition position, RayTraceResult result) {
-		return false;
-	}
-	
 	@SideOnly(Side.CLIENT)
 	public static IBakedModel model;
 	
@@ -126,71 +145,25 @@ public class TestRenderItem extends Item implements ICreativeRendered, ILittleTi
 	@SideOnly(Side.CLIENT)
 	public void applyCustomOpenGLHackery(ItemStack stack, TransformType cameraTransformType) {
 		Minecraft mc = Minecraft.getMinecraft();
-		GlStateManager.pushMatrix();
-		if(model == null) 
-			model = mc.getRenderItem().getItemModelMesher().getModelManager().getModel(new ModelResourceLocation(LittleForge.MODID + ":tongs_background", "inventory"));
 		
-		ForgeHooksClient.handleCameraTransforms(model, cameraTransformType, false);
-		mc.getRenderItem().renderItem(new ItemStack(Items.PAPER), model);
-		
-		if (cameraTransformType == TransformType.GUI) {
-			GlStateManager.translate(-0.25, 0.3, 0);
-			GlStateManager.scale(0.5, 0.5, 0.5);
-			
-			ItemStack blockStack = new ItemStack(Items.IRON_INGOT, 1);
-			IBakedModel model = mc.getRenderItem().getItemModelWithOverrides(blockStack, mc.world, mc.player); // getItemModelMesher().getItemModel(blockStack);
-			if (!(model instanceof CreativeBakedModel))
-				ForgeHooksClient.handleCameraTransforms(model, cameraTransformType, false);
-			
-			GlStateManager.disableDepth();
-			GlStateManager.pushMatrix();
-			GlStateManager.translate(-0.5F, -0.5F, -0.5F);
-			
-			try {
-				if (model.isBuiltInRenderer()) {
-					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-					GlStateManager.enableRescaleNormal();
-					TileEntityItemStackRenderer.instance.renderByItem(blockStack);
-				} else {
-					Color color = ColorUtils.IntToRGBA(ColorUtils.WHITE);
-					color.setAlpha(255);
-					ReflectionHelper.findMethod(RenderItem.class, "renderModel", "func_191967_a", IBakedModel.class, int.class, ItemStack.class).invoke(mc.getRenderItem(), model, ColorUtils.RGBAToInt(color), blockStack);
-				}
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
-			
-			GlStateManager.popMatrix();
-			
-			GlStateManager.enableDepth();
+		if (cameraTransformType == TransformType.FIRST_PERSON_RIGHT_HAND) {
+			GlStateManager.translate(-0.07D, -0.07D, -0.07D);
+
+			GlStateManager.rotate(-140.0F, 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotate(15.0F, 1.0F, 0.0F, 0.0F);
+			GlStateManager.rotate(10.0F, 0.0F, 0.0F, 1.0F);
+
+			//GlStateManager.scale(1.0D, 1.0D, 1.0D);
 		}
 		
-		GlStateManager.popMatrix();
+		if (cameraTransformType == TransformType.GUI) {
+			GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
+			GlStateManager.rotate(6.0F, 0.0F, 0.0F, 1.0F);
+			GlStateManager.rotate(5.0F, 0.0F, 1.0F, 0.0F);
+			GlStateManager.translate(-1.3D, -14.0D, -0.02D);
+			GlStateManager.scale(1.4D, 1.4D, 1.4D);
+		}
 		
-	}
-
-	@Override
-	public boolean hasLittlePreview(ItemStack stack) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public LittlePreviews getLittlePreview(ItemStack stack) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void saveLittlePreview(ItemStack stack, LittlePreviews previews) {
-		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public boolean containsIngredients(ItemStack stack) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
+	}	
 }

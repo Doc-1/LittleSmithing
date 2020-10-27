@@ -11,8 +11,10 @@ import com.creativemd.littletiles.common.item.ItemRecipeAdvanced;
 import com.creativemd.littletiles.server.LittleTilesServer;
 import com.littleforge.CommonProxy;
 import com.littleforge.LittleForge;
-import com.littleforge.common.item.TestRenderItem;
+import com.littleforge.common.item.PremadeItem;
+import com.littleforge.common.item.PremadeItemSword;
 import com.littleforge.common.recipe.LittleForgeRecipes;
+import com.littleforge.common.util.LeftClickBlockListener;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -32,21 +34,33 @@ public class LittleForgeClient extends LittleTilesServer {
 
 	@Override
 	public void loadSidePost() {
-		IReloadableResourceManager reloadableResourceManager = (IReloadableResourceManager) mc.getResourceManager();
-		reloadableResourceManager.registerReloadListener(new IResourceManagerReloadListener() {
-			@Override
-			public void onResourceManagerReload(IResourceManager resourceManager) {
-				LittleChunkDispatcher.currentRenderState++;
-				TestRenderItem.model = null;
-			}
-		});
+		MinecraftForge.EVENT_BUS.register(LeftClickBlockListener.class);		
+
+		CreativeCoreClient.registerItemColorHandler(LittleForge.sword);
+		CreativeCoreClient.registerItemColorHandler(LittleForge.hammer);
+		CreativeCoreClient.registerItemColorHandler(LittleForge.woodenTongs);
 	}
 	
 	@Override
 	public void loadSide() {
-		CreativeCoreClient.registerItemRenderer(LittleForge.tongs);
+		
+
+		CreativeCoreClient.registerItemRenderer(LittleForge.sword);
+		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.sword);
+
+		CreativeCoreClient.registerItemRenderer(LittleForge.hammer);
+		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.hammer);
+
+		CreativeCoreClient.registerItemRenderer(LittleForge.woodenTongs);
+		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.woodenTongs);
+	}
+}
+
+/*
+ * 
 		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.tongs);
 		ModelLoader.setCustomModelResourceLocation(LittleForge.tongs, 0, new ModelResourceLocation(LittleForge.MODID + ":tongs", "inventory"));
 		ModelLoader.setCustomModelResourceLocation(LittleForge.tongs, 1, new ModelResourceLocation(LittleForge.MODID + ":tongs_background", "inventory"));
-	}
-}
+ */
+
+
