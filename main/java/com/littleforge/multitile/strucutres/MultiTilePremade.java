@@ -1,11 +1,16 @@
 package com.littleforge.multitile.strucutres;
 
 import com.creativemd.creativecore.common.utils.math.Rotation;
+import com.creativemd.littletiles.common.structure.LittleStructure;
 import com.creativemd.littletiles.common.structure.attribute.LittleStructureAttribute;
 import com.creativemd.littletiles.common.structure.directional.StructureDirectional;
 import com.creativemd.littletiles.common.structure.registry.LittleStructureType;
 import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
+import com.creativemd.littletiles.common.tile.LittleTile;
+import com.creativemd.littletiles.common.tile.math.box.LittleBox;
+import com.creativemd.littletiles.common.tile.math.vec.LittleVec;
 import com.creativemd.littletiles.common.tile.parent.IStructureTileList;
+import com.creativemd.littletiles.common.tile.preview.LittlePreview;
 import com.creativemd.littletiles.common.tile.preview.LittlePreviews;
 import com.creativemd.littletiles.common.util.vec.SurroundingBox;
 import com.littleforge.common.recipe.LittleForgeRecipes;
@@ -13,7 +18,9 @@ import com.littleforge.common.recipe.LittleForgeRecipes;
 import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public abstract class MultiTilePremade extends LittleStructurePremade{
 	
@@ -32,11 +39,15 @@ public abstract class MultiTilePremade extends LittleStructurePremade{
 	public EnumFacing direction;
 	
 	public LittlePreviews updateStructureDirection(LittlePreviews previews, SurroundingBox box, BlockPos min) {
+		
+		
 		switch (direction) {
 		case NORTH:
+			
 			previews.rotatePreviews(Rotation.Y_CLOCKWISE, box.getAbsoluteBox().getDoubledCenter(min));
 			break;
 		case SOUTH:
+			
 			previews.rotatePreviews(Rotation.Y_COUNTER_CLOCKWISE, box.getAbsoluteBox().getDoubledCenter(min));
 			break;
 		case WEST:

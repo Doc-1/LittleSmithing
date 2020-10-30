@@ -79,7 +79,7 @@ public abstract class TickingMultiTilePremade extends MultiTilePremade{
 						preview = prev;
 					}
 					previews.convertToSmallest();
-					previews = updateStructureDirection(previews, box, min);
+					//previews = updateStructureDirection(previews, box, min);
 					
 					this.removeStructure();
 					PlacementPreview nextPremade = new PlacementPreview(this.getWorld(), previews, PlacementMode.normal, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);

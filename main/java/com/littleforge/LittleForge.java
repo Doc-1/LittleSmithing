@@ -47,10 +47,12 @@ import org.lwjgl.opengl.GL11;
 import com.littleforge.common.item.PremadeItemStoneHammer;
 import com.littleforge.common.item.ItemStructurePremade;
 import com.littleforge.common.item.PremadeItem;
+import com.littleforge.common.item.PremadeItemIronSludgeHammer;
 import com.littleforge.common.item.PremadeItemSword;
 import com.littleforge.common.item.PremadeItemWoodenTongs;
 import com.littleforge.common.recipe.LittleForgeRecipes;
 import com.littleforge.heated.structures.DirtyIronStructurePremade;
+import com.littleforge.multitile.strucutres.BrickForgeInteractiveMultiTilePremade;
 import com.littleforge.multitile.strucutres.ClaySmelteryInteractiveMultiTilePremade;
 import com.littleforge.multitile.strucutres.ClaySmelteryTickingMultiTilePremade;
 import com.littleforge.multitile.strucutres.InteractiveMultiTilePremade;
@@ -92,6 +94,7 @@ public class LittleForge {
     
 	public static ItemSword sword;
 	public static Item hammer;
+	public static Item ironHammer;
 	public static Item woodenTongs;
 
     public static final ToolMaterial Test = EnumHelper.addToolMaterial(MODID, 3, 250, 8.0F, 100.0F, 10);
@@ -101,12 +104,13 @@ public class LittleForge {
     	proxy.loadSidePre();
 		sword = new PremadeItemSword(Test ,"Sword", "sword");
 		hammer = new PremadeItemStoneHammer("StoneHammer", "stone_hammer");
+		ironHammer = new PremadeItemIronSludgeHammer("IronHammer", "iron_sludge_hammer");
 		woodenTongs = new PremadeItemWoodenTongs("WoodenTongs", "wooden_tongs");
     }
     
     @SubscribeEvent
 	public static void registerItems(RegistryEvent.Register<Item> event) {
-		event.getRegistry().registerAll(sword, hammer, woodenTongs);
+		event.getRegistry().registerAll(sword, hammer, woodenTongs, ironHammer);
 		proxy.loadSide();
 	}
     
@@ -129,9 +133,21 @@ public class LittleForge {
     	
     	LittleStructurePremade.registerPremadeStructureType("sword", LittleForge.MODID, ItemStructurePremade.class);
     	LittleStructurePremade.registerPremadeStructureType("stone_hammer", LittleForge.MODID, ItemStructurePremade.class);
+    	LittleStructurePremade.registerPremadeStructureType("iron_sludge_hammer", LittleForge.MODID, ItemStructurePremade.class);
     	LittleStructurePremade.registerPremadeStructureType("wooden_tongs", LittleForge.MODID, ItemStructurePremade.class);
     	LittleStructurePremade.registerPremadeStructureType("wooden_tongs_dirtyiron", LittleForge.MODID, ItemStructurePremade.class);
-
+    	
+    	MultiTilePremade.registerPremadeStructureType("brickForgeBasic_1", LittleForge.MODID, BrickForgeInteractiveMultiTilePremade.class);
+    	MultiTilePremade.registerPremadeStructureType("brickForgeBasic_2", LittleForge.MODID, BrickForgeInteractiveMultiTilePremade.class);
+    	MultiTilePremade.registerPremadeStructureType("brickForgeBasic_3", LittleForge.MODID, BrickForgeInteractiveMultiTilePremade.class);
+    	MultiTilePremade.registerPremadeStructureType("brickForgeBasic_4", LittleForge.MODID, BrickForgeInteractiveMultiTilePremade.class);
+    	MultiTilePremade.registerPremadeStructureType("brickForgeBasic_5", LittleForge.MODID, BrickForgeInteractiveMultiTilePremade.class);
+    	MultiTilePremade.registerPremadeStructureType("brickForgeBasic_6", LittleForge.MODID, BrickForgeInteractiveMultiTilePremade.class);
+    	MultiTilePremade.registerPremadeStructureType("brickForgeBasic_7", LittleForge.MODID, BrickForgeInteractiveMultiTilePremade.class);
+    	MultiTilePremade.registerPremadeStructureType("brickForgeBasic_8", LittleForge.MODID, BrickForgeInteractiveMultiTilePremade.class);
+    	MultiTilePremade.registerPremadeStructureType("brickForgeBasic_9", LittleForge.MODID, BrickForgeInteractiveMultiTilePremade.class);
+    	MultiTilePremade.registerPremadeStructureType("brickForgeBasic_10", LittleForge.MODID, BrickForgeInteractiveMultiTilePremade.class);
+    	
     	MultiTilePremade.registerPremadeStructureType("clayForge_1", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);
     	MultiTilePremade.registerPremadeStructureType("clayForge_2", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);
     	MultiTilePremade.registerPremadeStructureType("clayForge_3", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);

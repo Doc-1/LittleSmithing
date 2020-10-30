@@ -69,7 +69,7 @@ public abstract class InteractiveMultiTilePremade extends MultiTilePremade {
 	
 	public InteractiveMultiTilePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
-		seriesMaxium = 7;
+		seriesMaxium = 10;
 	}
 	
 	@Override
@@ -87,39 +87,43 @@ public abstract class InteractiveMultiTilePremade extends MultiTilePremade {
 		String next = nextSeries();
 		if(!next.isEmpty()) {
 			if(LittleForgeRecipes.takeIngredients(playerIn, type.id)) {
-
-				SurroundingBox box = getSurroundingBox();
-				long minX = box.getMinX();
-				long minY = box.getMinY();
-				long minZ = box.getMinZ();
-				LittleGridContext context = box.getContext();
-				BlockPos min = new BlockPos(context.toBlockOffset(minX), context.toBlockOffset(minY), context.toBlockOffset(minZ));
-				LittleVecContext minVec = new LittleVecContext(new LittleVec((int) (minX - (long) min.getX() * (long) context.size), (int) (minY - (long) min.getY() * (long) context.size), (int) (minZ - (long) min.getZ() * (long) context.size)), context);
-	
-				LittlePreviews previews = getStructurePremadeEntry(nextSeries()).previews.copy(); // Change this line to support different states
-				LittleVec previewMinVec = previews.getMinVec();
-				LittlePreview preview = null;
-				minVec.forceContext(previews);
-				for (LittlePreview prev : previews) {
-					prev.box.sub(previewMinVec);
-					prev.box.add(minVec.getVec());
-					preview = prev;
-				}
-				previews.convertToSmallest();
-				previews = updateStructureDirection(previews, box, min);
-				
-				PlacementPreview nextPremade = new PlacementPreview(this.getWorld(), previews, PlacementMode.normal, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);
-				Placement place = new Placement(null, nextPremade);
-				if(place.canPlace()) {
+				try {
+					SurroundingBox box = getSurroundingBox();
+					long minX = box.getMinX();
+					long minY = box.getMinY();
+					long minZ = box.getMinZ();
+					
+					long maxX = box.getMaxX();
+					long maxY = box.getMaxY();
+					long maxZ = box.getMaxZ();
+					LittleGridContext context = box.getContext();
+					BlockPos min = new BlockPos(context.toBlockOffset(minX), context.toBlockOffset(minY), context.toBlockOffset(minZ));
+					LittleVecContext minVec = new LittleVecContext(new LittleVec((int) (minX - (long) min.getX() * (long) context.size), (int) (minY - (long) min.getY() * (long) context.size), (int) (minZ - (long) min.getZ() * (long) context.size)), context);
+					
+					LittlePreviews previews = getStructurePremadeEntry(nextSeries()).previews.copy(); // Change this line to support different states
+					LittleVec previewMinVec = previews.getMinVec();
+					LittlePreview preview = null;
+					minVec.forceContext(previews);
+					for (LittlePreview prev : previews) {
+						prev.box.sub(previewMinVec);
+						prev.box.add(minVec.getVec());
+						preview = prev;
+					}
+					previews.convertToSmallest();
+					previews = updateStructureDirection(previews, box, min);
+			
 					this.removeStructure();
+					PlacementPreview nextPremade = new PlacementPreview(this.getWorld(), previews, PlacementMode.normal, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);
+					Placement place = new Placement(null, nextPremade);
 					place.place();
-				}else {
-					playerIn.sendStatusMessage(new TextComponentString("Not enough space!"), true);
+					
+				}catch (CorruptedConnectionException | NotYetConnectedException e1) {
+					e1.printStackTrace();
+				} catch (LittleActionException e) {
+					e.printStackTrace();
 				}
 			}
 		}
-		return true;
+	return true;
 	}
-	
-	
 }
