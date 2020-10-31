@@ -68,7 +68,7 @@ public abstract class TickingMultiTilePremade extends MultiTilePremade{
 					LittleGridContext context = box.getContext();
 					BlockPos min = new BlockPos(context.toBlockOffset(minX), context.toBlockOffset(minY), context.toBlockOffset(minZ));
 					LittleVecContext minVec = new LittleVecContext(new LittleVec((int) (minX - (long) min.getX() * (long) context.size), (int) (minY - (long) min.getY() * (long) context.size), (int) (minZ - (long) min.getZ() * (long) context.size)), context);
-		
+					
 					LittlePreviews previews = getStructurePremadeEntry(nextSeries()).previews.copy(); // Change this line to support different states
 					LittleVec previewMinVec = previews.getMinVec();
 					LittlePreview preview = null;
