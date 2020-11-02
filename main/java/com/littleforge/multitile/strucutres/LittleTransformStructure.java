@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.lwjgl.util.Color;
 
+import com.creativemd.creativecore.common.utils.math.Rotation;
 import com.creativemd.creativecore.common.utils.mc.ColorUtils;
 import com.creativemd.littletiles.common.structure.exception.CorruptedConnectionException;
 import com.creativemd.littletiles.common.structure.exception.NotYetConnectedException;
@@ -17,8 +18,11 @@ import com.creativemd.littletiles.common.tile.math.vec.LittleVec;
 import com.creativemd.littletiles.common.tile.parent.IStructureTileList;
 import com.creativemd.littletiles.common.tile.preview.LittlePreview;
 import com.creativemd.littletiles.common.util.grid.LittleGridContext;
+import com.creativemd.littletiles.common.util.vec.SurroundingBox;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -34,21 +38,25 @@ public class LittleTransformStructure {
 	private Map<LittleBox, LittleTile> tilePosList = new HashMap<LittleBox, LittleTile>();
 	private List<LittleTile> tileList;
 	
+	private LittleBox editArea;
+	private SurroundingBox structureBox;
+	
+	public EnumFacing structureDirection;
+	
 	public AxisAlignedBB absolutePos;
 	public double removeX;
 	public double removeY;
 	public double removeZ;
 	
-	public LittleTransformStructure(Iterable<IStructureTileList> blocksLs, AxisAlignedBB absPos) {
+	public LittleTransformStructure(Iterable<IStructureTileList> blocksLs, SurroundingBox box, EnumFacing structDirection) {
 		blocksList = blocksLs;
-		absolutePos = absPos;
-	
-		
-		
-		removeX = absolutePos.minX;
-		removeY = absolutePos.minY;
-		removeZ = absolutePos.minZ;
-		
+		absolutePos = box.getAABB();
+		structureBox = box;
+		structureDirection = structDirection;
+
+		removeX = box.getAABB().minX;
+		removeY = box.getAABB().minY;
+		removeZ = box.getAABB().minZ;
 		try {
 			collectAllTiles();
 		} catch (CorruptedConnectionException | NotYetConnectedException e) {
@@ -58,41 +66,46 @@ public class LittleTransformStructure {
 	}
 	
 	/***
-	 * 
 	 * @param box
-	 * 
+	 * Set it to the area you want to edit.
 	 */
-	public void selectBox(AxisAlignedBB box) {
-		double minX = box.minX;
-		double minY = box.minY;
-		double minZ = box.minZ;
+	public void setEditArea(LittleBox box) {
+		System.out.println(structureDirection);
+		double x = (box.maxX + box.minX) / 2;
+		double y = (box.maxY + box.minY) / 2;
+		double z = (box.maxZ + box.minZ) / 2;
+		LittleVec doubleCenter = new LittleVec((int) (x * 2), (int) (y * 2), (int) (z * 2));
 		
-		double maxX = box.maxX;
-		double maxY = box.maxY;
-		double maxZ = box.maxZ;
-		
-	}
-	
-	public void editTilesColor(int r, int g, int b, int a) {
-		for (LittleTile littleTile : tileList) {
-			int color = ColorUtils.RGBAToInt(r, g, b, a);
-			NBTTagCompound nbt = new NBTTagCompound();
-	    	littleTile.saveTileExtra(nbt);
-	    	
-	    	
-	    	nbt.setInteger("color", color);
-	    	littleTile.loadTileExtra(nbt);
+		switch (structureDirection) {
+		case NORTH:
+			box.rotateBox(Rotation.Y_CLOCKWISE, box.getCenter());
+			break;
+		case WEST:
+			
+			box.flipBox(Axis.Z, doubleCenter);
+			break;
+		case SOUTH:
+			box.rotateBox(Rotation.Y_CLOCKWISE, box.getCenter());
+			break;
+		default:
+			break;
 		}
+		editArea = box;
 	}
 	
-	public void collision() {
-		LittleBox box = new LittleBox(0, 0, 0, 16, 16, 48);
+	/***
+	 * Removes Alpha color from the premade structure. 
+	 */
+	public void removeAlpha() {
+		
 		for (LittleBox littleBox : tilePosList.keySet()) {
-			if(LittleBox.intersectsWith(littleBox, box)) {
+			if(LittleBox.intersectsWith(littleBox, editArea)) {
 				LittleTile littleTile = tilePosList.get(littleBox);
-				int color = ColorUtils.RGBAToInt(25, 0, 0, 255);
+				
 				NBTTagCompound nbt = new NBTTagCompound();
 		    	littleTile.saveTileExtra(nbt);
+		    	
+		    	int color = ColorUtils.BLACK;
 		    	if(nbt.hasKey("color")) {
 		    		color = nbt.getInteger("color");
 		    		Color c = ColorUtils.IntToRGBA(color);
@@ -105,6 +118,17 @@ public class LittleTransformStructure {
 			
 		}
 	}
+	
+	public void editTilesColor(int r, int g, int b, int a) {
+		for (LittleTile littleTile : tileList) {
+			int color = ColorUtils.RGBAToInt(r, g, b, a);
+			NBTTagCompound nbt = new NBTTagCompound();
+	    	littleTile.saveTileExtra(nbt);
+	    	nbt.setInteger("color", color);
+	    	littleTile.loadTileExtra(nbt);
+		}
+	}
+	
 	/***
 	 * Collects all tiles within the structure. It assigns each tile a box relative to the structure itself.
 	 * Meaning minimum corner of the structure is considered 0,0,0.
@@ -112,22 +136,19 @@ public class LittleTransformStructure {
 	public void collectAllTiles() throws CorruptedConnectionException, NotYetConnectedException {
 		for (IStructureTileList iStructureTileList : blocksList) {
 			iStructureTileList.getTe().updateTiles((a) -> {
-				Vec3d relativeMin;
-				Vec3d relativeMax;
 				IStructureTileList list = a.get(iStructureTileList);
 				List<LittleTile> tileLs = new ArrayList<LittleTile>();
 				BlockPos pos = iStructureTileList.getPos();
 				for(LittleTile littleTile : list) {
-					relativeMin = new Vec3d(((littleTile.getBox().minX/16D) + pos.getX()-removeX), 
+					Vec3d relativeMin = new Vec3d(((littleTile.getBox().minX/16D) + pos.getX()-removeX), 
 							(littleTile.getBox().minY/16D) + pos.getY()-removeY, 
 							(littleTile.getBox().minZ/16D) + pos.getZ()-removeZ);
-					relativeMax = new Vec3d(((littleTile.getBox().maxX/16D) + pos.getX()-removeX), 
+					Vec3d relativeMax = new Vec3d(((littleTile.getBox().maxX/16D) + pos.getX()-removeX), 
 							(littleTile.getBox().maxY/16D) + pos.getY()-removeY, 
 							(littleTile.getBox().maxZ/16D) + pos.getZ()-removeZ);
 					
 					LittleBox relativeBox = new LittleBox(new LittleVec((int) (relativeMin.x*16), (int) (relativeMin.y*16), (int) (relativeMin.z*16)), 
 							new LittleVec((int) (relativeMax.x*16), (int) (relativeMax.y*16), (int) (relativeMax.z*16)));
-					//System.out.println(relativeMin + " " + relativeMax + " " + relativeBox);
 
 					tilePosList.put(relativeBox, littleTile);
 				}

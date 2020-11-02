@@ -31,9 +31,9 @@ public class BrickForgeInteractiveMultiTilePremade extends InteractiveMultiTileP
 		if(worldIn.isRemote)
 			return true;
 
-		//{tiles:[{boxes:[[I;9,1,14,16,4,16],[I;0,1,14,8,4,16],[I;13,5,14,16,8,16],[I;5,5,14,12,8,16],[I;0,5,14,4,8,16]],tile:{color:-11850457,block:"littletiles:ltcoloredblock:5"}},{boxes:[[I;8,1,14,9,4,16],[I;0,0,14,16,1,16],[I;12,5,14,13,8,16],[I;4,5,14,5,8,16],[I;0,4,14,16,5,16]],tile:{color:-11448772,block:"littletiles:ltcoloredblock:5"}},{boxes:[[I;13,13,14,16,16,16],[I;0,13,14,3,16,16],[I;9,9,14,16,12,16],[I;0,9,14,8,12,16],[I;4,13,14,12,16,16]],tile:{color:-2109002457,block:"littletiles:ltcoloredblock:5"}},{boxes:[[I;0,8,14,16,9,16],[I;0,12,14,16,13,16],[I;12,13,14,13,16,16],[I;8,9,14,9,12,16],[I;3,13,14,4,16,16]],tile:{color:-2108600772,block:"littletiles:ltcoloredblock:5"}}],min:[I;0,0,14],size:[I;16,16,2],count:20}
-		LittleTransformStructure transform = new LittleTransformStructure(blocksList(), getSurroundingBox().getAABB());
-		transform.collision();
+		LittleTransformStructure transform = new LittleTransformStructure(blocksList(), getSurroundingBox(), direction);
+		transform.setEditArea(new LittleBox(0, 0, 0, 16, 22, 48));
+		transform.removeAlpha();
 		return true;
 	}
 }
