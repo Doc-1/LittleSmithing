@@ -26,14 +26,20 @@ public class BrickForgeInteractiveMultiTilePremade extends InteractiveMultiTileP
 		super(type, mainBlock);
 	}
 	
+	
+	
 	@Override
 	public boolean onBlockActivated(World worldIn, LittleTile tile, BlockPos pos, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ, LittleActionActivated action)throws LittleActionException {
 		if(worldIn.isRemote)
 			return true;
-
+		
 		LittleTransformStructure transform = new LittleTransformStructure(blocksList(), getSurroundingBox(), direction);
+		
 		transform.setEditArea(new LittleBox(0, 0, 0, 16, 22, 48));
 		transform.removeAlpha();
+	
+	
+		
 		return true;
 	}
 }

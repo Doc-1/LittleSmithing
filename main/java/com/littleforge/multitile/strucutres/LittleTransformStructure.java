@@ -81,7 +81,6 @@ public class LittleTransformStructure {
 			box.rotateBox(Rotation.Y_CLOCKWISE, box.getCenter());
 			break;
 		case WEST:
-			
 			box.flipBox(Axis.Z, doubleCenter);
 			break;
 		case SOUTH:
@@ -105,7 +104,7 @@ public class LittleTransformStructure {
 				NBTTagCompound nbt = new NBTTagCompound();
 		    	littleTile.saveTileExtra(nbt);
 		    	
-		    	int color = ColorUtils.BLACK;
+		    	int color = ColorUtils.WHITE;
 		    	if(nbt.hasKey("color")) {
 		    		color = nbt.getInteger("color");
 		    		Color c = ColorUtils.IntToRGBA(color);
@@ -139,6 +138,7 @@ public class LittleTransformStructure {
 				IStructureTileList list = a.get(iStructureTileList);
 				List<LittleTile> tileLs = new ArrayList<LittleTile>();
 				BlockPos pos = iStructureTileList.getPos();
+				
 				for(LittleTile littleTile : list) {
 					Vec3d relativeMin = new Vec3d(((littleTile.getBox().minX/16D) + pos.getX()-removeX), 
 							(littleTile.getBox().minY/16D) + pos.getY()-removeY, 

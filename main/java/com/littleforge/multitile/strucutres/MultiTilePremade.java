@@ -60,18 +60,12 @@ public abstract class MultiTilePremade extends LittleStructurePremade{
 		RayTraceResult res = plr.rayTrace(6.0, (float) 0.1);
 		LittleAbsoluteVec pos = new LittleAbsoluteVec(res, context);
 		
-		
 		long x = context.toGridAccurate(result.hitVec.x);
 		long y = context.toGridAccurate(result.hitVec.y);
 		long z = context.toGridAccurate(result.hitVec.z);
 		this.pos = new BlockPos((int) Math.floor(context.toVanillaGrid(x)), (int) Math.floor(context.toVanillaGrid(y)), (int) Math.floor(context.toVanillaGrid(z)));
 		this.contextVec = new LittleVecContext(new LittleVec((int) (x - context.toGridAccurate(pos.getX())), (int) (y - context.toGridAccurate(pos.getY())), (int) (z - context.toGridAccurate(pos.getZ()))), context);
-	
-	
 		*/
-		
-		
-		
 		LittleGridContext context = box.getContext();
 		StructureAbsolute absolute = new StructureAbsolute(boxPos, box.getAbsoluteBox().box, context);
 
