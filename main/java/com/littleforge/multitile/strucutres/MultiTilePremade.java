@@ -52,6 +52,7 @@ public abstract class MultiTilePremade extends LittleStructurePremade{
 	@StructureDirectional
 	public EnumFacing direction;
 	
+	
 	public LittlePreviews updateStructureDirection(LittlePreviews previews, SurroundingBox box, BlockPos min) {
 		BlockPos boxPos = box.getMinPos();
 		AxisAlignedBB aabb = new AxisAlignedBB(boxPos);
