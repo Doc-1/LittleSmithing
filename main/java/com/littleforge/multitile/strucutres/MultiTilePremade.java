@@ -1,57 +1,42 @@
 package com.littleforge.multitile.strucutres;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.creativemd.creativecore.common.utils.math.Rotation;
-import com.creativemd.creativecore.common.utils.mc.ColorUtils;
-import com.creativemd.littletiles.LittleTiles;
-import com.creativemd.littletiles.common.structure.LittleStructure;
-import com.creativemd.littletiles.common.structure.attribute.LittleStructureAttribute;
 import com.creativemd.littletiles.common.structure.directional.StructureDirectional;
-import com.creativemd.littletiles.common.structure.exception.CorruptedConnectionException;
-import com.creativemd.littletiles.common.structure.exception.NotYetConnectedException;
+import com.creativemd.littletiles.common.structure.directional.StructureDirectionalField;
 import com.creativemd.littletiles.common.structure.registry.LittleStructureType;
 import com.creativemd.littletiles.common.structure.relative.StructureAbsolute;
 import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
-import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade.LittleStructureTypePremade;
-import com.creativemd.littletiles.common.tile.LittleTile;
-import com.creativemd.littletiles.common.tile.math.box.LittleAbsoluteBox;
-import com.creativemd.littletiles.common.tile.math.box.LittleBox;
-import com.creativemd.littletiles.common.tile.math.vec.LittleAbsoluteVec;
-import com.creativemd.littletiles.common.tile.math.vec.LittleVec;
-import com.creativemd.littletiles.common.tile.math.vec.LittleVecContext;
 import com.creativemd.littletiles.common.tile.parent.IStructureTileList;
-import com.creativemd.littletiles.common.tile.parent.StructureTileList;
-import com.creativemd.littletiles.common.tile.preview.LittlePreview;
 import com.creativemd.littletiles.common.tile.preview.LittlePreviews;
 import com.creativemd.littletiles.common.util.grid.LittleGridContext;
 import com.creativemd.littletiles.common.util.vec.SurroundingBox;
-import com.littleforge.common.recipe.LittleForgeRecipes;
 
-import net.minecraft.init.Items;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
-public abstract class MultiTilePremade extends LittleStructurePremade{
+public abstract class MultiTilePremade extends LittleStructurePremade {
 	
 	protected int seriesMaxium;
 	protected String seriesName;
 	protected int seriesAt;
-
+	
 	public MultiTilePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
 		seriesName = type.id.toString().split("_")[0];
 		seriesAt = Integer.parseInt(this.type.id.toString().split("_")[1]);
 	}
-
+	
 	@StructureDirectional
 	public EnumFacing direction;
 	
+	@Override
+	protected Object failedLoadingRelative(NBTTagCompound nbt, StructureDirectionalField field) {
+		if (field.key.equals("direction"))
+			return EnumFacing.UP;
+		return super.failedLoadingRelative(nbt, field);
+	}
 	
 	public LittlePreviews updateStructureDirection(LittlePreviews previews, SurroundingBox box, BlockPos min) {
 		BlockPos boxPos = box.getMinPos();
@@ -69,7 +54,7 @@ public abstract class MultiTilePremade extends LittleStructurePremade{
 		*/
 		LittleGridContext context = box.getContext();
 		StructureAbsolute absolute = new StructureAbsolute(boxPos, box.getAbsoluteBox().box, context);
-
+		
 		System.out.println(box.getAbsoluteBox().getDoubledCenter(boxPos) + " " + absolute.getDoubledCenterVec());
 		switch (direction) {
 		case NORTH:
@@ -85,27 +70,20 @@ public abstract class MultiTilePremade extends LittleStructurePremade{
 		default:
 			break;
 		}
-
-
+		
 		return previews;
 	}
-
+	
 	@Override
-	protected void loadFromNBTExtra(NBTTagCompound nbt) {
-	}
-
+	protected void loadFromNBTExtra(NBTTagCompound nbt) {}
+	
 	@Override
-	protected void writeToNBTExtra(NBTTagCompound nbt) {
-	}
+	protected void writeToNBTExtra(NBTTagCompound nbt) {}
 	
 	protected String nextSeries() {
-		if(seriesMaxium > seriesAt) {
-			return seriesName + "_" + (seriesAt+1);
+		if (seriesMaxium > seriesAt) {
+			return seriesName + "_" + (seriesAt + 1);
 		}
 		return "";
-	}
-	
-	public static void registerPremadeStructureType(String id, String modid, Class<? extends LittleStructurePremade> classStructure) {
-		registerPremadeStructureType(id, modid, classStructure, LittleStructureAttribute.NONE);
 	}
 }
