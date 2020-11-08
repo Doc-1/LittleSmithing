@@ -44,9 +44,6 @@ public class LittleTransformStructure {
 	public EnumFacing structureDirection;
 	
 	public AxisAlignedBB absolutePos;
-	public double removeX;
-	public double removeY;
-	public double removeZ;
 	
 	public LittleTransformStructure(Iterable<IStructureTileList> blocksLs, SurroundingBox box, EnumFacing structDirection) {
 		blocksList = blocksLs;
@@ -54,9 +51,7 @@ public class LittleTransformStructure {
 		structureBox = box;
 		structureDirection = structDirection;
 
-		removeX = box.getAABB().minX;
-		removeY = box.getAABB().minY;
-		removeZ = box.getAABB().minZ;
+		
 		try {
 			collectAllTiles();
 		} catch (CorruptedConnectionException | NotYetConnectedException e) {
@@ -70,33 +65,15 @@ public class LittleTransformStructure {
 	 * Set it to the area you want to edit.
 	 */
 	public void setEditArea(LittleBox box) {
-		System.out.println(structureDirection);
-		double x = (box.maxX + box.minX) / 2;
-		double y = (box.maxY + box.minY) / 2;
-		double z = (box.maxZ + box.minZ) / 2;
-		LittleVec doubleCenter = new LittleVec((int) (x * 2), (int) (y * 2), (int) (z * 2));
-		
-		switch (structureDirection) {
-		case NORTH:
-			box.rotateBox(Rotation.Y_CLOCKWISE, box.getCenter());
-			break;
-		case WEST:
-			box.flipBox(Axis.Z, doubleCenter);
-			break;
-		case SOUTH:
-			box.rotateBox(Rotation.Y_CLOCKWISE, box.getCenter());
-			break;
-		default:
-			break;
-		}
 		editArea = box;
+		System.out.println(box);
+
 	}
 	
 	/***
 	 * Removes Alpha color from the premade structure. 
 	 */
 	public void removeAlpha() {
-		
 		for (LittleBox littleBox : tilePosList.keySet()) {
 			if(LittleBox.intersectsWith(littleBox, editArea)) {
 				LittleTile littleTile = tilePosList.get(littleBox);
@@ -128,6 +105,63 @@ public class LittleTransformStructure {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * Returns the adjusted vec
+	 */
+	private Vec3d[] adjustRelativeVec(BlockPos pos, LittleBox box) {
+		Vec3d relativeVec[] = new Vec3d[2];
+
+		double aMinX = 0, aMinY = 0, aMinZ = 0;
+		double aMaxX = 0, aMaxY = 0, aMaxZ = 0;
+		
+		switch (structureDirection) {
+		case NORTH:
+			aMinX = (box.maxZ/16D)+pos.getZ()-absolutePos.maxZ;
+			aMinY = (box.minY/16D)+pos.getY()-absolutePos.minY;
+			aMinZ =	(box.minX/16D)+pos.getX()-absolutePos.minX;
+			
+			aMaxX = (box.minZ/16D)+pos.getZ()-absolutePos.maxZ;
+			aMaxY = (box.maxY/16D)+pos.getY()-absolutePos.minY;
+			aMaxZ = (box.maxX/16D)+pos.getX()-absolutePos.minX;
+			break;
+		case EAST:
+			aMinX = (box.minX/16D)+pos.getX()-absolutePos.minX;
+			aMinY = (box.minY/16D)+pos.getY()-absolutePos.minY;
+			aMinZ =	(box.minZ/16D)+pos.getZ()-absolutePos.minZ;
+			
+			aMaxX = (box.maxX/16D)+pos.getX()-absolutePos.minX;
+			aMaxY = (box.maxY/16D)+pos.getY()-absolutePos.minY;
+			aMaxZ = (box.maxZ/16D)+pos.getZ()-absolutePos.minZ;
+			break;
+		case SOUTH:
+			aMinX = (box.minZ/16D)+pos.getZ()-absolutePos.minZ;
+			aMinY = (box.minY/16D)+pos.getY()-absolutePos.minY;
+			aMinZ =	(box.maxX/16D)+pos.getX()-absolutePos.maxX;
+			
+			aMaxX = (box.maxZ/16D)+pos.getZ()-absolutePos.minZ;
+			aMaxY = (box.maxY/16D)+pos.getY()-absolutePos.minY;
+			aMaxZ = (box.minX/16D)+pos.getX()-absolutePos.maxX;
+			break;
+		case WEST:
+			aMinX = (box.maxX/16D)+pos.getX()-absolutePos.maxX;
+			aMinY = (box.minY/16D)+pos.getY()-absolutePos.minY;
+			aMinZ =	(box.maxZ/16D)+pos.getZ()-absolutePos.maxZ;
+			
+			aMaxX = (box.minX/16D)+pos.getX()-absolutePos.maxX;
+			aMaxY = (box.maxY/16D)+pos.getY()-absolutePos.minY;
+			aMaxZ = (box.minZ/16D)+pos.getZ()-absolutePos.maxZ; 
+			break;
+		default:
+			
+			break;
+		}
+		relativeVec[0] = new Vec3d(Math.abs(aMinX), Math.abs(aMinY), Math.abs(aMinZ));
+		relativeVec[1] = new Vec3d(Math.abs(aMaxX), Math.abs(aMaxY), Math.abs(aMaxZ));
+		return relativeVec;
+	}
+	
 	/***
 	 * Collects all tiles within the structure. It assigns each tile a box relative to the structure itself.
 	 * Meaning minimum corner of the structure is considered 0,0,0.
@@ -137,16 +171,14 @@ public class LittleTransformStructure {
 			iStructureTileList.getTe().updateTiles((a) -> {
 				IStructureTileList list = a.get(iStructureTileList);
 				List<LittleTile> tileLs = new ArrayList<LittleTile>();
-				BlockPos pos = iStructureTileList.getPos();
-				
+				BlockPos pos = iStructureTileList.getTe().getPos();
+				int x = 0;
 				for(LittleTile littleTile : list) {
-					Vec3d relativeMin = new Vec3d(((littleTile.getBox().minX/16D) + pos.getX()-removeX), 
-							(littleTile.getBox().minY/16D) + pos.getY()-removeY, 
-							(littleTile.getBox().minZ/16D) + pos.getZ()-removeZ);
-					Vec3d relativeMax = new Vec3d(((littleTile.getBox().maxX/16D) + pos.getX()-removeX), 
-							(littleTile.getBox().maxY/16D) + pos.getY()-removeY, 
-							(littleTile.getBox().maxZ/16D) + pos.getZ()-removeZ);
-					
+					x++;
+					Vec3d relativeVec[] = adjustRelativeVec(pos, littleTile.getBox());
+					Vec3d relativeMin = relativeVec[0];
+					Vec3d relativeMax = relativeVec[1];
+					System.out.println(x);
 					LittleBox relativeBox = new LittleBox(new LittleVec((int) (relativeMin.x*16), (int) (relativeMin.y*16), (int) (relativeMin.z*16)), 
 							new LittleVec((int) (relativeMax.x*16), (int) (relativeMax.y*16), (int) (relativeMax.z*16)));
 

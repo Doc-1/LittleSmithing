@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-public class BrickForgeInteractiveMultiTilePremade extends InteractiveMultiTilePremade {
+public class BrickForgeInteractiveMultiTilePremade extends MultiTilePremade {
 	
 	public BrickForgeInteractiveMultiTilePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
@@ -26,16 +26,15 @@ public class BrickForgeInteractiveMultiTilePremade extends InteractiveMultiTileP
 		if (worldIn.isRemote)
 			return true;
 		
-		if (direction != EnumFacing.UP) {
+		if (facing != EnumFacing.UP) {
 			playerIn.sendStatusMessage(new TextComponentTranslation("structure.interaction.wrongfacing"), true);
 			return true;
 		}
 		
 		LittleTransformStructure transform = new LittleTransformStructure(blocksList(), getSurroundingBox(), direction);
 		
-		transform.setEditArea(new LittleBox(0, 0, 0, 16, 22, 48));
+		transform.setEditArea(new LittleBox(0, 0, 0, 16, 8, 2));
 		transform.removeAlpha();
-		
 		return true;
 	}
 }

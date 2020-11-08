@@ -24,16 +24,19 @@ public abstract class MultiTilePremade extends LittleStructurePremade {
 	
 	public MultiTilePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
-		seriesName = type.id.toString().split("_")[0];
-		seriesAt = Integer.parseInt(this.type.id.toString().split("_")[1]);
+		//seriesName = type.id.toString().split("_")[0];
+		//seriesAt = Integer.parseInt(this.type.id.toString().split("_")[1]);
 	}
 	
 	@StructureDirectional
 	public EnumFacing direction;
+
+	@StructureDirectional
+	public EnumFacing facing;
 	
 	@Override
 	protected Object failedLoadingRelative(NBTTagCompound nbt, StructureDirectionalField field) {
-		if (field.key.equals("direction"))
+		if (field.key.equals("facing"))
 			return EnumFacing.UP;
 		return super.failedLoadingRelative(nbt, field);
 	}
@@ -81,9 +84,9 @@ public abstract class MultiTilePremade extends LittleStructurePremade {
 	protected void writeToNBTExtra(NBTTagCompound nbt) {}
 	
 	protected String nextSeries() {
-		if (seriesMaxium > seriesAt) {
-			return seriesName + "_" + (seriesAt + 1);
-		}
+		//if (seriesMaxium > seriesAt) {
+		//	return seriesName + "_" + (seriesAt + 1);
+		//}
 		return "";
 	}
 }
