@@ -10,8 +10,8 @@ import com.littleforge.common.item.PremadeItemIronSludgeHammer;
 import com.littleforge.common.item.PremadeItemStoneHammer;
 import com.littleforge.common.item.PremadeItemSword;
 import com.littleforge.common.item.PremadeItemWoodenTongs;
+import com.littleforge.common.strucutres.type.premade.interactive.BrickForgeInteractivePremade;
 import com.littleforge.heated.structures.DirtyIronStructurePremade;
-import com.littleforge.multitile.strucutres.BrickForgeInteractiveMultiTilePremade;
 import com.littleforge.multitile.strucutres.ClaySmelteryInteractiveMultiTilePremade;
 import com.littleforge.multitile.strucutres.ClaySmelteryTickingMultiTilePremade;
 import com.littleforge.premade.structures.StoneAnvilStructurePremade;
@@ -89,12 +89,12 @@ public class LittleForge {
 		LittleStructurePremade.registerPremadeStructureType("wooden_tongs", LittleForge.MODID, ItemStructurePremade.class);
 		LittleStructurePremade.registerPremadeStructureType("wooden_tongs_dirtyiron", LittleForge.MODID, ItemStructurePremade.class);
 		
-		LittleStructurePremade.registerPremadeStructureType(new LittleStructureTypePremade("brickForgeBasic_1", "premade", BrickForgeInteractiveMultiTilePremade.class, LittleStructureAttribute.PREMADE, LittleForge.MODID)).setNotShowCreativeTab();
+		LittleStructurePremade.registerPremadeStructureType(new LittleStructureTypePremade("brickForgeBasic_1", "premade", BrickForgeInteractivePremade.class, LittleStructureAttribute.PREMADE, LittleForge.MODID)).setNotShowCreativeTab();
 		
 		LittleStructurePremade.registerPremadeStructureType("brickForgeBasic_2", LittleForge.MODID, 
-				BrickForgeInteractiveMultiTilePremade.class).setFieldDefault("facing", EnumFacing.UP);
+				BrickForgeInteractivePremade.class).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("east", EnumFacing.EAST).setFieldDefault("west", EnumFacing.WEST);
 		LittleStructurePremade.registerPremadeStructureType("testing", LittleForge.MODID, 
-				BrickForgeInteractiveMultiTilePremade.class).setFieldDefault("facing", EnumFacing.UP);
+				BrickForgeInteractivePremade.class).setFieldDefault("facing", EnumFacing.UP);
 		
 		LittleStructurePremade.registerPremadeStructureType("clayForge_1", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);
 		LittleStructurePremade.registerPremadeStructureType("clayForge_2", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);

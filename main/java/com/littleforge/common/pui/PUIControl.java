@@ -1,4 +1,4 @@
-package com.littleforge.multitile.strucutres;
+package com.littleforge.common.pui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +18,9 @@ import com.creativemd.littletiles.common.tile.math.vec.LittleVec;
 import com.creativemd.littletiles.common.tile.parent.IStructureTileList;
 import com.creativemd.littletiles.common.tile.preview.LittlePreview;
 import com.creativemd.littletiles.common.util.grid.LittleGridContext;
+import com.creativemd.littletiles.common.util.place.PlacementMode.PreviewMode;
 import com.creativemd.littletiles.common.util.vec.SurroundingBox;
+import com.littleforge.common.strucutres.type.premade.interactive.InteractivePremade;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -28,35 +30,32 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 /***
- * 
  * @author Doc
  *	Allows for changing color, material, position, ect. of tiles inside a premade structure.
  */
-public class LittleTransformStructure {
+public class PUIControl {
 	
-	private Iterable<IStructureTileList> blocksList;
-	private Map<LittleBox, LittleTile> tilePosList = new HashMap<LittleBox, LittleTile>();
-	private List<LittleTile> tileList;
+	protected Iterable<IStructureTileList> blocksList;
+	protected Map<LittleBox, LittleTile> tilePosList = new HashMap<LittleBox, LittleTile>();
+	protected List<LittleTile> tileList;
 	
-	private LittleBox editArea;
-	private SurroundingBox structureBox;
+	protected LittleBox editArea;
+	protected SurroundingBox structureBox;
 	
 	public EnumFacing structureDirection;
 	
 	public AxisAlignedBB absolutePos;
 	
-	public LittleTransformStructure(Iterable<IStructureTileList> blocksLs, SurroundingBox box, EnumFacing structDirection) {
-		blocksList = blocksLs;
-		absolutePos = box.getAABB();
-		structureBox = box;
-		structureDirection = structDirection;
-
-		
+	public PUIControl(InteractivePremade premade) {
 		try {
+			blocksList = premade.blocksList();
+			structureBox = premade.getSurroundingBox();
+			absolutePos = structureBox.getAABB();
+			structureDirection = premade.direction;
 			collectAllTiles();
-		} catch (CorruptedConnectionException | NotYetConnectedException e) {
+		} catch (CorruptedConnectionException | NotYetConnectedException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
 	}
 	
@@ -64,45 +63,8 @@ public class LittleTransformStructure {
 	 * @param box
 	 * Set it to the area you want to edit.
 	 */
-	public void setEditArea(LittleBox box) {
-		editArea = box;
-		System.out.println(box);
-
-	}
-	
-	/***
-	 * Removes Alpha color from the premade structure. 
-	 */
-	public void removeAlpha() {
-		for (LittleBox littleBox : tilePosList.keySet()) {
-			if(LittleBox.intersectsWith(littleBox, editArea)) {
-				LittleTile littleTile = tilePosList.get(littleBox);
-				
-				NBTTagCompound nbt = new NBTTagCompound();
-		    	littleTile.saveTileExtra(nbt);
-		    	
-		    	int color = ColorUtils.WHITE;
-		    	if(nbt.hasKey("color")) {
-		    		color = nbt.getInteger("color");
-		    		Color c = ColorUtils.IntToRGBA(color);
-		    		c.setAlpha(255);
-		    		color = ColorUtils.RGBAToInt(c);
-		    	}
-		    	nbt.setInteger("color", color);
-		    	littleTile.loadTileExtra(nbt);
-			}
-			
-		}
-	}
-	
-	public void editTilesColor(int r, int g, int b, int a) {
-		for (LittleTile littleTile : tileList) {
-			int color = ColorUtils.RGBAToInt(r, g, b, a);
-			NBTTagCompound nbt = new NBTTagCompound();
-	    	littleTile.saveTileExtra(nbt);
-	    	nbt.setInteger("color", color);
-	    	littleTile.loadTileExtra(nbt);
-		}
+	public void setEditArea(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+		editArea = new LittleBox(minX, minY, minZ, maxX, maxY, maxZ);
 	}
 	
 	/**
@@ -154,7 +116,6 @@ public class LittleTransformStructure {
 			aMaxZ = (box.minZ/16D)+pos.getZ()-absolutePos.maxZ; 
 			break;
 		default:
-			
 			break;
 		}
 		relativeVec[0] = new Vec3d(Math.abs(aMinX), Math.abs(aMinY), Math.abs(aMinZ));
@@ -172,13 +133,10 @@ public class LittleTransformStructure {
 				IStructureTileList list = a.get(iStructureTileList);
 				List<LittleTile> tileLs = new ArrayList<LittleTile>();
 				BlockPos pos = iStructureTileList.getTe().getPos();
-				int x = 0;
 				for(LittleTile littleTile : list) {
-					x++;
 					Vec3d relativeVec[] = adjustRelativeVec(pos, littleTile.getBox());
 					Vec3d relativeMin = relativeVec[0];
 					Vec3d relativeMax = relativeVec[1];
-					System.out.println(x);
 					LittleBox relativeBox = new LittleBox(new LittleVec((int) (relativeMin.x*16), (int) (relativeMin.y*16), (int) (relativeMin.z*16)), 
 							new LittleVec((int) (relativeMax.x*16), (int) (relativeMax.y*16), (int) (relativeMax.z*16)));
 

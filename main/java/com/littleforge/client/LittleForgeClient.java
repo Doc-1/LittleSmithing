@@ -34,8 +34,8 @@ public class LittleForgeClient extends LittleTilesServer {
 
 	@Override
 	public void loadSidePost() {
-		MinecraftForge.EVENT_BUS.register(LeftClickBlockListener.class);		
-
+		MinecraftForge.EVENT_BUS.register(LeftClickBlockListener.class);
+		
 		CreativeCoreClient.registerItemColorHandler(LittleForge.sword);
 		CreativeCoreClient.registerItemColorHandler(LittleForge.hammer);
 		CreativeCoreClient.registerItemColorHandler(LittleForge.ironHammer);

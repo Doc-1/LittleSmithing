@@ -1,16 +1,16 @@
-package com.littleforge.multitile.strucutres;
+package com.littleforge.common.strucutres.type.premade.interactive;
 
 import com.creativemd.creativecore.common.utils.math.Rotation;
-import com.creativemd.littletiles.client.gui.controls.GuiDirectionIndicator;
-import com.creativemd.littletiles.client.gui.controls.GuiTileViewer;
 import com.creativemd.littletiles.common.action.LittleActionException;
-import com.creativemd.littletiles.common.structure.LittleStructure;
+import com.creativemd.littletiles.common.action.block.LittleActionActivated;
 import com.creativemd.littletiles.common.structure.directional.StructureDirectional;
+import com.creativemd.littletiles.common.structure.directional.StructureDirectionalField;
 import com.creativemd.littletiles.common.structure.exception.CorruptedConnectionException;
 import com.creativemd.littletiles.common.structure.exception.NotYetConnectedException;
 import com.creativemd.littletiles.common.structure.registry.LittleStructureType;
+import com.creativemd.littletiles.common.structure.relative.StructureAbsolute;
 import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
-import com.creativemd.littletiles.common.tile.math.box.LittleBoxes;
+import com.creativemd.littletiles.common.tile.LittleTile;
 import com.creativemd.littletiles.common.tile.math.vec.LittleVec;
 import com.creativemd.littletiles.common.tile.math.vec.LittleVecContext;
 import com.creativemd.littletiles.common.tile.parent.IStructureTileList;
@@ -21,50 +21,61 @@ import com.creativemd.littletiles.common.util.place.Placement;
 import com.creativemd.littletiles.common.util.place.PlacementMode;
 import com.creativemd.littletiles.common.util.place.PlacementPreview;
 import com.creativemd.littletiles.common.util.vec.SurroundingBox;
+import com.littleforge.common.recipe.LittleForgeRecipes;
 
-import net.minecraft.init.Items;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.world.World;
 
-public abstract class TickingMultiTilePremade extends MultiTilePremade{
+public abstract class InteractivePremade extends LittleStructurePremade {
 	
-	private int tick = 0;
-	protected int tickMax;
+	protected int seriesMaxium;
+	protected String seriesName;
+	protected int seriesAt;
 	
-	public TickingMultiTilePremade(LittleStructureType type, IStructureTileList mainBlock, int tickMaxium, int seriesMax) {
+	public InteractivePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
-		tickMax = tickMaxium;
-		seriesMaxium = seriesMax;
+		//seriesName = type.id.toString().split("_")[0];
+		//seriesAt = Integer.parseInt(this.type.id.toString().split("_")[1]);
 	}
 	
-	@Override
-	protected void loadFromNBTExtra(NBTTagCompound nbt) {
-		tick = nbt.getInteger("tick");
-	}
+	@StructureDirectional
+	public EnumFacing direction;
 	
-	@Override
-	protected void writeToNBTExtra(NBTTagCompound nbt) {
-		nbt.setInteger("tick", tick);
-	}
+	@StructureDirectional
+	public EnumFacing facing;
+
+	@StructureDirectional
+	public EnumFacing east;
+
+	@StructureDirectional
+	public EnumFacing west;
 
 	@Override
-	public void tick() {
-		if (getWorld().isRemote)
-			return;
-		if(tickMax != 0) {
-			tick++;
-			try {	
-				if (tick >= tickMax) {
-					tick = 0;
+	public boolean onBlockActivated(World worldIn, LittleTile tile, BlockPos pos, EntityPlayer playerIn, EnumHand hand,
+			ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ, LittleActionActivated action)
+			throws LittleActionException {
+		if(worldIn.isRemote)
+			return true;
+		
+		System.out.println(this.getAttribute());
+		String next = nextSeries();
+		if(!next.isEmpty()) {
+			if(LittleForgeRecipes.takeIngredients(playerIn, type.id)) {
+				try {
 					SurroundingBox box = getSurroundingBox();
 					long minX = box.getMinX();
 					long minY = box.getMinY();
 					long minZ = box.getMinZ();
+					
+					long maxX = box.getMaxX();
+					long maxY = box.getMaxY();
+					long maxZ = box.getMaxZ();
 					LittleGridContext context = box.getContext();
 					BlockPos min = new BlockPos(context.toBlockOffset(minX), context.toBlockOffset(minY), context.toBlockOffset(minZ));
 					LittleVecContext minVec = new LittleVecContext(new LittleVec((int) (minX - (long) min.getX() * (long) context.size), (int) (minY - (long) min.getY() * (long) context.size), (int) (minZ - (long) min.getZ() * (long) context.size)), context);
@@ -78,19 +89,45 @@ public abstract class TickingMultiTilePremade extends MultiTilePremade{
 						prev.box.add(minVec.getVec());
 						preview = prev;
 					}
-					previews.convertToSmallest();
-					//previews = updateStructureDirection(previews, box, min);
 					
+					previews.convertToSmallest();
+			
 					this.removeStructure();
 					PlacementPreview nextPremade = new PlacementPreview(this.getWorld(), previews, PlacementMode.normal, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);
 					Placement place = new Placement(null, nextPremade);
 					place.place();
+					
+				}catch (CorruptedConnectionException | NotYetConnectedException e1) {
+					e1.printStackTrace();
+				} catch (LittleActionException e) {
+					e.printStackTrace();
 				}
-			}catch (CorruptedConnectionException | NotYetConnectedException e1) {
-				e1.printStackTrace();
-			} catch (LittleActionException e) {
-				e.printStackTrace();
 			}
 		}
+	return true;
+	}
+	
+	@Override
+	protected Object failedLoadingRelative(NBTTagCompound nbt, StructureDirectionalField field) {
+		if (field.key.equals("facing"))
+			return EnumFacing.UP;
+		if (field.key.equals("east"))
+			return EnumFacing.EAST;
+		if (field.key.equals("west"))
+			return EnumFacing.WEST;
+		return super.failedLoadingRelative(nbt, field);
+	}
+	
+	@Override
+	protected void loadFromNBTExtra(NBTTagCompound nbt) {}
+	
+	@Override
+	protected void writeToNBTExtra(NBTTagCompound nbt) {}
+	
+	protected String nextSeries() {
+		//if (seriesMaxium > seriesAt) {
+		//	return seriesName + "_" + (seriesAt + 1);
+		//}
+		return "";
 	}
 }

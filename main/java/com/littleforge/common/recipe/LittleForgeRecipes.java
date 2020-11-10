@@ -30,7 +30,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.littleforge.LittleForge;
 import com.littleforge.LittleSmithingConfig;
-import com.littleforge.multitile.strucutres.MultiTilePremade;
+import com.littleforge.common.strucutres.type.premade.interactive.InteractivePremade;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;

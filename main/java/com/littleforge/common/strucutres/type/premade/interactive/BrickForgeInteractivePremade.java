@@ -1,11 +1,14 @@
-package com.littleforge.multitile.strucutres;
+package com.littleforge.common.strucutres.type.premade.interactive;
 
+import com.creativemd.littletiles.client.LittleTilesClient;
 import com.creativemd.littletiles.common.action.LittleActionException;
 import com.creativemd.littletiles.common.action.block.LittleActionActivated;
 import com.creativemd.littletiles.common.structure.registry.LittleStructureType;
 import com.creativemd.littletiles.common.tile.LittleTile;
 import com.creativemd.littletiles.common.tile.math.box.LittleBox;
 import com.creativemd.littletiles.common.tile.parent.IStructureTileList;
+import com.littleforge.common.pui.PUIControl;
+import com.littleforge.common.pui.PUIEditTileColor;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -15,9 +18,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-public class BrickForgeInteractiveMultiTilePremade extends MultiTilePremade {
+public class BrickForgeInteractivePremade extends InteractivePremade {
 	
-	public BrickForgeInteractiveMultiTilePremade(LittleStructureType type, IStructureTileList mainBlock) {
+	public BrickForgeInteractivePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
 	}
 	
@@ -31,9 +34,10 @@ public class BrickForgeInteractiveMultiTilePremade extends MultiTilePremade {
 			return true;
 		}
 		
-		LittleTransformStructure transform = new LittleTransformStructure(blocksList(), getSurroundingBox(), direction);
-		
-		transform.setEditArea(new LittleBox(0, 0, 0, 16, 8, 2));
+		//System.out.println("Up:" + (facing==(EnumFacing.UP)) + " East:" + (east==(EnumFacing.EAST)) + " West:" + (west==(EnumFacing.WEST)));
+		System.out.println(east + " " + west);
+		PUIEditTileColor transform = new PUIEditTileColor(this);
+		transform.setEditArea(0, 0, 0, 1, 8, 5);
 		transform.removeAlpha();
 		return true;
 	}
