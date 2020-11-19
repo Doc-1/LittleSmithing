@@ -13,6 +13,7 @@ import com.littleforge.CommonProxy;
 import com.littleforge.LittleForge;
 import com.littleforge.common.item.PremadeItem;
 import com.littleforge.common.item.PremadeItemSword;
+import com.littleforge.common.premade.interaction.PremadeInteractionControl;
 import com.littleforge.common.recipe.LittleForgeRecipes;
 import com.littleforge.common.util.LeftClickBlockListener;
 
@@ -35,6 +36,7 @@ public class LittleForgeClient extends LittleTilesServer {
 	@Override
 	public void loadSidePost() {
 		MinecraftForge.EVENT_BUS.register(LeftClickBlockListener.class);
+		MinecraftForge.EVENT_BUS.register(PremadeInteractionControl.class);
 		
 		CreativeCoreClient.registerItemColorHandler(LittleForge.sword);
 		CreativeCoreClient.registerItemColorHandler(LittleForge.hammer);

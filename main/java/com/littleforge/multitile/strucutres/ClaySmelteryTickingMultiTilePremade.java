@@ -10,5 +10,11 @@ public class ClaySmelteryTickingMultiTilePremade extends TickingPremade {
 	public ClaySmelteryTickingMultiTilePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock, 20, 13);
 	}
+
+	@Override
+	public void createControls() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

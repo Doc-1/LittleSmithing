@@ -10,4 +10,10 @@ public class ClaySmelteryInteractiveMultiTilePremade extends InteractivePremade{
 		super(type, mainBlock);
 	}
 
+	@Override
+	public void createControls() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

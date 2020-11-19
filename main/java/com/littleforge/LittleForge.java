@@ -11,6 +11,7 @@ import com.littleforge.common.item.PremadeItemStoneHammer;
 import com.littleforge.common.item.PremadeItemSword;
 import com.littleforge.common.item.PremadeItemWoodenTongs;
 import com.littleforge.common.strucutres.type.premade.interactive.BrickForgeInteractivePremade;
+import com.littleforge.common.strucutres.type.premade.interactive.VendingMachineInteractivePremade;
 import com.littleforge.heated.structures.DirtyIronStructurePremade;
 import com.littleforge.multitile.strucutres.ClaySmelteryInteractiveMultiTilePremade;
 import com.littleforge.multitile.strucutres.ClaySmelteryTickingMultiTilePremade;
@@ -88,11 +89,18 @@ public class LittleForge {
 		LittleStructurePremade.registerPremadeStructureType("iron_sludge_hammer", LittleForge.MODID, ItemStructurePremade.class);
 		LittleStructurePremade.registerPremadeStructureType("wooden_tongs", LittleForge.MODID, ItemStructurePremade.class);
 		LittleStructurePremade.registerPremadeStructureType("wooden_tongs_dirtyiron", LittleForge.MODID, ItemStructurePremade.class);
+
+		LittleStructurePremade.registerPremadeStructureType("vending", LittleForge.MODID, 
+			VendingMachineInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING);
 		
 		LittleStructurePremade.registerPremadeStructureType(new LittleStructureTypePremade("brickForgeBasic_1", "premade", BrickForgeInteractivePremade.class, LittleStructureAttribute.PREMADE, LittleForge.MODID)).setNotShowCreativeTab();
 		
 		LittleStructurePremade.registerPremadeStructureType("brickForgeBasic_2", LittleForge.MODID, 
-				BrickForgeInteractivePremade.class).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("east", EnumFacing.EAST).setFieldDefault("west", EnumFacing.WEST);
+			BrickForgeInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING)
+			.setFieldDefault("facing", EnumFacing.UP)
+			.setFieldDefault("east", EnumFacing.EAST)
+			.setFieldDefault("west", EnumFacing.WEST);
+	
 		LittleStructurePremade.registerPremadeStructureType("testing", LittleForge.MODID, 
 				BrickForgeInteractivePremade.class).setFieldDefault("facing", EnumFacing.UP);
 		

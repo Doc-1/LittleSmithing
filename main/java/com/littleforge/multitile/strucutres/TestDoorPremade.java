@@ -35,8 +35,6 @@ public class TestDoorPremade extends LittleStructurePremade{
 		nbt.setInteger("tick", tick);
 	}
 	
-	
-	
 	@Override
 	public void tick() {
 		if (getWorld().isRemote)

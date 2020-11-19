@@ -2,4 +2,4 @@ item.LTPremade.photoimporter.name=Photo Importer
 item.LTPremade.typewriter.name=Typewriter
 item.tapemeasure.name=Tape Measure
 structure.interaction.wrongfacing=Structure is facing the wrong way
-structure.interaction.flipped=Flipped!
+structure.interaction.structurecollision=Collision at
