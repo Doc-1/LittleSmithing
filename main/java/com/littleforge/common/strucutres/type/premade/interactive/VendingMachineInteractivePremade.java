@@ -2,19 +2,13 @@ package com.littleforge.common.strucutres.type.premade.interactive;
 
 import com.creativemd.littletiles.common.structure.registry.LittleStructureType;
 import com.creativemd.littletiles.common.tile.parent.IStructureTileList;
-import com.littleforge.common.premade.interaction.controls.PIControlButtons;
 
-public class VendingMachineInteractivePremade extends InteractivePremade{
+public class VendingMachineInteractivePremade extends InteractiveDoorPremade{
 
 	public VendingMachineInteractivePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
-		
+		this.setListOfDoors("b1","b2","b3","b4","b5","b6","b7","b8");
 	}
 
-	@Override
-	public void createControls() {
-		PIControlButtons buttons = new PIControlButtons(this, "vendingButtons", 30);
-		controls.add(buttons);
-	}
 
 }

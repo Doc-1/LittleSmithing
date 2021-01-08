@@ -24,10 +24,8 @@ import com.creativemd.littletiles.common.util.place.Placement;
 import com.creativemd.littletiles.common.util.place.PlacementMode;
 import com.creativemd.littletiles.common.util.place.PlacementPreview;
 import com.creativemd.littletiles.common.util.vec.SurroundingBox;
-import com.littleforge.common.premade.interaction.PremadeInteractionControl;
-import com.littleforge.common.premade.interaction.controls.PIAddStructure;
-import com.littleforge.common.premade.interaction.controls.PIBuildProgress;
-import com.littleforge.common.premade.interaction.controls.PITileColorChange;
+import com.littleforge.common.premade.interaction.actions.AddStructure;
+import com.littleforge.common.premade.interaction.actions.BuildProgress;
 import com.littleforge.common.recipe.LittleForgeRecipes;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -43,11 +41,12 @@ public class BrickForgeInteractivePremade extends InteractivePremade {
 	public BrickForgeInteractivePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
 	}
-	
-	@Override
-	public void createControls() {
-		controls.add(new PIBuildProgress(this, "progress", 0, 0, 0, 16, 48, 40));
-	}
 
-	
+	@Override
+	public void onPremadeActivated() {
+
+		//editArea = new LittleBox(8, 40, 8, 8, 40, 8);
+		//AddStructure.toPremade(this, false);
+		//BuildProgress.forPremade(this);
+	}
 }

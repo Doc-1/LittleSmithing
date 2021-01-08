@@ -1,20 +1,24 @@
 package com.littleforge;
 
 import com.creativemd.creativecore.common.config.holder.CreativeConfigRegistry;
+import com.creativemd.creativecore.common.packet.CreativeCorePacket;
 import com.creativemd.littletiles.common.structure.attribute.LittleStructureAttribute;
 import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
 import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade.LittleStructureTypePremade;
 import com.creativemd.littletiles.server.LittleTilesServer;
 import com.littleforge.common.item.ItemStructurePremade;
+import com.littleforge.common.item.PremadeItemDrink;
 import com.littleforge.common.item.PremadeItemIronSludgeHammer;
 import com.littleforge.common.item.PremadeItemStoneHammer;
 import com.littleforge.common.item.PremadeItemSword;
 import com.littleforge.common.item.PremadeItemWoodenTongs;
 import com.littleforge.common.strucutres.type.premade.interactive.BrickForgeInteractivePremade;
+import com.littleforge.common.strucutres.type.premade.interactive.PickupItemPremade;
 import com.littleforge.common.strucutres.type.premade.interactive.VendingMachineInteractivePremade;
 import com.littleforge.heated.structures.DirtyIronStructurePremade;
 import com.littleforge.multitile.strucutres.ClaySmelteryInteractiveMultiTilePremade;
 import com.littleforge.multitile.strucutres.ClaySmelteryTickingMultiTilePremade;
+import com.littleforge.packet.PacketUpdateGivenItem;
 import com.littleforge.premade.structures.StoneAnvilStructurePremade;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -49,12 +53,13 @@ public class LittleForge {
 	public static Item hammer;
 	public static Item ironHammer;
 	public static Item woodenTongs;
-	
+	public static Item soda;
 	public static final ToolMaterial Test = EnumHelper.addToolMaterial(MODID, 3, 250, 8.0F, 100.0F, 10);
 	
 	@EventHandler
 	public void PreInit(FMLPreInitializationEvent event) {
 		proxy.loadSidePre();
+		soda = new PremadeItemDrink("Soda", "soda");
 		sword = new PremadeItemSword(Test, "Sword", "sword");
 		hammer = new PremadeItemStoneHammer("StoneHammer", "stone_hammer");
 		ironHammer = new PremadeItemIronSludgeHammer("IronHammer", "iron_sludge_hammer");
@@ -63,7 +68,7 @@ public class LittleForge {
 	
 	@SubscribeEvent
 	public static void registerItems(RegistryEvent.Register<Item> event) {
-		event.getRegistry().registerAll(sword, hammer, woodenTongs, ironHammer);
+		event.getRegistry().registerAll(sword, hammer, woodenTongs, ironHammer, soda);
 		proxy.loadSide();
 	}
 	
@@ -79,21 +84,28 @@ public class LittleForge {
 	@EventHandler
 	public void Init(FMLInitializationEvent event) {
 		CreativeConfigRegistry.ROOT.registerValue(MODID, CONFIG = new LittleSmithingConfig());
+		CreativeCorePacket.registerPacket(PacketUpdateGivenItem.class);
 		
 		LittleStructurePremade.registerPremadeStructureType("dirty_iron", LittleForge.MODID, DirtyIronStructurePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING);
 		
 		LittleStructurePremade.registerPremadeStructureType("stone_anvil", LittleForge.MODID, StoneAnvilStructurePremade.class);
 		
-		LittleStructurePremade.registerPremadeStructureType("sword", LittleForge.MODID, ItemStructurePremade.class);
+		LittleStructurePremade.registerPremadeStructureType("soda", LittleForge.MODID, PickupItemPremade.class);
+		
+		LittleStructurePremade.registerPremadeStructureType("sword", LittleForge.MODID, PickupItemPremade.class);
 		LittleStructurePremade.registerPremadeStructureType("stone_hammer", LittleForge.MODID, ItemStructurePremade.class);
 		LittleStructurePremade.registerPremadeStructureType("iron_sludge_hammer", LittleForge.MODID, ItemStructurePremade.class);
 		LittleStructurePremade.registerPremadeStructureType("wooden_tongs", LittleForge.MODID, ItemStructurePremade.class);
 		LittleStructurePremade.registerPremadeStructureType("wooden_tongs_dirtyiron", LittleForge.MODID, ItemStructurePremade.class);
 
 		LittleStructurePremade.registerPremadeStructureType("vending", LittleForge.MODID, 
-			VendingMachineInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING);
+			VendingMachineInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING)
+		.setFieldDefault("facing", EnumFacing.UP)
+		.setFieldDefault("east", EnumFacing.EAST)
+		.setFieldDefault("west", EnumFacing.WEST);
 		
-		LittleStructurePremade.registerPremadeStructureType(new LittleStructureTypePremade("brickForgeBasic_1", "premade", BrickForgeInteractivePremade.class, LittleStructureAttribute.PREMADE, LittleForge.MODID)).setNotShowCreativeTab();
+		LittleStructurePremade.registerPremadeStructureType("brickForgeBasic_1", LittleForge.MODID, 
+				BrickForgeInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING);
 		
 		LittleStructurePremade.registerPremadeStructureType("brickForgeBasic_2", LittleForge.MODID, 
 			BrickForgeInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING)

@@ -6,14 +6,12 @@ import com.creativemd.littletiles.LittleTiles;
 import com.creativemd.littletiles.client.render.world.LittleChunkDispatcher;
 import com.creativemd.littletiles.common.item.ItemLittleChisel;
 import com.creativemd.littletiles.common.item.ItemLittleGrabber;
-import com.creativemd.littletiles.common.item.ItemRecipe;
-import com.creativemd.littletiles.common.item.ItemRecipeAdvanced;
 import com.creativemd.littletiles.server.LittleTilesServer;
 import com.littleforge.CommonProxy;
 import com.littleforge.LittleForge;
 import com.littleforge.common.item.PremadeItem;
+import com.littleforge.common.item.PremadeItemDrink;
 import com.littleforge.common.item.PremadeItemSword;
-import com.littleforge.common.premade.interaction.PremadeInteractionControl;
 import com.littleforge.common.recipe.LittleForgeRecipes;
 import com.littleforge.common.util.LeftClickBlockListener;
 
@@ -36,9 +34,9 @@ public class LittleForgeClient extends LittleTilesServer {
 	@Override
 	public void loadSidePost() {
 		MinecraftForge.EVENT_BUS.register(LeftClickBlockListener.class);
-		MinecraftForge.EVENT_BUS.register(PremadeInteractionControl.class);
 		
 		CreativeCoreClient.registerItemColorHandler(LittleForge.sword);
+		CreativeCoreClient.registerItemColorHandler(LittleForge.soda);
 		CreativeCoreClient.registerItemColorHandler(LittleForge.hammer);
 		CreativeCoreClient.registerItemColorHandler(LittleForge.ironHammer);
 		CreativeCoreClient.registerItemColorHandler(LittleForge.woodenTongs);
@@ -59,6 +57,9 @@ public class LittleForgeClient extends LittleTilesServer {
 
 		CreativeCoreClient.registerItemRenderer(LittleForge.woodenTongs);
 		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.woodenTongs);
+
+		CreativeCoreClient.registerItemRenderer(LittleForge.soda);
+		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.soda);
 	}
 }
 

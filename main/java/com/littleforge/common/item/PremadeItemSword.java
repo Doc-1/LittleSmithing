@@ -89,15 +89,10 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class PremadeItemSword extends ItemSword implements ICreativeRendered {
-	
-	String registryName;
+public class PremadeItemSword extends PremadePlaceableItemSword {
 	
 	public PremadeItemSword(ToolMaterial material, String unlocalizedName, String registryNm) {
-		super(material);
-		registryName = registryNm;
-		setUnlocalizedName(unlocalizedName);
-		setRegistryName(registryNm);
+		super(material, unlocalizedName, registryNm);
 		setCreativeTab(LittleTiles.littleTab);
 		setMaxStackSize(1);
 	}	
@@ -147,8 +142,9 @@ public class PremadeItemSword extends ItemSword implements ICreativeRendered {
 		Minecraft mc = Minecraft.getMinecraft();
 		
 		if (cameraTransformType == TransformType.FIRST_PERSON_RIGHT_HAND) {
-			GlStateManager.translate(-0.07D, -0.07D, -0.07D);
-
+			GlStateManager.scale(2D, 2D, 2D);
+			GlStateManager.translate(-0.07D, .15D, -0.07D);
+			
 			GlStateManager.rotate(-140.0F, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotate(15.0F, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotate(10.0F, 0.0F, 0.0F, 1.0F);

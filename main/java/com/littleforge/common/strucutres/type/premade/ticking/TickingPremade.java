@@ -44,6 +44,11 @@ public abstract class TickingPremade extends InteractivePremade{
 	}
 	
 	@Override
+	public void onPremadeActivated() {
+
+	}
+	
+	@Override
 	protected void loadFromNBTExtra(NBTTagCompound nbt) {
 		tick = nbt.getInteger("tick");
 	}

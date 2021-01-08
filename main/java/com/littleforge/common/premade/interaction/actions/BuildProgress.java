@@ -1,4 +1,4 @@
-package com.littleforge.common.premade.interaction.controls;
+package com.littleforge.common.premade.interaction.actions;
 
 import org.lwjgl.util.Color;
 
@@ -11,20 +11,12 @@ import com.littleforge.common.strucutres.type.premade.interactive.InteractivePre
 
 import net.minecraft.nbt.NBTTagCompound;
 
-public class PIBuildProgress extends PITileColorChange{
+public class BuildProgress {
 
-	public PIBuildProgress(InteractivePremade premade, String id, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-		super(premade, id, null, minX, minY, minZ, maxX, maxY, maxZ);
-	}
-
-	/**
-	 * Removes Alpha color from the premade structure. 
-	 */
-	@Override
-	public void changeTilesColor() {
-		for (LittleBox littleBox : tilePosList.keySet()) {
-			if(LittleBox.intersectsWith(littleBox, editArea)) {
-				LittleTile littleTile = tilePosList.get(littleBox);
+	public static void forPremade(InteractivePremade premade) {
+		for (LittleBox littleBox : premade.getTilePosList().keySet()) {
+			if(LittleBox.intersectsWith(littleBox, premade.getEditArea())) {
+				LittleTile littleTile = premade.getTilePosList().get(littleBox);
 				
 				NBTTagCompound nbt = new NBTTagCompound();
 		    	littleTile.saveTileExtra(nbt);
