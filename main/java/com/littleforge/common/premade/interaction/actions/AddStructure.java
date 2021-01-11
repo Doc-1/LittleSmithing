@@ -1,9 +1,7 @@
 package com.littleforge.common.premade.interaction.actions;
 
-import com.creativemd.creativecore.common.utils.math.Rotation;
 import com.creativemd.littletiles.common.structure.exception.CorruptedConnectionException;
 import com.creativemd.littletiles.common.structure.exception.NotYetConnectedException;
-import com.creativemd.littletiles.common.structure.relative.StructureRelative;
 import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
 import com.creativemd.littletiles.common.tile.math.box.LittleBox;
 import com.creativemd.littletiles.common.tile.math.vec.LittleVec;
@@ -14,7 +12,6 @@ import com.creativemd.littletiles.common.util.grid.LittleGridContext;
 import com.creativemd.littletiles.common.util.place.Placement;
 import com.creativemd.littletiles.common.util.place.PlacementMode;
 import com.creativemd.littletiles.common.util.place.PlacementPreview;
-import com.creativemd.littletiles.common.util.vec.SurroundingBox;
 import com.littleforge.common.recipe.LittleForgeRecipes;
 import com.littleforge.common.strucutres.type.premade.interactive.InteractivePremade;
 
@@ -22,12 +19,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextComponentTranslationFormatException;
 
 public abstract class AddStructure {
-	
 	
 	public static LittleVec adjustEditArea(LittleBox editArea, EnumFacing facing) {
 		
@@ -48,7 +42,7 @@ public abstract class AddStructure {
 	public static void toPremade(InteractivePremade premade, boolean removeStructure) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		System.out.println(premade.direction);
-		if(LittleForgeRecipes.takeIngredients(player, premade.type.id)) {
+		if (LittleForgeRecipes.takeIngredients(player, premade.type.id)) {
 			try {
 				long minX = premade.getSurroundingBox().getMinX();
 				long minY = premade.getSurroundingBox().getMinY();
@@ -72,19 +66,19 @@ public abstract class AddStructure {
 				//previews.rotatePreviews(Rotation.X_CLOCKWISE, new StructureRelative(previews.getSurroundingBox(), LittleGridContext.get(32)).getDoubledCenterVec());
 				PlacementPreview nextPremade = new PlacementPreview(premade.getWorld(), previews, PlacementMode.all, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);
 				
-				if(removeStructure) {
+				if (removeStructure) {
 					premade.removeStructure();
 				}
 				
+				Placement place = new Placement(null, nextPremade);
+				if (place.tryPlace() == null) {
+					player.sendStatusMessage(new TextComponentTranslation("structure.interaction.structurecollision").appendText(min.getX() + ", " + min.getY() + ", " + (min.getZ() + 1)), true);
+				}
 				
-				
-				
-			}catch (CorruptedConnectionException | NotYetConnectedException e1) {
+			} catch (CorruptedConnectionException | NotYetConnectedException e1) {
 				e1.printStackTrace();
 			}
 		}
 	}
-
-
 	
 }

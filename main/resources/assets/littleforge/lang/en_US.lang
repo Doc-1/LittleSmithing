@@ -3,3 +3,4 @@ item.LTPremade.typewriter.name=Typewriter
 item.tapemeasure.name=Tape Measure
 structure.interaction.wrongfacing=Structure is facing the wrong way
 structure.interaction.structurecollision=Collision at
+attack.kill.spider=Spider! Spider! Get Them Off Me!

@@ -1,4 +1,4 @@
-package com.littleforge.common.item;
+package com.littleforge.common.item.placeable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +25,6 @@ import com.creativemd.littletiles.common.util.place.PlacementPosition;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -33,28 +32,29 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class PremadePlaceableItem extends Item implements ILittleTile, ICreativeRendered{
+public class PremadePlaceableItem extends Item implements ILittleTile, ICreativeRendered {
 	
-	public String registryName = "";
+	public String premadeToPlace = "";
+	public String premadeToRender = "";
 	public boolean isShifting = false;
 	
-	public PremadePlaceableItem(String unlocalizedName, String registryNm) {
-		registryName = registryNm;
+	public PremadePlaceableItem(String unlocalizedName, String registryName, String premadeToRender, String premadeToPlace) {
+		this.premadeToPlace = premadeToPlace;
+		this.premadeToRender = premadeToRender;
 		setUnlocalizedName(unlocalizedName);
-		setRegistryName(registryNm);
+		setRegistryName(registryName);
 		hasSubtypes = true;
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public List<RenderBox> getRenderingCubes(IBlockState state, TileEntity te, ItemStack stack) {
-		LittleStructureTypePremade premade = (LittleStructureTypePremade) LittleStructureRegistry.getStructureType(registryName);
+		LittleStructureTypePremade premade = (LittleStructureTypePremade) LittleStructureRegistry.getStructureType(premadeToRender);
 		LittlePreviews previews = LittleStructurePremade.getPreviews(premade.id).copy();
 		List<RenderBox> cubes = premade.getRenderingCubes(previews);
 		if (cubes == null) {
@@ -63,9 +63,9 @@ public class PremadePlaceableItem extends Item implements ILittleTile, ICreative
 			for (LittlePreview preview : previews.allPreviews())
 				cubes.add(preview.getCubeBlock(previews.getContext()));
 		}
-		return cubes;	
+		return cubes;
 	}
-
+	
 	@SideOnly(Side.CLIENT)
 	public static IBakedModel model;
 	
@@ -76,7 +76,7 @@ public class PremadePlaceableItem extends Item implements ILittleTile, ICreative
 	
 	@Override
 	public boolean onRightClick(World world, EntityPlayer player, ItemStack stack, PlacementPosition position, RayTraceResult result) {
-		if(player.isSneaking()) {
+		if (player.isSneaking()) {
 			return true;
 		}
 		return false;
@@ -104,7 +104,7 @@ public class PremadePlaceableItem extends Item implements ILittleTile, ICreative
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void saveCachedModel(EnumFacing facing, BlockRenderLayer layer, List<BakedQuad> cachedQuads, IBlockState state, TileEntity te, ItemStack stack, boolean threaded) {
-		stack = LittleStructurePremade.getPremadeStack(registryName);
+		stack = LittleStructurePremade.getPremadeStack(premadeToPlace);
 		if (stack != null)
 			ItemModelCache.cacheModel(getPremade(stack).stack, facing, cachedQuads);
 	}
@@ -112,22 +112,13 @@ public class PremadePlaceableItem extends Item implements ILittleTile, ICreative
 	@Override
 	@SideOnly(Side.CLIENT)
 	public List<BakedQuad> getCachedModel(EnumFacing facing, BlockRenderLayer layer, IBlockState state, TileEntity te, ItemStack stack, boolean threaded) {
-		stack = LittleStructurePremade.getPremadeStack(registryName);
+		stack = LittleStructurePremade.getPremadeStack(premadeToPlace);
 		if (stack == null)
 			return null;
 		LittleStructurePremadeEntry entry = getPremade(stack);
 		if (entry == null)
 			return null;
 		return ItemModelCache.requestCache(entry.stack, facing);
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> list) {
-		if (isInCreativeTab(tab))
-			for (LittleStructureTypePremade entry : LittleStructurePremade.getPremadeStructureTypes())
-				if (entry.showInCreativeTab)
-					list.add(entry.createItemStack());
 	}
 	
 	@Override
@@ -151,7 +142,7 @@ public class PremadePlaceableItem extends Item implements ILittleTile, ICreative
 	
 	@Override
 	public LittlePreviews getLittlePreview(ItemStack stack) {
-		String id = getPremadeId(LittleStructurePremade.tryGetPremadeStack(this.registryName));
+		String id = getPremadeId(LittleStructurePremade.tryGetPremadeStack(this.premadeToPlace));
 		if (cachedPreviews.containsKey(id))
 			return cachedPreviews.get(id).copy();
 		return LittleStructurePremade.getPreviews(id).copy();
@@ -159,7 +150,7 @@ public class PremadePlaceableItem extends Item implements ILittleTile, ICreative
 	
 	@Override
 	public void saveLittlePreview(ItemStack stack, LittlePreviews previews) {
-		cachedPreviews.put(getPremadeId(LittleStructurePremade.tryGetPremadeStack(this.registryName)), previews);
+		cachedPreviews.put(getPremadeId(LittleStructurePremade.tryGetPremadeStack(this.premadeToPlace)), previews);
 	}
 	
 	@Override
@@ -200,5 +191,5 @@ public class PremadePlaceableItem extends Item implements ILittleTile, ICreative
 			return LittleStructurePremade.getStructurePremadeEntry(stack.getTagCompound().getCompoundTag("structure").getString("id"));
 		return null;
 	}
-
+	
 }
