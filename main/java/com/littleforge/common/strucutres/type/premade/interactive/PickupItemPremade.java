@@ -22,6 +22,10 @@ public class PickupItemPremade extends LittleStructurePremade {
 	
 	public Item itemToPickup;
 	
+	public PickupItemPremade(LittleStructureType type, IStructureTileList mainBlock) {
+		super(type, mainBlock);
+	}
+	
 	public PickupItemPremade(LittleStructureType type, IStructureTileList mainBlock, Item itemToPickup) {
 		super(type, mainBlock);
 		this.itemToPickup = itemToPickup;

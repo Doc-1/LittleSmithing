@@ -18,9 +18,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class PremadeItemSword extends PremadePlaceableItemWeapon {
+public class PremadeItemSword45 extends PremadePlaceableItemWeapon {
 	
-	public PremadeItemSword(ToolMaterial material, String unlocalizedName, String registryName, String premadeToRender, String premadeToPlace) {
+	public PremadeItemSword45(ToolMaterial material, String unlocalizedName, String registryName, String premadeToRender, String premadeToPlace) {
 		super(material, unlocalizedName, registryName, premadeToRender, premadeToPlace);
 		setCreativeTab(LittleTiles.littleTab);
 	}

@@ -11,6 +11,8 @@ import com.creativemd.littletiles.common.structure.type.door.LittleDoor.DoorActi
 import com.creativemd.littletiles.common.structure.type.door.LittleDoorBase;
 import com.creativemd.littletiles.common.tile.parent.IStructureTileList;
 
+import net.minecraft.item.ItemStack;
+
 public class InteractiveDoorPremade extends InteractivePremade {
 	
 	public HashMap<String, Boolean> whatDoorIsOpen = new HashMap<String, Boolean>(); //Closed state is default state
@@ -86,7 +88,7 @@ public class InteractiveDoorPremade extends InteractivePremade {
 	}
 	
 	@Override
-	public void onPremadeActivated() {
+	public void onPremadeActivated(ItemStack heldItem) {
 		
 	}
 	

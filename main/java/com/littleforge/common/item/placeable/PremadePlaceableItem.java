@@ -54,7 +54,7 @@ public class PremadePlaceableItem extends Item implements ILittleTile, ICreative
 	@Override
 	@SideOnly(Side.CLIENT)
 	public List<RenderBox> getRenderingCubes(IBlockState state, TileEntity te, ItemStack stack) {
-		LittleStructureTypePremade premade = (LittleStructureTypePremade) LittleStructureRegistry.getStructureType(premadeToRender);
+		LittleStructureTypePremade premade = (LittleStructureTypePremade) LittleStructureRegistry.getStructureType(premadeToPlace);
 		LittlePreviews previews = LittleStructurePremade.getPreviews(premade.id).copy();
 		List<RenderBox> cubes = premade.getRenderingCubes(previews);
 		if (cubes == null) {

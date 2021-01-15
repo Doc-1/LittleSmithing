@@ -38,6 +38,7 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	protected Map<LittleBox, LittleTile> tilePosList = new HashMap<LittleBox, LittleTile>();
 	protected LittleBox editArea;
 	public AxisAlignedBB absolutePos;
+	public LittleBox relativeBox;
 	
 	public InteractivePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
@@ -67,12 +68,16 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	/** @return
 	 *         Returns the adjusted vec */
 	private Vec3d[] adjustRelativeTileVec(BlockPos pos, LittleBox box) {
+		return adjustRelativeTileVec(pos, box, absolutePos, this.direction);
+	}
+	
+	public static Vec3d[] adjustRelativeTileVec(BlockPos pos, LittleBox box, AxisAlignedBB absolutePos, EnumFacing direction) {
 		Vec3d relativeVec[] = new Vec3d[2];
 		
 		double aMinX = 0, aMinY = 0, aMinZ = 0;
 		double aMaxX = 0, aMaxY = 0, aMaxZ = 0;
 		
-		switch (this.direction) {
+		switch (direction) {
 		case NORTH:
 			aMinX = (box.maxZ / 16D) + pos.getZ() - absolutePos.maxZ;
 			aMinY = (box.minY / 16D) + pos.getY() - absolutePos.minY;
@@ -137,6 +142,25 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 		}
 	}
 	
+	public void getRelativeBox() throws CorruptedConnectionException, NotYetConnectedException {
+		
+		for (IStructureTileList iStructureTileList : this.blocksList()) {
+			iStructureTileList.getTe().updateTiles((a) -> {
+				IStructureTileList list = a.get(iStructureTileList);
+				List<LittleTile> tileLs = new ArrayList<LittleTile>();
+				BlockPos pos = iStructureTileList.getTe().getPos();
+				
+				for (LittleTile littleTile : list) {
+					Vec3d relativeVec[] = adjustRelativeTileVec(pos, littleTile.getBox());
+					Vec3d relativeMin = relativeVec[0];
+					Vec3d relativeMax = relativeVec[1];
+					relativeBox = new LittleBox(new LittleVec((int) (relativeMin.x * 16), (int) (relativeMin.y * 16), (int) (relativeMin.z * 16)), new LittleVec((int) (relativeMax.x * 16), (int) (relativeMax.y * 16), (int) (relativeMax.z * 16)));
+				}
+			});
+			
+		}
+	}
+	
 	@Override
 	protected Object failedLoadingRelative(NBTTagCompound nbt, StructureDirectionalField field) {
 		if (field.key.equals("facing"))
@@ -171,6 +195,8 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	public boolean onBlockActivated(World worldIn, LittleTile tile, BlockPos pos, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ, LittleActionActivated action) throws LittleActionException {
 		if (worldIn.isRemote)
 			return true;
+		System.out.println(this.facing);
+		System.out.println(this.direction);
 		
 		if (facing != EnumFacing.UP) {
 			playerIn.sendStatusMessage(new TextComponentTranslation("structure.interaction.wrongfacing"), true);
@@ -183,13 +209,13 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 				e.printStackTrace();
 			}
 			
-			onPremadeActivated();
+			onPremadeActivated(heldItem);
 		}
 		
 		return true;
 	}
 	
-	public abstract void onPremadeActivated();
+	public abstract void onPremadeActivated(ItemStack heldItem);
 	
 	public LittleBox getEditArea() {
 		return editArea;

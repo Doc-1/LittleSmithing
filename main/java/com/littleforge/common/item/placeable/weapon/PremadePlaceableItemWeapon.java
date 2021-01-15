@@ -49,7 +49,6 @@ public class PremadePlaceableItemWeapon extends ItemSword implements ILittleTile
 		this.premadeToRender = premadeToRender;
 		setUnlocalizedName(unlocalizedName);
 		setRegistryName(registryName);
-		setMaxStackSize(1);
 		hasSubtypes = true;
 	}
 	
@@ -106,7 +105,7 @@ public class PremadePlaceableItemWeapon extends ItemSword implements ILittleTile
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void saveCachedModel(EnumFacing facing, BlockRenderLayer layer, List<BakedQuad> cachedQuads, IBlockState state, TileEntity te, ItemStack stack, boolean threaded) {
-		stack = LittleStructurePremade.getPremadeStack(premadeToPlace);
+		stack = LittleStructurePremade.getPremadeStack(premadeToRender);
 		if (stack != null)
 			ItemModelCache.cacheModel(getPremade(stack).stack, facing, cachedQuads);
 	}
@@ -114,7 +113,7 @@ public class PremadePlaceableItemWeapon extends ItemSword implements ILittleTile
 	@Override
 	@SideOnly(Side.CLIENT)
 	public List<BakedQuad> getCachedModel(EnumFacing facing, BlockRenderLayer layer, IBlockState state, TileEntity te, ItemStack stack, boolean threaded) {
-		stack = LittleStructurePremade.getPremadeStack(premadeToPlace);
+		stack = LittleStructurePremade.getPremadeStack(premadeToRender);
 		if (stack == null)
 			return null;
 		LittleStructurePremadeEntry entry = getPremade(stack);
