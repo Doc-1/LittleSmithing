@@ -1,14 +1,20 @@
 package com.littleforge.common.premade.interaction.actions;
 
 import com.creativemd.creativecore.common.utils.math.Rotation;
+import com.creativemd.creativecore.common.utils.type.Pair;
+import com.creativemd.littletiles.common.block.BlockTile;
+import com.creativemd.littletiles.common.structure.LittleStructure;
 import com.creativemd.littletiles.common.structure.exception.CorruptedConnectionException;
 import com.creativemd.littletiles.common.structure.exception.NotYetConnectedException;
 import com.creativemd.littletiles.common.structure.relative.StructureRelative;
 import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
+import com.creativemd.littletiles.common.tile.LittleTile;
 import com.creativemd.littletiles.common.tile.math.vec.LittleVec;
 import com.creativemd.littletiles.common.tile.math.vec.LittleVecContext;
+import com.creativemd.littletiles.common.tile.parent.IParentTileList;
 import com.creativemd.littletiles.common.tile.preview.LittlePreview;
 import com.creativemd.littletiles.common.tile.preview.LittlePreviews;
+import com.creativemd.littletiles.common.tileentity.TileEntityLittleTiles;
 import com.creativemd.littletiles.common.util.grid.LittleGridContext;
 import com.creativemd.littletiles.common.util.place.Placement;
 import com.creativemd.littletiles.common.util.place.PlacementMode;
@@ -25,12 +31,76 @@ import net.minecraft.util.text.TextComponentTranslation;
 
 public abstract class AddStructure {
 	
+	private static String premadeID;
+	
+	public static String getPremadeID() {
+		return premadeID;
+	}
+	
+	/** @param premadeID
+	 *            This value needs to be set for AddStucture to work
+	 *            premadeID is the ID of premade you wish to add to
+	 *            the existing premade structure. */
+	public static void setPremadeID(String premadeID) {
+		AddStructure.premadeID = premadeID;
+	}
+	
+	private static LittlePreviews adjustPreviews(InteractivePremade premade, LittlePreviews previews) {
+		int x;
+		int z;
+		
+		LittleVec doubledCenter = new StructureRelative(previews.getSurroundingBox(), previews.getContext()).getDoubledCenterVec();
+		LittlePreviews premadePreviews = LittleStructurePremade.getPreviews(premade.type.id);
+		LittleVec premadePreviewSize = premadePreviews.getSize().copy();
+		
+		switch (premade.direction) {
+		case NORTH:
+			premadePreviewSize.setY(0);
+			premadePreviewSize.setX(0);
+			previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
+			break;
+		case EAST:
+			previews.rotatePreviews(Rotation.Y_CLOCKWISE, doubledCenter);
+			previews.flipPreviews(Axis.X, doubledCenter);
+			
+			premadePreviewSize.setY(0);
+			premadePreviewSize.setX(0);
+			
+			x = premadePreviewSize.getX();
+			z = premadePreviewSize.getZ();
+			
+			premadePreviewSize.setZ(x);
+			previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
+			break;
+		case SOUTH:
+			previews.flipPreviews(Axis.Z, doubledCenter);
+			
+			premadePreviewSize.setY(0);
+			premadePreviewSize.setZ(0);
+			previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
+			break;
+		case WEST:
+			previews.rotatePreviews(Rotation.Y_CLOCKWISE, doubledCenter);
+			
+			premadePreviewSize.setY(0);
+			x = premadePreviewSize.getX();
+			z = premadePreviewSize.getZ();
+			
+			premadePreviewSize.setX(z);
+			premadePreviewSize.setZ(x);
+			previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
+			break;
+		default:
+			break;
+		}
+		return previews;
+	}
+	
 	public static void toPremade(InteractivePremade premade, boolean removeStructure) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		System.out.println(premade.direction);
 		if (LittleForgeRecipes.takeIngredients(player, premade.type.id)) {
 			try {
-				LittlePreviews premadePreviews = LittleStructurePremade.getPreviews(premade.type.id);
 				
 				long minX = premade.getSurroundingBox().getMinX();
 				long minY = premade.getSurroundingBox().getMinY();
@@ -40,71 +110,20 @@ public abstract class AddStructure {
 				BlockPos min = new BlockPos(context.toBlockOffset(minX), context.toBlockOffset(minY), context.toBlockOffset(minZ));
 				LittleVecContext minVec = new LittleVecContext(new LittleVec((int) (minX - (long) min.getX() * (long) context.size), (int) (minY - (long) min.getY() * (long) context.size), (int) (minZ - (long) min.getZ() * (long) context.size)), context);
 				
-				LittlePreviews previews = LittleStructurePremade.getStructurePremadeEntry("soda").previews.copy(); // Change this line to support different states
+				LittlePreviews previews = LittleStructurePremade.getStructurePremadeEntry(premadeID).previews.copy(); // Change this line to support different states
+				
 				LittleVec previewMinVec = previews.getMinVec();
 				LittlePreview preview = null;
-				LittleVec minPre = new LittleVec(premadePreviews.getSurroundingBox().minX, premadePreviews.getSurroundingBox().minY, premadePreviews.getSurroundingBox().minZ);
-				LittleVec maxPre = new LittleVec(premadePreviews.getSurroundingBox().maxX, premadePreviews.getSurroundingBox().minY, premadePreviews.getSurroundingBox().maxZ);
-				LittleVec editVec = new LittleVec(premade.getEditArea().minX, premade.getEditArea().minY, premade.getEditArea().minZ);
 				
 				LittleVec previewSize = previews.getSize().copy();
 				
-				LittleVec rotationPoint = new StructureRelative(previews.getSurroundingBox(), previews.getContext()).getDoubledCenterVec();
-				LittleVec doubledCenter = new StructureRelative(previews.getSurroundingBox(), previews.getContext()).getDoubledCenterVec();
-				System.out.println(previewSize + "\n" + previews.getSize());
-				
-				LittleVec premadePreviewSize = premadePreviews.getSize().copy();
-				
-				int x;
-				int z;
-				
-				switch (premade.direction) {
-				case NORTH:
-					premadePreviewSize.setY(0);
-					premadePreviewSize.setX(0);
-					previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
-					break;
-				case EAST:
-					previews.rotatePreviews(Rotation.Y_CLOCKWISE, doubledCenter);
-					previews.flipPreviews(Axis.X, doubledCenter);
-					
-					premadePreviewSize.setY(0);
-					premadePreviewSize.setX(0);
-					
-					x = premadePreviewSize.getX();
-					z = premadePreviewSize.getZ();
-					
-					premadePreviewSize.setZ(x);
-					previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
-					break;
-				case SOUTH:
-					previews.flipPreviews(Axis.Z, doubledCenter);
-					
-					premadePreviewSize.setY(0);
-					premadePreviewSize.setZ(0);
-					previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
-					break;
-				case WEST:
-					
-					previews.rotatePreviews(Rotation.Y_CLOCKWISE, doubledCenter);
-					
-					premadePreviewSize.setY(0);
-					x = premadePreviewSize.getX();
-					z = premadePreviewSize.getZ();
-					
-					premadePreviewSize.setX(z);
-					premadePreviewSize.setZ(x);
-					previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
-					
-					break;
-				default:
-					break;
-				}
+				previews = adjustPreviews(premade, previews);
 				
 				int editX = premade.getEditArea().minX;
 				int editY = premade.getEditArea().minY;
 				int editZ = premade.getEditArea().minZ;
 				
+				//double in the event of premade being placed is grid of 32. Might change it to be dynamic
 				if (previews.getContext().size == 32) {
 					editX *= 2;
 					editY *= 2;
@@ -138,47 +157,42 @@ public abstract class AddStructure {
 					default:
 						break;
 					}
-					//prev.box.add(premade.getEditArea().minX, premade.getEditArea().minY, premade.getEditArea().minX);
 					preview = prev;
 				}
-				
-				//previews.convertToSmallest();
-				//previews.rotatePreviews(Rotation.X_CLOCKWISE, new StructureRelative(previews.getSurroundingBox(), LittleGridContext.get(32)).getDoubledCenterVec());
+				previews.convertToSmallest();
 				PlacementPreview nextPremade = new PlacementPreview(premade.getWorld(), previews, PlacementMode.all, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);
 				
+				/*
 				if (removeStructure) {
 					premade.removeStructure();
 				}
+				*/
 				
 				Placement place = new Placement(null, nextPremade);
 				if (place.tryPlace() == null) {
 					player.sendStatusMessage(new TextComponentTranslation("structure.interaction.structurecollision").appendText(min.getX() + ", " + min.getY() + ", " + (min.getZ() + 1)), true);
 				}
 				
+				LittleStructure structure = null;
+				TileEntityLittleTiles te = BlockTile.loadTe(premade.getWorld(), place.pos);
+				
+				preview.getLittleTile();
+				if (te != null) {
+					try {
+						for (Pair<IParentTileList, LittleTile> s : te.allTiles()) {
+							structure = s.key.getStructure();
+							System.out.println(structure.type.id);
+						}
+					} catch (CorruptedConnectionException | NotYetConnectedException e) {
+					}
+				}
+				//Make sure to not always use zero
+				premade.updateChildConnection(0, structure);
+				structure.updateParentConnection(0, premade);
+				
 			} catch (CorruptedConnectionException | NotYetConnectedException e1) {
 				e1.printStackTrace();
 			}
 		}
 	}
-	
-	public static LittleVec getMaxVec(LittlePreviews previews) {
-		int minX = Integer.MAX_VALUE;
-		int minY = Integer.MAX_VALUE;
-		int minZ = Integer.MAX_VALUE;
-		int maxX = Integer.MIN_VALUE;
-		int maxY = Integer.MIN_VALUE;
-		int maxZ = Integer.MIN_VALUE;
-		
-		for (LittlePreview preview : previews.allPreviews()) {
-			minX = Math.min(minX, preview.box.minX);
-			minY = Math.min(minY, preview.box.minY);
-			minZ = Math.min(minZ, preview.box.minZ);
-			maxX = Math.max(maxX, preview.box.maxX);
-			maxY = Math.max(maxY, preview.box.maxY);
-			maxZ = Math.max(maxZ, preview.box.maxZ);
-		}
-		
-		return new LittleVec(maxX, maxY, maxZ);
-	}
-	
 }
