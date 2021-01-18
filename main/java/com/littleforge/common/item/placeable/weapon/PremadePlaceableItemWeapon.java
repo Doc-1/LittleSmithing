@@ -26,10 +26,12 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.RayTraceResult;
@@ -50,6 +52,10 @@ public class PremadePlaceableItemWeapon extends ItemSword implements ILittleTile
 		setUnlocalizedName(unlocalizedName);
 		setRegistryName(registryName);
 		hasSubtypes = true;
+	}
+	
+	public ActionResult<ItemStack> onRightClickEntity(ItemStack heldItem, EntityPlayer player, EntityLivingBase entity) {
+		return null;
 	}
 	
 	@Override

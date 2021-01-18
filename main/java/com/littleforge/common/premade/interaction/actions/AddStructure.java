@@ -1,24 +1,19 @@
 package com.littleforge.common.premade.interaction.actions;
 
 import com.creativemd.creativecore.common.utils.math.Rotation;
-import com.creativemd.creativecore.common.utils.type.Pair;
-import com.creativemd.littletiles.common.block.BlockTile;
-import com.creativemd.littletiles.common.structure.LittleStructure;
 import com.creativemd.littletiles.common.structure.exception.CorruptedConnectionException;
 import com.creativemd.littletiles.common.structure.exception.NotYetConnectedException;
 import com.creativemd.littletiles.common.structure.relative.StructureRelative;
 import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
-import com.creativemd.littletiles.common.tile.LittleTile;
 import com.creativemd.littletiles.common.tile.math.vec.LittleVec;
 import com.creativemd.littletiles.common.tile.math.vec.LittleVecContext;
-import com.creativemd.littletiles.common.tile.parent.IParentTileList;
 import com.creativemd.littletiles.common.tile.preview.LittlePreview;
 import com.creativemd.littletiles.common.tile.preview.LittlePreviews;
-import com.creativemd.littletiles.common.tileentity.TileEntityLittleTiles;
 import com.creativemd.littletiles.common.util.grid.LittleGridContext;
 import com.creativemd.littletiles.common.util.place.Placement;
 import com.creativemd.littletiles.common.util.place.PlacementMode;
 import com.creativemd.littletiles.common.util.place.PlacementPreview;
+import com.creativemd.littletiles.common.util.place.PlacementResult;
 import com.littleforge.common.recipe.LittleForgeRecipes;
 import com.littleforge.common.strucutres.type.premade.interactive.InteractivePremade;
 
@@ -80,14 +75,14 @@ public abstract class AddStructure {
 			previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
 			break;
 		case WEST:
-			previews.rotatePreviews(Rotation.Y_CLOCKWISE, doubledCenter);
+			previews.rotatePreviews(Rotation.Y_COUNTER_CLOCKWISE, doubledCenter);
 			
 			premadePreviewSize.setY(0);
 			x = premadePreviewSize.getX();
 			z = premadePreviewSize.getZ();
 			
-			premadePreviewSize.setX(z);
-			premadePreviewSize.setZ(x);
+			premadePreviewSize.setX(x);
+			premadePreviewSize.setZ(z);
 			previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
 			break;
 		default:
@@ -99,9 +94,8 @@ public abstract class AddStructure {
 	public static void toPremade(InteractivePremade premade, boolean removeStructure) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		System.out.println(premade.direction);
-		if (LittleForgeRecipes.takeIngredients(player, premade.type.id)) {
+		if (LittleForgeRecipes.takeIngredients(player, premade.type.id, premade.getSeriesMaxium(), premade.getSeriesAt())) {
 			try {
-				
 				long minX = premade.getSurroundingBox().getMinX();
 				long minY = premade.getSurroundingBox().getMinY();
 				long minZ = premade.getSurroundingBox().getMinZ();
@@ -152,7 +146,7 @@ public abstract class AddStructure {
 					case WEST:
 						prev.box.add(0, editY, 0);
 						prev.box.sub(editZ, 0, editX);
-						prev.box.sub(previewSize.z, 0, previewSize.x);
+						//prev.box.sub(previewSize.z, 0, previewSize.z);
 						break;
 					default:
 						break;
@@ -160,35 +154,20 @@ public abstract class AddStructure {
 					preview = prev;
 				}
 				previews.convertToSmallest();
-				PlacementPreview nextPremade = new PlacementPreview(premade.getWorld(), previews, PlacementMode.all, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);
 				
 				/*
 				if (removeStructure) {
 					premade.removeStructure();
 				}
 				*/
-				
+				PlacementPreview nextPremade = new PlacementPreview(premade.getWorld(), previews, PlacementMode.all, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);
 				Placement place = new Placement(null, nextPremade);
-				if (place.tryPlace() == null) {
-					player.sendStatusMessage(new TextComponentTranslation("structure.interaction.structurecollision").appendText(min.getX() + ", " + min.getY() + ", " + (min.getZ() + 1)), true);
-				}
-				
-				LittleStructure structure = null;
-				TileEntityLittleTiles te = BlockTile.loadTe(premade.getWorld(), place.pos);
-				
-				preview.getLittleTile();
-				if (te != null) {
-					try {
-						for (Pair<IParentTileList, LittleTile> s : te.allTiles()) {
-							structure = s.key.getStructure();
-							System.out.println(structure.type.id);
-						}
-					} catch (CorruptedConnectionException | NotYetConnectedException e) {
-					}
-				}
-				//Make sure to not always use zero
-				premade.updateChildConnection(0, structure);
-				structure.updateParentConnection(0, premade);
+				PlacementResult result = place.tryPlace();
+				if (result != null) {
+					premade.updateChildConnection(premade.getChildren().size(), result.parentStructure);
+					result.parentStructure.updateParentConnection(premade.getChildren().size(), premade);
+				} else
+					player.sendStatusMessage(new TextComponentTranslation("structure.interaction.structurecollision").appendText(" " + place.pos.toString()), true);
 				
 			} catch (CorruptedConnectionException | NotYetConnectedException e1) {
 				e1.printStackTrace();

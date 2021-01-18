@@ -11,13 +11,16 @@ public class BrickForgeInteractivePremade extends InteractivePremade {
 	
 	public BrickForgeInteractivePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
+		seriesMaxium = 9;
 	}
 	
 	@Override
 	public void onPremadeActivated(ItemStack heldItem) {
-		editArea = new LittleBox(2, 16, 1, 0, 0, 0);
-		AddStructure.setPremadeID("soda");
+		editArea = new LittleBox(64, 0, 0, 0, 0, 0);
+		AddStructure.setPremadeID("brickForgeBasic");
 		AddStructure.toPremade(this, false);
+		//AddStructure.setPremadeID("exporter");
+		//AddStructure.toPremade(this, false);
 		
 		//editArea = new LittleBox(0, 0, 0, 8, 8, 8);
 		//BuildProgress.forPremade(this);

@@ -9,9 +9,9 @@ import com.littleforge.common.item.PremadeItemIronSludgeHammer;
 import com.littleforge.common.item.PremadeItemStoneHammer;
 import com.littleforge.common.item.PremadeItemWoodenTongs;
 import com.littleforge.common.item.drink.PremadeItemDrink;
-import com.littleforge.common.item.placeable.weapon.PremadeItemSword25;
 import com.littleforge.common.item.placeable.weapon.PremadeItemSword45;
 import com.littleforge.common.item.placeable.weapon.PremadeWeaponBlueprint;
+import com.littleforge.common.item.placeable.weapon.PremadeWeaponSerpentSword;
 import com.littleforge.common.structure.registry.LittleStructurePickupType;
 import com.littleforge.common.strucutres.type.premade.interactive.BrickForgeInteractivePremade;
 import com.littleforge.common.strucutres.type.premade.interactive.PickupItemPremade;
@@ -64,12 +64,11 @@ public class LittleForge {
 		soda = new PremadeItemDrink("Soda", "Soda", "soda", "soda");
 		rolledUpBlueprint = new PremadeWeaponBlueprint(BluePrint, "BlueprintRolled", "BlueprintRolled", "blueprint_rolled", "blueprint_flat");
 		sword = new PremadeItemSword45(Test, "Sword", "Sword", "sword", "sword");
-		serpentSword = new PremadeItemSword25(Test, "SerpentSword", "SerpentSword", "serpent_sword", "serpent_sword");
+		serpentSword = new PremadeWeaponSerpentSword(Test, "SerpentSword", "SerpentSword", "serpent_sword", "serpent_sword");
 		
 		hammer = new PremadeItemStoneHammer("StoneHammer", "stone_hammer");
 		ironHammer = new PremadeItemIronSludgeHammer("IronHammer", "iron_sludge_hammer");
 		woodenTongs = new PremadeItemWoodenTongs("WoodenTongs", "wooden_tongs");
-		
 	}
 	
 	@SubscribeEvent
@@ -108,11 +107,9 @@ public class LittleForge {
 		
 		LittleStructurePremade.registerPremadeStructureType("blueprint_rolled", LittleForge.MODID, PickupItemPremade.class);
 		
-		LittleStructurePremade.registerPremadeStructureType("vending", LittleForge.MODID, VendingMachineInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setFieldDefault("facing", EnumFacing.UP);
+		LittleStructurePremade.registerPremadeStructureType("vending", LittleForge.MODID, VendingMachineInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
 		
-		LittleStructurePremade.registerPremadeStructureType("brickForgeBasic_1", LittleForge.MODID, BrickForgeInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
-		
-		LittleStructurePremade.registerPremadeStructureType("brickForgeBasic_2", LittleForge.MODID, BrickForgeInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING);
+		LittleStructurePremade.registerPremadeStructureType("brickForgeBasic", LittleForge.MODID, BrickForgeInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
 		
 		LittleStructurePremade.registerPremadeStructureType("testing", LittleForge.MODID, BrickForgeInteractivePremade.class).setFieldDefault("facing", EnumFacing.UP);
 		

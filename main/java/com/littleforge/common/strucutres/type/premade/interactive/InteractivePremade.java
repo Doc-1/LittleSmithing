@@ -32,8 +32,7 @@ import net.minecraft.world.World;
 public abstract class InteractivePremade extends LittleStructurePremade {
 	
 	protected int seriesMaxium;
-	protected String seriesName;
-	protected int seriesAt;
+	protected int seriesAt = 0;
 	
 	protected Map<LittleBox, LittleTile> tilePosList = new HashMap<LittleBox, LittleTile>();
 	protected LittleBox editArea;
@@ -52,12 +51,6 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	
 	@StructureDirectional
 	public EnumFacing facing;
-	
-	@StructureDirectional
-	public EnumFacing east;
-	
-	@StructureDirectional
-	public EnumFacing west;
 	
 	/** @param box
 	 *            Set it to the area you want to edit. */
@@ -195,8 +188,6 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	public boolean onBlockActivated(World worldIn, LittleTile tile, BlockPos pos, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ, LittleActionActivated action) throws LittleActionException {
 		if (worldIn.isRemote)
 			return true;
-		System.out.println(this.facing);
-		System.out.println(this.direction);
 		
 		if (facing != EnumFacing.UP) {
 			playerIn.sendStatusMessage(new TextComponentTranslation("structure.interaction.wrongfacing"), true);
@@ -223,5 +214,13 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	
 	public Map<LittleBox, LittleTile> getTilePosList() {
 		return tilePosList;
+	}
+	
+	public int getSeriesAt() {
+		return seriesAt;
+	}
+	
+	public int getSeriesMaxium() {
+		return seriesMaxium;
 	}
 }

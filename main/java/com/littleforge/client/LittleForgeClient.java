@@ -4,8 +4,7 @@ import com.creativemd.creativecore.client.CreativeCoreClient;
 import com.creativemd.creativecore.client.rendering.model.CreativeBlockRenderHelper;
 import com.creativemd.littletiles.server.LittleTilesServer;
 import com.littleforge.LittleForge;
-import com.littleforge.common.modifier.DamageModifier;
-import com.littleforge.common.util.LeftClickBlockListener;
+import com.littleforge.common.event.LittleForgeEventHandler;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,8 +18,8 @@ public class LittleForgeClient extends LittleTilesServer {
 	
 	@Override
 	public void loadSidePost() {
-		MinecraftForge.EVENT_BUS.register(LeftClickBlockListener.class);
-		MinecraftForge.EVENT_BUS.register(DamageModifier.class);
+		
+		MinecraftForge.EVENT_BUS.register(LittleForgeEventHandler.class);
 		
 		CreativeCoreClient.registerItemColorHandler(LittleForge.sword);
 		CreativeCoreClient.registerItemColorHandler(LittleForge.serpentSword);
