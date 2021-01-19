@@ -17,45 +17,39 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PremadeItemSword25 extends PremadePlaceableItemWeapon {
-	
-	public PremadeItemSword25(ToolMaterial material, String unlocalizedName, String registryName, String premadeToRender, String premadeToPlace) {
-		super(material, unlocalizedName, registryName, premadeToRender, premadeToPlace);
-		setCreativeTab(LittleTiles.littleTab);
-	}
-	
-	@Override
-	public float getDestroySpeed(ItemStack stack, IBlockState state) {
-		return 0F;
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void applyCustomOpenGLHackery(ItemStack stack, TransformType cameraTransformType) {
-		Minecraft mc = Minecraft.getMinecraft();
-		
-		if (cameraTransformType == TransformType.FIRST_PERSON_RIGHT_HAND) {
-			GlStateManager.scale(2.2D, 2.2D, 2.2D);
-			GlStateManager.translate(-0.06D, .05D, 0.0D);
-			
-			GlStateManager.rotate(99.0F, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotate(-32.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotate(85.0F, 0.0F, 0.0F, 1.0F);
-			
-			//GlStateManager.scale(1.0D, 1.0D, 1.0D);
-		}
-		
-		if (cameraTransformType == TransformType.GUI) {
-			GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotate(6.0F, 0.0F, 0.0F, 1.0F);
-			GlStateManager.rotate(5.0F, 0.0F, 1.0F, 0.0F);
-			GlStateManager.translate(-1.3D, -14.0D, -0.02D);
-			GlStateManager.scale(1.4D, 1.4D, 1.4D);
-		}
-		
-	}
+    
+    public PremadeItemSword25(ToolMaterial material, String unlocalizedName, String registryName, String premadeToRender, String premadeToPlace) {
+        super(material, unlocalizedName, registryName, premadeToRender, premadeToPlace);
+        setCreativeTab(LittleTiles.littleTab);
+    }
+    
+    @Override
+    public float getDestroySpeed(ItemStack stack, IBlockState state) {
+        return 0F;
+    }
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {}
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void applyCustomOpenGLHackery(ItemStack stack, TransformType cameraTransformType) {
+        Minecraft mc = Minecraft.getMinecraft();
+        
+        if (cameraTransformType == TransformType.FIRST_PERSON_RIGHT_HAND) {
+            GlStateManager.scale(2.2D, 2.2D, 2.2D);
+            GlStateManager.translate(-0.04D, .05D, 0.0D);
+            
+            GlStateManager.rotate(99.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate(-32.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(85.0F, 0.0F, 0.0F, 1.0F);
+            
+            //GlStateManager.scale(1.0D, 1.0D, 1.0D);
+        }
+        
+        if (cameraTransformType == TransformType.GUI)
+            GlStateManager.scale(1.6D, 1.6D, 1.6D);
+        
+    }
 }
