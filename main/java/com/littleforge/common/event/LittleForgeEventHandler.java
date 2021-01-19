@@ -18,6 +18,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -25,14 +26,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class LittleForgeEventHandler {
 	
 	@SubscribeEvent
-	public static void hasDamagedEntity(LivingDamageEvent event) {
+	public static void hasDamagedEntityEvent(LivingDamageEvent event) {
 		DamageSource source = event.getSource();
 		Entity en = source.getTrueSource();
 		EntityLivingBase entity = event.getEntityLiving();
 	}
 	
 	@SubscribeEvent
-	public static void rightClickEntity(PlayerInteractEvent.RightClickItem event) {
+	public static void rightClickEntityEvent(PlayerInteractEvent.RightClickItem event) {
 		EntityPlayer player = event.getEntityPlayer();
 		
 		EntityLivingBase entity = (EntityLivingBase) player.rayTrace(8, Minecraft.getMinecraft().getRenderPartialTicks()).entityHit;
@@ -46,7 +47,12 @@ public class LittleForgeEventHandler {
 				((PremadePlaceableItem) itemHeld).onRightClickEntity(event.getItemStack(), player, entity);
 			}
 		}
-		
+	}
+	
+	public static void blockBrokenEvent(LootTableLoadEvent event) {
+		if (event.getName().toString().equals("minecraft:chests/simple_dungeon")) {
+			event.getTable();
+		}
 	}
 	
 	@SubscribeEvent
