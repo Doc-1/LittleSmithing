@@ -5,8 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.creativemd.creativecore.common.utils.type.Pair;
 import com.creativemd.littletiles.common.action.LittleActionException;
 import com.creativemd.littletiles.common.action.block.LittleActionActivated;
+import com.creativemd.littletiles.common.block.BlockTile;
+import com.creativemd.littletiles.common.structure.LittleStructure;
 import com.creativemd.littletiles.common.structure.directional.StructureDirectional;
 import com.creativemd.littletiles.common.structure.directional.StructureDirectionalField;
 import com.creativemd.littletiles.common.structure.exception.CorruptedConnectionException;
@@ -16,11 +19,15 @@ import com.creativemd.littletiles.common.structure.type.premade.LittleStructureP
 import com.creativemd.littletiles.common.tile.LittleTile;
 import com.creativemd.littletiles.common.tile.math.box.LittleBox;
 import com.creativemd.littletiles.common.tile.math.vec.LittleVec;
+import com.creativemd.littletiles.common.tile.parent.IParentTileList;
 import com.creativemd.littletiles.common.tile.parent.IStructureTileList;
+import com.creativemd.littletiles.common.tile.preview.LittlePreviews;
+import com.creativemd.littletiles.common.tileentity.TileEntityLittleTiles;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -39,6 +46,9 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	public AxisAlignedBB absolutePos;
 	public LittleBox relativeBox;
 	
+	public List<LittleStructure> linked = new ArrayList<LittleStructure>();
+	public LittleBox linkedBox;
+	
 	public InteractivePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
 		
@@ -51,6 +61,60 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	
 	@StructureDirectional
 	public EnumFacing facing;
+	
+	public void linkStructure(LittleStructure structure, EnumFacing direction) throws CorruptedConnectionException, NotYetConnectedException {
+		linked.add(structure);
+		structure.mainBlock.first();
+		LittlePreviews previews = structure.getPreviews(structure.getPos());
+		List<LittleTile> tileList = new ArrayList<LittleTile>();
+		List<LittleTile> tileList2 = new ArrayList<LittleTile>();
+		for (Pair<IStructureTileList, LittleTile> pair : structure.tiles()) {
+			tileList.add(pair.value);
+		}
+		
+		NBTTagIntArray intArr = structure.mainBlock.first().getCollisionBox().getNBTIntArray();
+		NBTTagCompound nbt = new NBTTagCompound();
+		TileEntityLittleTiles te = BlockTile.loadTe(this.getWorld(), structure.getPos());
+		
+		LittleBox box = structure.mainBlock.first().getBox();
+		for (Pair<IParentTileList, LittleTile> pair : te.allTiles()) {
+			if (structure.mainBlock.first().intersectsWith(pair.value.getBox())) {
+				linkedBox = structure.mainBlock.first().getBox();
+				break;
+			}
+		}
+	}
+	
+	@Override
+	protected void loadFromNBTExtra(NBTTagCompound nbt) {
+		if (linkedBox == null) {
+			if (nbt.hasKey("LinkedBox")) {
+				int[] boxArr = nbt.getIntArray("LinkedBox");
+				linkedBox = new LittleBox(boxArr[0], boxArr[1], boxArr[2], boxArr[3], boxArr[4], boxArr[5]);
+			}
+		}
+	}
+	
+	@Override
+	protected void writeToNBTExtra(NBTTagCompound nbt) {
+		if (linkedBox != null) {
+			System.out.println("write");
+			nbt.setTag("LinkedBox", linkedBox.getNBTIntArray());
+		}
+	}
+	
+	@Override
+	public void onStructureDestroyed() {
+		super.onStructureDestroyed();
+		for (LittleStructure struct : linked) {
+			try {
+				struct.removeStructure();
+			} catch (CorruptedConnectionException | NotYetConnectedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	/** @param box
 	 *            Set it to the area you want to edit. */
@@ -170,14 +234,6 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 		//	return seriesName + "_" + (seriesAt + 1);
 		//}
 		return "";
-	}
-	
-	@Override
-	protected void loadFromNBTExtra(NBTTagCompound nbt) {
-	}
-	
-	@Override
-	protected void writeToNBTExtra(NBTTagCompound nbt) {
 	}
 	
 	@Override

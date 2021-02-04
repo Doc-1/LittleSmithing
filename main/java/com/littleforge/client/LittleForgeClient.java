@@ -29,6 +29,7 @@ public class LittleForgeClient extends LittleTilesServer {
 		CreativeCoreClient.registerItemColorHandler(LittleForge.hammer);
 		CreativeCoreClient.registerItemColorHandler(LittleForge.ironHammer);
 		CreativeCoreClient.registerItemColorHandler(LittleForge.woodenTongs);
+		CreativeCoreClient.registerItemColorHandler(LittleForge.mushroomHorn);
 	}
 	
 	@Override
@@ -36,6 +37,9 @@ public class LittleForgeClient extends LittleTilesServer {
 		
 		CreativeCoreClient.registerItemRenderer(LittleForge.sword);
 		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.sword);
+		
+		CreativeCoreClient.registerItemRenderer(LittleForge.mushroomHorn);
+		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.mushroomHorn);
 		
 		CreativeCoreClient.registerItemRenderer(LittleForge.serpentSword);
 		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.serpentSword);

@@ -5,6 +5,7 @@ import com.creativemd.littletiles.common.structure.exception.CorruptedConnection
 import com.creativemd.littletiles.common.structure.exception.NotYetConnectedException;
 import com.creativemd.littletiles.common.structure.relative.StructureRelative;
 import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
+import com.creativemd.littletiles.common.tile.math.box.LittleBox;
 import com.creativemd.littletiles.common.tile.math.vec.LittleVec;
 import com.creativemd.littletiles.common.tile.math.vec.LittleVecContext;
 import com.creativemd.littletiles.common.tile.preview.LittlePreview;
@@ -41,49 +42,76 @@ public abstract class AddStructure {
 	}
 	
 	private static LittlePreviews adjustPreviews(InteractivePremade premade, LittlePreviews previews) {
-		int x;
-		int z;
+		int x = previews.getSize().x;
+		int y = previews.getSize().y;
+		int z = previews.getSize().z;
+		//(box.maxX * 2 - box.minX * 2) / 2, (box.maxY * 2 - box.minY * 2) / 2, (box.maxZ * 2 - box.minZ * 2) / 2
+		LittleBox surrounding = previews.getSurroundingBox();
+		StructureRelative strctureRelative = new StructureRelative(previews.getSurroundingBox(), previews.getContext());
+		LittleVec doubledCenter = strctureRelative.getDoubledCenterVec();
 		
-		LittleVec doubledCenter = new StructureRelative(previews.getSurroundingBox(), previews.getContext()).getDoubledCenterVec();
+		if (surrounding.getSize(Axis.X) % 2 != 0 && surrounding.getSize(Axis.X) != 1) {
+			doubledCenter.add(new LittleVec(0, 0, 1));
+		}
+		if (surrounding.getSize(Axis.Y) % 2 != 0 && surrounding.getSize(Axis.Y) != 1) {
+			doubledCenter.add(new LittleVec(1, 0, 0));
+		}
+		if (surrounding.getSize(Axis.Z) % 2 != 0 && surrounding.getSize(Axis.Z) != 1) {
+			doubledCenter.add(new LittleVec(1, 0, 0));
+		}
+		
 		LittlePreviews premadePreviews = LittleStructurePremade.getPreviews(premade.type.id);
 		LittleVec premadePreviewSize = premadePreviews.getSize().copy();
-		
+		LittleVec previewsSize = previews.getSize();
 		switch (premade.direction) {
 		case NORTH:
+			previews.flipPreviews(Axis.Z, doubledCenter);
+			
 			premadePreviewSize.setY(0);
 			premadePreviewSize.setX(0);
 			previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
 			break;
 		case EAST:
-			previews.rotatePreviews(Rotation.Y_CLOCKWISE, doubledCenter);
-			previews.flipPreviews(Axis.X, doubledCenter);
-			
-			premadePreviewSize.setY(0);
-			premadePreviewSize.setX(0);
-			
-			x = premadePreviewSize.getX();
-			z = premadePreviewSize.getZ();
-			
-			premadePreviewSize.setZ(x);
-			previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
+			if (previewsSize.x != previewsSize.z) {
+				int offsetX = Math.abs(previewsSize.x - premadePreviewSize.z);
+				offsetX /= 2;
+				
+				if (previews.getContext().size == 32) {
+					offsetX /= 2;
+				}
+				
+				previews.movePreviews(premadePreviews.getContext(), new LittleVec(offsetX, 0, -offsetX));
+				strctureRelative = new StructureRelative(previews.getSurroundingBox(), previews.getContext());
+				previews.rotatePreviews(Rotation.Y_COUNTER_CLOCKWISE, strctureRelative.getDoubledCenterVec());
+				previews.flipPreviews(Axis.X, strctureRelative.getDoubledCenterVec());
+				
+			} else {
+				previews.rotatePreviews(Rotation.Y_COUNTER_CLOCKWISE, doubledCenter);
+				previews.flipPreviews(Axis.X, doubledCenter);
+			}
 			break;
 		case SOUTH:
-			previews.flipPreviews(Axis.Z, doubledCenter);
 			
 			premadePreviewSize.setY(0);
 			premadePreviewSize.setZ(0);
 			previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
 			break;
+		
 		case WEST:
-			previews.rotatePreviews(Rotation.Y_COUNTER_CLOCKWISE, doubledCenter);
-			
-			premadePreviewSize.setY(0);
-			x = premadePreviewSize.getX();
-			z = premadePreviewSize.getZ();
-			
-			premadePreviewSize.setX(x);
-			premadePreviewSize.setZ(z);
-			previews.movePreviews(premadePreviews.getContext(), premadePreviewSize);
+			if (previewsSize.x != previewsSize.z) {
+				
+				int offsetX = (Math.abs(previewsSize.x - premadePreviewSize.z)) / 2;
+				if (previews.getContext().size == 32)
+					offsetX /= 2;
+				previews.movePreviews(premadePreviews.getContext(), new LittleVec(offsetX, 0, -offsetX));
+				strctureRelative = new StructureRelative(previews.getSurroundingBox(), previews.getContext());
+				previews.rotatePreviews(Rotation.Y_COUNTER_CLOCKWISE, strctureRelative.getDoubledCenterVec());
+				
+			} else {
+				int offsetX = Math.abs(previewsSize.z - premadePreviewSize.z);
+				int offsetZ = Math.abs(previewsSize.x - premadePreviewSize.x);
+				previews.movePreviews(premadePreviews.getContext(), new LittleVec(offsetX, 0, offsetZ));
+			}
 			break;
 		default:
 			break;
@@ -91,7 +119,7 @@ public abstract class AddStructure {
 		return previews;
 	}
 	
-	public static void toPremade(InteractivePremade premade, boolean removeStructure) {
+	public static void toPremade(InteractivePremade premade, boolean becomeChild, boolean becomeLinked) {
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		System.out.println(premade.direction);
 		if (LittleForgeRecipes.takeIngredients(player, premade.type.id, premade.getSeriesMaxium(), premade.getSeriesAt())) {
@@ -111,18 +139,11 @@ public abstract class AddStructure {
 				
 				LittleVec previewSize = previews.getSize().copy();
 				
-				previews = adjustPreviews(premade, previews);
-				
 				int editX = premade.getEditArea().minX;
 				int editY = premade.getEditArea().minY;
 				int editZ = premade.getEditArea().minZ;
 				
-				//double in the event of premade being placed is grid of 32. Might change it to be dynamic
-				if (previews.getContext().size == 32) {
-					editX *= 2;
-					editY *= 2;
-					editZ *= 2;
-				}
+				previews = adjustPreviews(premade, previews);
 				
 				minVec.forceContext(previews);
 				for (LittlePreview prev : previews) {
@@ -164,8 +185,14 @@ public abstract class AddStructure {
 				Placement place = new Placement(null, nextPremade);
 				PlacementResult result = place.tryPlace();
 				if (result != null) {
-					premade.updateChildConnection(premade.getChildren().size(), result.parentStructure);
-					result.parentStructure.updateParentConnection(premade.getChildren().size(), premade);
+					if (becomeChild) {
+						premade.updateChildConnection(premade.getChildren().size(), result.parentStructure);
+						result.parentStructure.updateParentConnection(premade.getChildren().size(), premade);
+					}
+					if (becomeLinked) {
+						premade.linkStructure(result.parentStructure, premade.direction);
+						
+					}
 				} else
 					player.sendStatusMessage(new TextComponentTranslation("structure.interaction.structurecollision").appendText(" " + place.pos.toString()), true);
 				
