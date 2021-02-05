@@ -21,26 +21,27 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class InteractiveAnvilPremade extends InteractivePremade {
-	
-	public InteractiveAnvilPremade(LittleStructureType type, IStructureTileList mainBlock) {
-		super(type, mainBlock);
-		// TODO Auto-generated constructor stub
-	}
-	
-	@Override
-	public void onPremadeActivated(ItemStack heldItem) {
-	}
-	
-	@Override
-	public boolean onBlockActivated(World worldIn, LittleTile tile, BlockPos pos, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ, LittleActionActivated action) throws LittleActionException {
-		if (playerIn.getHeldItemMainhand().getItem().equals(LittleForge.mushroomHorn)) {
-			AddStructure.setPremadeID("mushroom_horn");
-			editArea = new LittleBox(37, 21, 4, 0, 0, 0);
-			AddStructure.toPremade(this, false, true);
-			return true;
-		}
-		if (!worldIn.isRemote)
-			LittleStructureGuiHandler.openGui("anvil", new NBTTagCompound(), playerIn, this);
-		return true;
-	}
+    
+    public InteractiveAnvilPremade(LittleStructureType type, IStructureTileList mainBlock) {
+        super(type, mainBlock);
+        // TODO Auto-generated constructor stub
+    }
+    
+    @Override
+    public void onPremadeActivated(ItemStack heldItem) {}
+    
+    @Override
+    public boolean onBlockActivated(World worldIn, LittleTile tile, BlockPos pos, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ, LittleActionActivated action) throws LittleActionException {
+        if (playerIn.getHeldItemMainhand().getItem().equals(LittleForge.mushroomHorn)) {
+            if (!worldIn.isRemote) {
+                AddStructure.setPremadeID("mushroom_horn");
+                editArea = new LittleBox(37, 21, 4, 0, 0, 0);
+                AddStructure.toPremade(this, playerIn);
+            }
+            return true;
+        }
+        if (!worldIn.isRemote)
+            LittleStructureGuiHandler.openGui("anvil", new NBTTagCompound(), playerIn, this);
+        return true;
+    }
 }
