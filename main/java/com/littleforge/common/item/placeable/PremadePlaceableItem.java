@@ -54,7 +54,7 @@ public class PremadePlaceableItem extends Item implements ILittleItem, ICreative
 	@Override
 	@SideOnly(Side.CLIENT)
 	public List<RenderBox> getRenderingCubes(IBlockState state, TileEntity te, ItemStack stack) {
-		LittleStructureTypePremade premade = (LittleStructureTypePremade) LittleStructureRegistry.getStructureType(premadeToPlace);
+		LittleStructureTypePremade premade = (LittleStructureTypePremade) LittleStructureRegistry.getStructureType(premadeToRender);
 		LittlePreviews previews = LittleStructurePremade.getPreviews(premade.id).copy();
 		List<RenderBox> cubes = premade.getRenderingCubes(previews);
 		if (cubes == null) {
@@ -106,7 +106,7 @@ public class PremadePlaceableItem extends Item implements ILittleItem, ICreative
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void saveCachedModel(EnumFacing facing, BlockRenderLayer layer, List<BakedQuad> cachedQuads, IBlockState state, TileEntity te, ItemStack stack, boolean threaded) {
-		stack = LittleStructurePremade.getPremadeStack(premadeToPlace);
+		stack = LittleStructurePremade.getPremadeStack(premadeToRender);
 		if (stack != null)
 			ItemModelCache.cacheModel(getPremade(stack).stack, facing, cachedQuads);
 	}
@@ -114,13 +114,14 @@ public class PremadePlaceableItem extends Item implements ILittleItem, ICreative
 	@Override
 	@SideOnly(Side.CLIENT)
 	public List<BakedQuad> getCachedModel(EnumFacing facing, BlockRenderLayer layer, IBlockState state, TileEntity te, ItemStack stack, boolean threaded) {
-		stack = LittleStructurePremade.getPremadeStack(premadeToPlace);
+		stack = LittleStructurePremade.getPremadeStack(premadeToRender);
 		if (stack == null)
 			return null;
 		LittleStructurePremadeEntry entry = getPremade(stack);
 		if (entry == null)
 			return null;
 		return ItemModelCache.requestCache(entry.stack, facing);
+		
 	}
 	
 	@Override

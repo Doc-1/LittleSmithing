@@ -1,12 +1,16 @@
 package com.littleforge.client;
 
+import java.util.ArrayList;
+
 import com.creativemd.creativecore.client.CreativeCoreClient;
 import com.creativemd.creativecore.client.rendering.model.CreativeBlockRenderHelper;
 import com.creativemd.littletiles.server.LittleTilesServer;
-import com.littleforge.LittleForge;
 import com.littleforge.common.event.LittleForgeEventHandler;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.Item;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.relauncher.Side;
@@ -15,49 +19,40 @@ import net.minecraftforge.fml.relauncher.Side;
 public class LittleForgeClient extends LittleTilesServer {
 	
 	Minecraft mc = Minecraft.getMinecraft();
+	private static ArrayList<Item> renderedItems = new ArrayList<Item>();
+	
+	public static void addItemToRenderTiles(Item... items) {
+		for (Item item : items) {
+			renderedItems.add(item);
+		}
+	}
 	
 	@Override
 	public void loadSidePost() {
-		
 		MinecraftForge.EVENT_BUS.register(LittleForgeEventHandler.class);
-		
-		CreativeCoreClient.registerItemColorHandler(LittleForge.sword);
-		CreativeCoreClient.registerItemColorHandler(LittleForge.serpentSword);
-		
-		CreativeCoreClient.registerItemColorHandler(LittleForge.rolledUpBlueprint);
-		CreativeCoreClient.registerItemColorHandler(LittleForge.soda);
-		CreativeCoreClient.registerItemColorHandler(LittleForge.hammer);
-		CreativeCoreClient.registerItemColorHandler(LittleForge.ironHammer);
-		CreativeCoreClient.registerItemColorHandler(LittleForge.woodenTongs);
-		CreativeCoreClient.registerItemColorHandler(LittleForge.mushroomHorn);
+		for (Item item : renderedItems) {
+			CreativeCoreClient.registerItemColorHandler(item);
+		}
 	}
 	
 	@Override
 	public void loadSide() {
+		for (Item item : renderedItems) {
+			if (item.getHasSubtypes()) {
+				registerItemRenderer(item);
+				CreativeBlockRenderHelper.registerCreativeRenderedItem(item);
+			} else {
+				CreativeCoreClient.registerItemRenderer(item);
+				CreativeBlockRenderHelper.registerCreativeRenderedItem(item);
+			}
+		}
 		
-		CreativeCoreClient.registerItemRenderer(LittleForge.sword);
-		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.sword);
-		
-		CreativeCoreClient.registerItemRenderer(LittleForge.mushroomHorn);
-		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.mushroomHorn);
-		
-		CreativeCoreClient.registerItemRenderer(LittleForge.serpentSword);
-		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.serpentSword);
-		
-		CreativeCoreClient.registerItemRenderer(LittleForge.rolledUpBlueprint);
-		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.rolledUpBlueprint);
-		
-		CreativeCoreClient.registerItemRenderer(LittleForge.hammer);
-		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.hammer);
-		
-		CreativeCoreClient.registerItemRenderer(LittleForge.ironHammer);
-		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.ironHammer);
-		
-		CreativeCoreClient.registerItemRenderer(LittleForge.woodenTongs);
-		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.woodenTongs);
-		
-		CreativeCoreClient.registerItemRenderer(LittleForge.soda);
-		CreativeBlockRenderHelper.registerCreativeRenderedItem(LittleForge.soda);
+	}
+	
+	public static void registerItemRenderer(Item item) {
+		for (int i = 0; i <= 18; i++) {
+			ModelLoader.setCustomModelResourceLocation(item, i, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+		}
 	}
 }
 

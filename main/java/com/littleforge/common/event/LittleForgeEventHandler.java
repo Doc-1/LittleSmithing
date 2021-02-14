@@ -9,6 +9,7 @@ import com.creativemd.littletiles.common.tileentity.TileEntityLittleTiles;
 import com.creativemd.littletiles.common.util.place.PlacementHelper;
 import com.littleforge.common.api.ILittleItem;
 import com.littleforge.common.item.placeable.weapon.PremadePlaceableItemWeapon;
+import com.littleforge.common.strucutres.type.premade.interactive.InteractiveAnvilPremade;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -55,7 +56,7 @@ public class LittleForgeEventHandler extends LittleEventHandler {
 	@Override
 	@SubscribeEvent
 	public void onInteract(RightClickBlock event) {
-		if (!event.getWorld().isRemote && LittleEventHandler.consumeBlockTilePrevent(event.getEntityPlayer())) {
+		if (!event.getWorld().isRemote && LittleEventHandler.consumeBlockTilePrevent(event.getEntityPlayer(), EnumHand.MAIN_HAND)) {
 			event.setCanceled(true);
 			return;
 		}
@@ -89,21 +90,6 @@ public class LittleForgeEventHandler extends LittleEventHandler {
 		RayTraceResult results = player.rayTrace(6.0F, mc.getRenderPartialTicks());
 		LittleStructure structure = null;
 		TileEntityLittleTiles te = BlockTile.loadTe(world, results.getBlockPos());
-		/*
-		for (IStructureTileList struct : te.structures()) {
-			try {
-				System.out.println(struct.getStructure());
-				NBTTagCompound nbt = new NBTTagCompound();
-				
-				for (LittleTile tile : struct.getStructure().mainBlock) {
-					tile.saveTile(nbt);
-					//System.out.println(nbt);
-				}
-			} catch (CorruptedConnectionException | NotYetConnectedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}*/
 		ItemStack itemHeld = player.getHeldItemMainhand();
 		//if (itemHeld.getItem() instanceof PremadeItemHammer) {
 		if (te != null) {
@@ -117,9 +103,9 @@ public class LittleForgeEventHandler extends LittleEventHandler {
 			}
 		}
 		if (structure != null) {
-			//System.out.println(structure);
-			
-			//((PremadeItemHammer) itemHeld.getItem()).onLeftClickStructure(world, player, structure);
+			if (structure instanceof InteractiveAnvilPremade) {
+				((InteractiveAnvilPremade) structure).onLeftClickStructure(world, player, structure);
+			}
 		}
 		//}
 	}

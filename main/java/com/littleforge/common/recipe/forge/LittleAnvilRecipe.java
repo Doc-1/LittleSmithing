@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.creativemd.creativecore.common.utils.mc.InventoryUtils;
-import com.creativemd.creativecore.common.utils.stack.InfoOre;
+import com.creativemd.creativecore.common.utils.stack.InfoItemStack;
 import com.creativemd.creativecore.common.utils.stack.InfoStack;
 import com.creativemd.littletiles.common.action.LittleActionException;
 import com.creativemd.littletiles.common.util.ingredient.NotEnoughIngredientsException;
+import com.littleforge.LittleForge;
 
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
@@ -32,49 +33,6 @@ public class LittleAnvilRecipe {
 	
 	public static LittleAnvilRecipe getRecipe(int id) {
 		return recipes.get(id);
-	}
-	
-	public enum MetalTemperature {
-		
-		STRAW(200, 240, 0xfff3ae53),
-		BROWN(250, 260, 0xffad662e),
-		PURPLE(270, 290, 0xff925382),
-		BLUE(300, 410, 0xff7078a6),
-		GRAY(420, 600, 0xffdfb6b6),
-		RED(610, 700, 0xff70001a),
-		BRIGHT_RED(710, 810, 0xffcb1922),
-		ORANGE(820, 930, 0xfff55821),
-		BRIGHT_ORANGE(940, 980, 0xfff38321),
-		YELLOW(990, 1040, 0xfffab335),
-		BRIGHT_YELLOW(1050, 1090, 0xfffff277),
-		WHITE(1090, 1200, 0xfffffbd8);
-		
-		private int temperatureMin;
-		private int temperatureMax;
-		private int color;
-		
-		MetalTemperature(final int temperatureMin, final int temperatureMax, final int color) {
-			this.temperatureMin = temperatureMin;
-			this.temperatureMax = temperatureMax;
-			this.color = color;
-		}
-		
-		public int getTemperatureMax() {
-			return this.temperatureMax;
-		}
-		
-		public int getTemperatureMin() {
-			return this.temperatureMin;
-		}
-		
-		public int getColor() {
-			return this.color;
-		}
-		
-		@Override
-		public String toString() {
-			return "Min = " + temperatureMin + ", Max = " + temperatureMax;
-		}
 	}
 	
 	private int id;
@@ -113,6 +71,6 @@ public class LittleAnvilRecipe {
 	}
 	
 	static {
-		registerRecipe(new LittleAnvilRecipe(new ItemStack(Items.IRON_INGOT), 10, MetalTemperature.RED, new InfoOre("goldIngot")));
+		registerRecipe(new LittleAnvilRecipe(new ItemStack(Items.IRON_INGOT), 10, MetalTemperature.RED, new InfoItemStack(new ItemStack(LittleForge.tongs, 1, 0), 1)));
 	}
 }

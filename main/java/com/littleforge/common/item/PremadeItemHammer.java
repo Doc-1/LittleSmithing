@@ -1,14 +1,11 @@
 package com.littleforge.common.item;
 
 import com.creativemd.creativecore.client.rendering.model.ICreativeRendered;
-import com.creativemd.littletiles.common.structure.LittleStructure;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -16,10 +13,6 @@ public class PremadeItemHammer extends PremadeItem implements ICreativeRendered 
 	
 	public PremadeItemHammer(String unlocalizedName, String registryNm) {
 		super(unlocalizedName, registryNm);
-	}
-	
-	public void onLeftClickStructure(World world, EntityPlayer player, LittleStructure structure) {
-		System.out.println(structure);
 	}
 	
 	@Override

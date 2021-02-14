@@ -15,7 +15,7 @@ import com.creativemd.creativecore.common.gui.controls.gui.GuiScrollBox;
 import com.creativemd.creativecore.common.gui.controls.gui.GuiTextBox;
 import com.creativemd.creativecore.common.utils.mc.ColorUtils;
 import com.littleforge.LittleForge;
-import com.littleforge.common.recipe.forge.LittleAnvilRecipe.MetalTemperature;
+import com.littleforge.common.recipe.forge.MetalTemperature;
 import com.littleforge.common.strucutres.type.premade.interactive.InteractiveAnvilPremade;
 
 import net.minecraft.client.renderer.GlStateManager;

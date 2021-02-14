@@ -9,14 +9,15 @@ import com.creativemd.littletiles.common.structure.LittleStructure;
 import com.creativemd.littletiles.common.structure.attribute.LittleStructureAttribute;
 import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
 import com.creativemd.littletiles.server.LittleTilesServer;
+import com.littleforge.client.LittleForgeClient;
 import com.littleforge.client.gui.SubGuiAnvil;
 import com.littleforge.common.container.SubContainerAnvil;
 import com.littleforge.common.item.ItemStructurePremade;
 import com.littleforge.common.item.PremadeItemHammer;
 import com.littleforge.common.item.PremadeItemIronSludgeHammer;
-import com.littleforge.common.item.PremadeItemWoodenTongs;
 import com.littleforge.common.item.drink.PremadeItemDrink;
 import com.littleforge.common.item.placeable.PremadePlaceableItem;
+import com.littleforge.common.item.placeable.forgeable.PremadeForgeableItem;
 import com.littleforge.common.item.placeable.weapon.PremadeItemSword45;
 import com.littleforge.common.item.placeable.weapon.PremadeWeaponBlueprint;
 import com.littleforge.common.item.placeable.weapon.PremadeWeaponSerpentSword;
@@ -63,10 +64,11 @@ public class LittleForge {
 	
 	public static ItemSword sword, serpentSword;
 	public static ItemSword rolledUpBlueprint;
+	public static Item testMetal;
 	public static Item hammer;
 	public static Item mushroomHorn;
 	public static Item ironHammer;
-	public static Item woodenTongs;
+	public static Item tongs;
 	public static Item soda;
 	public static final ToolMaterial Test = EnumHelper.addToolMaterial(MODID, 3, 250, 8.0F, 100.0F, 10);
 	public static final ToolMaterial BluePrint = EnumHelper.addToolMaterial(MODID, 0, 1, 0.10F, -3.9001F, 1);
@@ -80,14 +82,18 @@ public class LittleForge {
 		sword = new PremadeItemSword45(Test, "Sword", "Sword", "sword", "sword");
 		serpentSword = new PremadeWeaponSerpentSword(Test, "SerpentSword", "SerpentSword", "serpent_sword", "serpent_sword");
 		
+		testMetal = new PremadeForgeableItem("Metal", "Metal", "metal_block", "metal_block");
+		
 		hammer = new PremadeItemHammer("StoneHammer", "stone_hammer");
 		ironHammer = new PremadeItemIronSludgeHammer("IronHammer", "iron_sludge_hammer");
-		woodenTongs = new PremadeItemWoodenTongs("WoodenTongs", "wooden_tongs");
+		tongs = new PremadeForgeableItem("WoodenTongs", "wooden_tongs", "wooden_tongs", "wooden_tongs");
+		
+		LittleForgeClient.addItemToRenderTiles(soda, mushroomHorn, rolledUpBlueprint, sword, serpentSword, testMetal, hammer, ironHammer, tongs);
 	}
 	
 	@SubscribeEvent
 	public static void registerItems(RegistryEvent.Register<Item> event) {
-		event.getRegistry().registerAll(mushroomHorn, serpentSword, sword, hammer, woodenTongs, ironHammer, soda, rolledUpBlueprint);
+		event.getRegistry().registerAll(testMetal, mushroomHorn, serpentSword, sword, hammer, tongs, ironHammer, soda, rolledUpBlueprint);
 		proxy.loadSide();
 	}
 	
@@ -108,6 +114,8 @@ public class LittleForge {
 		
 		LittleStructurePremade.registerPremadeStructureType("stone_anvil", LittleForge.MODID, InteractiveAnvilPremade.class);
 		LittleStructurePremade.registerPremadeStructureType("iron_anvil", LittleForge.MODID, InteractiveAnvilPremade.class);
+		
+		LittleStructurePremade.registerPremadeStructureType("metal_block", LittleForge.MODID, PickupItemPremade.class);
 		
 		LittleStructurePremade.registerPremadeStructureType("soda", LittleForge.MODID, PickupItemPremade.class);
 		LittleStructurePremade.registerPremadeStructureType("serpent_sword", LittleForge.MODID, PickupItemPremade.class);
