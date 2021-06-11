@@ -178,7 +178,6 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	
 	@Override
 	protected Object failedLoadingRelative(NBTTagCompound nbt, StructureDirectionalField field) {
-		System.out.println(field.key);
 		if (field.key.equals("facing"))
 			return EnumFacing.UP;
 		if (field.key.equals("direction"))

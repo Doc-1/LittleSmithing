@@ -24,8 +24,8 @@ public class BrickForgeInteractivePremade extends InteractivePremade {
 	
 	@Override
 	public boolean onBlockActivated(World worldIn, LittleTile tile, BlockPos pos, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ, LittleActionActivated action) throws LittleActionException {
-		AddStructure.setPremadeID("mushroom_horn");
-		editArea = new LittleBox(0, 84, 0, 0, 0, 0);
+		AddStructure.setPremadeID("exporter");
+		editArea = new LittleBox(-16, 0, 0, 0, 0, 0);
 		AddStructure.toPremade(this, playerIn);
 		System.out.println(this.facing + " " + this.direction + " " + this.west);
 		return true;

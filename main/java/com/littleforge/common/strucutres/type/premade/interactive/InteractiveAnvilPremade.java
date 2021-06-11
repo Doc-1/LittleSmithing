@@ -2,7 +2,6 @@ package com.littleforge.common.strucutres.type.premade.interactive;
 
 import javax.annotation.Nullable;
 
-import com.creativemd.littletiles.client.gui.handler.LittleStructureGuiHandler;
 import com.creativemd.littletiles.common.action.LittleActionException;
 import com.creativemd.littletiles.common.action.block.LittleActionActivated;
 import com.creativemd.littletiles.common.structure.LittleStructure;
@@ -15,7 +14,6 @@ import com.littleforge.common.premade.interaction.actions.AddStructure;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -46,8 +44,15 @@ public class InteractiveAnvilPremade extends InteractivePremade {
 			}
 			return true;
 		}
-		if (!worldIn.isRemote)
-			LittleStructureGuiHandler.openGui("anvil", new NBTTagCompound(), playerIn, this);
+		if (!worldIn.isRemote) {
+			AddStructure.setPremadeID("mushroom_horn");
+			editArea = new LittleBox(4, 21, 37, 0, 0, 0);
+			AddStructure.toPremade(this, playerIn);
+			
+		}
+		System.out.println(this.facing + " " + this.direction + " " + this.west);
+		
+		//LittleStructureGuiHandler.openGui("anvil", new NBTTagCompound(), playerIn, this);
 		return true;
 	}
 }

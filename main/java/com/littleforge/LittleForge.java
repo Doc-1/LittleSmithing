@@ -122,7 +122,7 @@ public class LittleForge {
 		LittleStructurePremade.registerPremadeStructureType("dirty_iron", LittleForge.MODID, DirtyIronStructurePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING);
 		
 		LittleStructurePremade.registerPremadeStructureType("stone_anvil", LittleForge.MODID, InteractiveAnvilPremade.class);
-		LittleStructurePremade.registerPremadeStructureType("iron_anvil", LittleForge.MODID, InteractiveAnvilPremade.class);
+		LittleStructurePremade.registerPremadeStructureType("iron_anvil", LittleForge.MODID, InteractiveAnvilPremade.class).setFieldDefault("west", EnumFacing.WEST).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
 		
 		LittleStructurePremade.registerPremadeStructureType("metal_block", LittleForge.MODID, PickupItemPremade.class);
 		

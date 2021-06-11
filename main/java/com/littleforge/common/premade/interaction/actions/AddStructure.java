@@ -46,17 +46,17 @@ public abstract class AddStructure {
 		int z = previews.getSize().z;
 		//(box.maxX * 2 - box.minX * 2) / 2, (box.maxY * 2 - box.minY * 2) / 2, (box.maxZ * 2 - box.minZ * 2) / 2
 		LittleBox surrounding = previews.getSurroundingBox();
-		StructureRelative strctureRelative = new StructureRelative(previews.getSurroundingBox(), previews.getContext());
-		LittleVec doubledCenter = strctureRelative.getDoubledCenterVec();
+		StructureRelative previewRelative = new StructureRelative(previews.getSurroundingBox(), previews.getContext());
+		LittleVec doubledCenterPreview = previewRelative.getDoubledCenterVec();
 		
 		if (surrounding.getSize(Axis.X) % 2 != 0 && surrounding.getSize(Axis.X) != 1) {
-			doubledCenter.add(new LittleVec(0, 0, 1));
+			doubledCenterPreview.add(new LittleVec(0, 0, 1));
 		}
 		if (surrounding.getSize(Axis.Y) % 2 != 0 && surrounding.getSize(Axis.Y) != 1) {
-			doubledCenter.add(new LittleVec(1, 0, 0));
+			doubledCenterPreview.add(new LittleVec(1, 0, 0));
 		}
 		if (surrounding.getSize(Axis.Z) % 2 != 0 && surrounding.getSize(Axis.Z) != 1) {
-			doubledCenter.add(new LittleVec(1, 0, 0));
+			doubledCenterPreview.add(new LittleVec(1, 0, 0));
 		}
 		
 		LittlePreviews premadePreviews = LittleStructurePremade.getPreviews(premade.type.id);
@@ -64,7 +64,7 @@ public abstract class AddStructure {
 		LittleVec previewsSize = previews.getSize();
 		switch (premade.direction) {
 		case NORTH:
-			previews.flipPreviews(Axis.Z, doubledCenter);
+			previews.flipPreviews(Axis.Z, doubledCenterPreview);
 			
 			premadePreviewSize.setY(0);
 			premadePreviewSize.setX(0);
@@ -72,21 +72,19 @@ public abstract class AddStructure {
 			break;
 		case EAST:
 			if (previewsSize.x != previewsSize.z) {
-				int offsetX = Math.abs(previewsSize.x - premadePreviewSize.z);
-				offsetX /= 2;
+				int offsetX = (Math.abs(previewsSize.x - premadePreviewSize.z)) / 2;
 				
 				if (previews.getContext().size == 32) {
 					offsetX /= 2;
 				}
 				
 				previews.movePreviews(premadePreviews.getContext(), new LittleVec(offsetX, 0, -offsetX));
-				strctureRelative = new StructureRelative(previews.getSurroundingBox(), previews.getContext());
-				previews.rotatePreviews(Rotation.Y_COUNTER_CLOCKWISE, strctureRelative.getDoubledCenterVec());
-				previews.flipPreviews(Axis.X, strctureRelative.getDoubledCenterVec());
+				previews.rotatePreviews(Rotation.Y_COUNTER_CLOCKWISE, doubledCenterPreview);
+				previews.flipPreviews(Axis.X, doubledCenterPreview);
 				
 			} else {
-				previews.rotatePreviews(Rotation.Y_COUNTER_CLOCKWISE, doubledCenter);
-				previews.flipPreviews(Axis.X, doubledCenter);
+				previews.rotatePreviews(Rotation.Y_COUNTER_CLOCKWISE, doubledCenterPreview);
+				previews.flipPreviews(Axis.X, doubledCenterPreview);
 			}
 			break;
 		case SOUTH:
@@ -98,15 +96,14 @@ public abstract class AddStructure {
 		
 		case WEST:
 			if (previewsSize.x != previewsSize.z) {
-				
 				int offsetX = (Math.abs(previewsSize.x - premadePreviewSize.z)) / 2;
 				if (previews.getContext().size == 32)
 					offsetX /= 2;
 				previews.movePreviews(premadePreviews.getContext(), new LittleVec(offsetX, 0, -offsetX));
-				strctureRelative = new StructureRelative(previews.getSurroundingBox(), previews.getContext());
-				previews.rotatePreviews(Rotation.Y_COUNTER_CLOCKWISE, strctureRelative.getDoubledCenterVec());
+				previews.rotatePreviews(Rotation.Y_COUNTER_CLOCKWISE, doubledCenterPreview);
 				
 			} else {
+				previews.rotatePreviews(Rotation.Y_COUNTER_CLOCKWISE, doubledCenterPreview);
 				int offsetX = Math.abs(previewsSize.z - premadePreviewSize.z);
 				int offsetZ = Math.abs(previewsSize.x - premadePreviewSize.x);
 				previews.movePreviews(premadePreviews.getContext(), new LittleVec(offsetX, 0, offsetZ));
@@ -119,7 +116,6 @@ public abstract class AddStructure {
 	}
 	
 	public static void toPremade(InteractivePremade premade, EntityPlayer player) {
-		System.out.println(premade.direction);
 		if (LittleForgeRecipes.takeIngredients(player, premade.type.id, premade.getSeriesMaxium(), premade.getSeriesAt())) {
 			try {
 				long minX = premade.getSurroundingBox().getMinX();
@@ -131,6 +127,7 @@ public abstract class AddStructure {
 				LittleVecContext minVec = new LittleVecContext(new LittleVec((int) (minX - (long) min.getX() * (long) context.size), (int) (minY - (long) min.getY() * (long) context.size), (int) (minZ - (long) min.getZ() * (long) context.size)), context);
 				
 				LittlePreviews previews = LittleStructurePremade.getStructurePremadeEntry(premadeID).previews.copy(); // Change this line to support different states
+				LittlePreviews previewsPreade = LittleStructurePremade.getStructurePremadeEntry(premade.type.id).previews.copy(); // Change this line to support different states
 				
 				LittleVec previewMinVec = previews.getMinVec();
 				LittlePreview preview = null;
@@ -172,6 +169,43 @@ public abstract class AddStructure {
 					}
 					preview = prev;
 				}
+				
+				StructureRelative previewRelative = new StructureRelative(previews.getSurroundingBox(), previews.getContext());
+				LittleVec doubledCenterPreview = previewRelative.getDoubledCenterVec();
+				
+				LittlePreviews premadePreview = LittleStructurePremade.getPreviews(premade.type.id);
+				StructureRelative premadeRelative = new StructureRelative(premadePreview.getSurroundingBox(), premadePreview.getContext());
+				LittleVec doubledCenterPremade = premadeRelative.getDoubledCenterVec();
+				
+				int xMod = Math.abs(doubledCenterPreview.x - doubledCenterPremade.x);
+				int zMod = Math.abs(doubledCenterPremade.x - doubledCenterPreview.z);
+				System.out.println(xMod);
+				System.out.println(zMod);
+				
+				for (LittlePreview prev : previews) {
+					switch (premade.direction) {
+					case NORTH:
+						if (premade.west.equals(EnumFacing.WEST))
+							prev.box.add(Math.abs(doubledCenterPreview.x - doubledCenterPremade.x), 0, 0);
+						break;
+					case EAST:
+						if (premade.west.equals(EnumFacing.NORTH))
+							prev.box.add(0, 0, zMod);
+						break;
+					case SOUTH:
+						if (premade.west.equals(EnumFacing.EAST))
+							prev.box.sub(Math.abs(doubledCenterPreview.x - doubledCenterPremade.x), 0, 0);
+						break;
+					case WEST:
+						if (premade.west.equals(EnumFacing.SOUTH))
+							prev.box.sub(0, 0, zMod);
+						break;
+					default:
+						break;
+					}
+					preview = prev;
+				}
+				
 				previews.convertToSmallest();
 				
 				/*
