@@ -55,6 +55,9 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	@StructureDirectional
 	public EnumFacing facing;
 	
+	@StructureDirectional
+	public EnumFacing west;
+	
 	public void linkStructure(LittleStructure structure, EnumFacing direction) throws CorruptedConnectionException, NotYetConnectedException {
 		int childIndex = children.findFreeIndex();
 		updateChildConnection(childIndex, structure, true);
@@ -175,10 +178,11 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	
 	@Override
 	protected Object failedLoadingRelative(NBTTagCompound nbt, StructureDirectionalField field) {
+		System.out.println(field.key);
 		if (field.key.equals("facing"))
 			return EnumFacing.UP;
-		if (field.key.equals("east"))
-			return EnumFacing.EAST;
+		if (field.key.equals("direction"))
+			return EnumFacing.SOUTH;
 		if (field.key.equals("west"))
 			return EnumFacing.WEST;
 		return super.failedLoadingRelative(nbt, field);

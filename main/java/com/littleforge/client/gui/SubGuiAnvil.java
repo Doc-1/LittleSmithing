@@ -3,6 +3,7 @@ package com.littleforge.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.creativemd.creativecore.common.gui.GuiControl;
 import com.creativemd.creativecore.common.gui.GuiRenderHelper;
 import com.creativemd.creativecore.common.gui.client.style.ColoredDisplayStyle;
 import com.creativemd.creativecore.common.gui.client.style.DisplayStyle;
@@ -13,17 +14,18 @@ import com.creativemd.creativecore.common.gui.controls.container.SlotControlNoSy
 import com.creativemd.creativecore.common.gui.controls.container.client.GuiSlotControl;
 import com.creativemd.creativecore.common.gui.controls.gui.GuiScrollBox;
 import com.creativemd.creativecore.common.gui.controls.gui.GuiTextBox;
+import com.creativemd.creativecore.common.gui.event.gui.GuiControlChangedEvent;
 import com.creativemd.creativecore.common.utils.mc.ColorUtils;
 import com.littleforge.LittleForge;
+import com.littleforge.common.recipe.forge.LittleAnvilRecipe;
 import com.littleforge.common.recipe.forge.MetalTemperature;
 import com.littleforge.common.strucutres.type.premade.interactive.InteractiveAnvilPremade;
+import com.n247s.api.eventapi.eventsystem.CustomEventSubscribe;
 
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 public class SubGuiAnvil extends SubGui {
@@ -54,13 +56,24 @@ public class SubGuiAnvil extends SubGui {
 		selector.controls.add(ingredientText);
 		selector.controls.add(resultText);
 		selector.controls.add(hitText);
-		selector.controls.add(new GuiAnvilRecipeSelector("test", MetalTemperature.RED, 0, (1 * 28) - 15, 250, 20, 0, 4, 20));
-		selector.controls.add(new GuiAnvilRecipeSelector("test1", MetalTemperature.BRIGHT_RED, 0, (2 * 28) - 15, 250, 20, 1, 5, 35));
-		selector.controls.add(new GuiAnvilRecipeSelector("test2", MetalTemperature.BRIGHT_ORANGE, 0, (3 * 28) - 15, 250, 20, 2, 2, 15));
-		selector.controls.add(new GuiAnvilRecipeSelector("test3", MetalTemperature.YELLOW, 0, (4 * 28) - 15, 250, 20, 3, 3, 5));
-		
+		List<LittleAnvilRecipe> recipes = LittleAnvilRecipe.matchingRecipes(this.getPlayer().inventory, LittleForge.mushroomHorn);
+		for (int i = 0; i < recipes.size(); i++) {
+			selector.controls.add(new GuiAnvilRecipeSelector("recipe" + i, LittleAnvilRecipe.getRecipe(recipes.get(i).getId()), 1, ((i % 5) * 28) + 15, 240, 20));
+		}
 		controls.add(selector);
 		
+	}
+	
+	@CustomEventSubscribe
+	public void onChanged(GuiControlChangedEvent event) {
+		if (event.source.name.contains("recipe")) {
+			GuiScrollBox selector = (GuiScrollBox) get("preview");
+			for (GuiControl ctrl : selector.controls) {
+				if (ctrl.name.contains("recipe") && !ctrl.name.equals(event.source.name)) {
+					((GuiAnvilRecipeSelector) ctrl).selected = false;
+				}
+			}
+		}
 	}
 	
 	public class GuiAnvilRecipeSelector extends GuiParent {
@@ -70,19 +83,25 @@ public class SubGuiAnvil extends SubGui {
 		private int hits;
 		public final int index;
 		
-		public GuiAnvilRecipeSelector(String name, MetalTemperature tempColor, int x, int y, int width, int height, int index, int ingerdients, int hits) {
+		public GuiAnvilRecipeSelector(String name, LittleAnvilRecipe recipe, int x, int y, int width, int height) {
 			super(name, x, y, width, height);
-			this.tempColor = tempColor;
-			this.hits = hits;
-			this.index = index;
+			this.tempColor = recipe.temperature;
+			this.hits = recipe.hits;
+			this.index = recipe.getId();
+			int ingerdients = recipe.ingredients.length;
 			InventoryBasic basic = new InventoryBasic("", false, ingerdients);
-			int counter = 0;
+			
+			InventoryBasic result = new InventoryBasic("", false, 1);
+			result.setInventorySlotContents(0, recipe.result);
+			
+			addControl(new GuiSlotControlSelect(this, 115, 0, 0, result, false));
+			
 			for (int i = 0; i < ingerdients; i++) {
 				int col = i % 5;
 				int row = i / 5;
-				basic.setInventorySlotContents(i, new ItemStack(Items.IRON_INGOT, 1));
-				addControl(new GuiSlotControlSelect(this, col, row, index, basic));
-				counter++;
+				basic.setInventorySlotContents(i, recipe.ingredients[i].getItemStack());
+				//System.out.println(recipe.ingredients[i].getItemStack());
+				addControl(new GuiSlotControlSelect(this, col, row, i, basic, true));
 			}
 			
 		}
@@ -104,6 +123,7 @@ public class SubGuiAnvil extends SubGui {
 			System.out.println(index);
 			selected = true;
 			playSound(SoundEvents.UI_BUTTON_CLICK);
+			raiseEvent(new GuiControlChangedEvent(this));
 			return super.mousePressed(posX, posY, button);
 		}
 		
@@ -150,7 +170,6 @@ public class SubGuiAnvil extends SubGui {
 			renderHits(helper, width, height);
 			GlStateManager.scale(0.065, 0.06, 0);
 			helper.drawTexturedModalRect(new ResourceLocation(LittleForge.MODID, "textures/gui/arrow.png"), 187 * 16, 1 * 16, 0, 0, 16 * 16, 16 * 16);
-			
 		}
 	}
 	
@@ -159,8 +178,8 @@ public class SubGuiAnvil extends SubGui {
 		public final GuiAnvilRecipeSelector selector;
 		public final int index;
 		
-		public GuiSlotControlSelect(GuiAnvilRecipeSelector selector, int col, int row, int index, InventoryBasic basic) {
-			super(100 + (col * 18), row * 18, new SlotControlNoSync(new Slot(basic, index, col * 18, row * 18)));
+		public GuiSlotControlSelect(GuiAnvilRecipeSelector selector, int col, int row, int index, InventoryBasic basic, boolean step) {
+			super(100 + (col * (step ? 18 : 1)), row * (step ? 18 : 1), new SlotControlNoSync(new Slot(basic, index, col * (step ? 18 : 1), row * (step ? 18 : 1))));
 			
 			this.selector = selector;
 			this.index = index;

@@ -17,7 +17,7 @@ import com.littleforge.CommonProxy;
 import net.minecraftforge.common.config.Configuration;
 
 public class Config {
-
-    private static final String CATEGORY_GENERAL = "general";
-
+	
+	private static final String CATEGORY_GENERAL = "general";
+	
 }

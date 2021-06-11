@@ -1,4 +1,4 @@
-package com.littleforge.heated.structures;
+package com.littleforge.common.structures.type.premade.heatable;
 
 import org.apache.http.auth.NTCredentials;
 
@@ -30,7 +30,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class DirtyIronStructurePremade extends LittleStructurePremade{
+public class DirtyIronStructurePremade extends LittleStructurePremade {
 	
 	private int temperature = 0;
 	
@@ -47,7 +47,7 @@ public class DirtyIronStructurePremade extends LittleStructurePremade{
 	protected void writeToNBTExtra(NBTTagCompound nbt) {
 		nbt.setInteger("temperature", temperature);
 	}
-
+	
 	@Override
 	public void tick() {
 		temperature = 1001;

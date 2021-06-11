@@ -12,19 +12,17 @@ import com.littleforge.common.strucutres.type.premade.interactive.InteractivePre
 import net.minecraft.nbt.NBTTagCompound;
 
 public abstract class ChangeTileColor {
-
+	
 	public static void forPremade(InteractivePremade premade, Color color) {
 		for (LittleBox littleBox : premade.getTilePosList().keySet()) {
-			if(LittleBox.intersectsWith(littleBox, premade.getEditArea())) {
+			if (LittleBox.intersectsWith(littleBox, premade.getEditArea())) {
 				LittleTile littleTile = premade.getTilePosList().get(littleBox);
 				NBTTagCompound nbt = new NBTTagCompound();
-		    	littleTile.saveTileExtra(nbt);
-		    	nbt.setInteger("color", ColorUtils.RGBAToInt(color));
-		    	littleTile.loadTileExtra(nbt);
+				littleTile.saveTileExtra(nbt);
+				nbt.setInteger("color", ColorUtils.RGBAToInt(color));
+				littleTile.loadTileExtra(nbt);
 			}
 		}
 	}
-
-
-
+	
 }

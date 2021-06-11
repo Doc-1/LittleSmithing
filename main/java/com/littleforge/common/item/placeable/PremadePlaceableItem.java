@@ -9,6 +9,7 @@ import com.creativemd.creativecore.client.rendering.model.ICreativeRendered;
 import com.creativemd.littletiles.client.gui.configure.SubGuiConfigure;
 import com.creativemd.littletiles.client.gui.configure.SubGuiModeSelector;
 import com.creativemd.littletiles.client.render.cache.ItemModelCache;
+import com.creativemd.littletiles.common.api.ILittlePlacer;
 import com.creativemd.littletiles.common.item.ItemLittleChisel;
 import com.creativemd.littletiles.common.item.ItemMultiTiles;
 import com.creativemd.littletiles.common.structure.registry.LittleStructureRegistry;
@@ -20,7 +21,6 @@ import com.creativemd.littletiles.common.tile.preview.LittlePreviews;
 import com.creativemd.littletiles.common.util.grid.LittleGridContext;
 import com.creativemd.littletiles.common.util.place.PlacementMode;
 import com.creativemd.littletiles.common.util.place.PlacementPosition;
-import com.littleforge.common.api.ILittleItem;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -37,7 +37,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class PremadePlaceableItem extends Item implements ILittleItem, ICreativeRendered {
+public class PremadePlaceableItem extends Item implements ILittlePlacer, ICreativeRendered {
 	
 	public String premadeToPlace = "";
 	public String premadeToRender = "";
@@ -77,6 +77,27 @@ public class PremadePlaceableItem extends Item implements ILittleItem, ICreative
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
+	public void saveCachedModel(EnumFacing facing, BlockRenderLayer layer, List<BakedQuad> cachedQuads, IBlockState state, TileEntity te, ItemStack stack, boolean threaded) {
+		stack = LittleStructurePremade.getPremadeStack(premadeToRender);
+		if (stack != null)
+			ItemModelCache.cacheModel(getPremade(stack).stack, facing, cachedQuads);
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public List<BakedQuad> getCachedModel(EnumFacing facing, BlockRenderLayer layer, IBlockState state, TileEntity te, ItemStack stack, boolean threaded) {
+		stack = LittleStructurePremade.getPremadeStack(premadeToRender);
+		if (stack == null)
+			return null;
+		LittleStructurePremadeEntry entry = getPremade(stack);
+		if (entry == null)
+			return null;
+		return ItemModelCache.requestCache(entry.stack, facing);
+		
+	}
+	
+	@Override
 	public boolean onRightClick(World world, EntityPlayer player, ItemStack stack, PlacementPosition position, RayTraceResult result) {
 		if (player.isSneaking()) {
 			return true;
@@ -104,43 +125,8 @@ public class PremadePlaceableItem extends Item implements ILittleItem, ICreative
 	}
 	
 	@Override
-	@SideOnly(Side.CLIENT)
-	public void saveCachedModel(EnumFacing facing, BlockRenderLayer layer, List<BakedQuad> cachedQuads, IBlockState state, TileEntity te, ItemStack stack, boolean threaded) {
-		stack = LittleStructurePremade.getPremadeStack(premadeToRender);
-		if (stack != null)
-			ItemModelCache.cacheModel(getPremade(stack).stack, facing, cachedQuads);
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public List<BakedQuad> getCachedModel(EnumFacing facing, BlockRenderLayer layer, IBlockState state, TileEntity te, ItemStack stack, boolean threaded) {
-		stack = LittleStructurePremade.getPremadeStack(premadeToRender);
-		if (stack == null)
-			return null;
-		LittleStructurePremadeEntry entry = getPremade(stack);
-		if (entry == null)
-			return null;
-		return ItemModelCache.requestCache(entry.stack, facing);
-		
-	}
-	
-	@Override
 	public boolean hasLittlePreview(ItemStack stack) {
 		return isShifting;
-	}
-	
-	public void removeUnnecessaryData(ItemStack stack) {
-		if (stack.hasTagCompound()) {
-			stack.getTagCompound().removeTag("tiles");
-			stack.getTagCompound().removeTag("size");
-			stack.getTagCompound().removeTag("min");
-		}
-	}
-	
-	private static HashMap<String, LittlePreviews> cachedPreviews = new HashMap<>();
-	
-	public static void clearCache() {
-		cachedPreviews.clear();
 	}
 	
 	@Override
@@ -178,9 +164,18 @@ public class PremadePlaceableItem extends Item implements ILittleItem, ICreative
 		return false;
 	}
 	
-	@Override
-	public boolean snapToGridByDefault() {
-		return true;
+	public void removeUnnecessaryData(ItemStack stack) {
+		if (stack.hasTagCompound()) {
+			stack.getTagCompound().removeTag("tiles");
+			stack.getTagCompound().removeTag("size");
+			stack.getTagCompound().removeTag("min");
+		}
+	}
+	
+	private static HashMap<String, LittlePreviews> cachedPreviews = new HashMap<>();
+	
+	public static void clearCache() {
+		cachedPreviews.clear();
 	}
 	
 	public static String getPremadeId(ItemStack stack) {

@@ -11,7 +11,7 @@ import com.creativemd.littletiles.common.structure.LittleStructure;
 import com.creativemd.littletiles.common.structure.exception.CorruptedConnectionException;
 import com.creativemd.littletiles.common.structure.exception.NotYetConnectedException;
 import com.creativemd.littletiles.common.tileentity.TileEntityLittleTiles;
-import com.littleforge.heated.structures.DirtyIronStructurePremade;
+import com.littleforge.common.structures.type.premade.heatable.DirtyIronStructurePremade;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;

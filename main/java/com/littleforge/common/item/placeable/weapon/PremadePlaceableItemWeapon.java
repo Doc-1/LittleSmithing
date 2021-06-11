@@ -9,7 +9,7 @@ import com.creativemd.creativecore.client.rendering.model.ICreativeRendered;
 import com.creativemd.littletiles.client.gui.configure.SubGuiConfigure;
 import com.creativemd.littletiles.client.gui.configure.SubGuiModeSelector;
 import com.creativemd.littletiles.client.render.cache.ItemModelCache;
-import com.creativemd.littletiles.common.api.ILittleTile;
+import com.creativemd.littletiles.common.api.ILittlePlacer;
 import com.creativemd.littletiles.common.item.ItemLittleChisel;
 import com.creativemd.littletiles.common.item.ItemMultiTiles;
 import com.creativemd.littletiles.common.structure.registry.LittleStructureRegistry;
@@ -39,7 +39,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class PremadePlaceableItemWeapon extends ItemSword implements ILittleTile, ICreativeRendered {
+public class PremadePlaceableItemWeapon extends ItemSword implements ILittlePlacer, ICreativeRendered {
 	
 	public String premadeToPlace = "";
 	public String premadeToRender = "";
@@ -183,11 +183,6 @@ public class PremadePlaceableItemWeapon extends ItemSword implements ILittleTile
 	@Override
 	public boolean shouldCache() {
 		return false;
-	}
-	
-	@Override
-	public boolean snapToGridByDefault() {
-		return true;
 	}
 	
 	public static String getPremadeId(ItemStack stack) {

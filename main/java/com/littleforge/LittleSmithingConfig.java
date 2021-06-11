@@ -19,7 +19,7 @@ import net.minecraft.nbt.NBTTagCompound;
 public class LittleSmithingConfig {
 	
 	private static final String CATEGORY_GENERAL = "general";
-
+	
 	//CLIENT Only read from Client. Server doesn't need to know about it
 	//SERVER Only read from Server. Client doesn't need to know about it
 	//UNIVERSAL Server will push it's config to Client

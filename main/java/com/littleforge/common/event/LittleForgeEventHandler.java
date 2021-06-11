@@ -1,5 +1,6 @@
 package com.littleforge.common.event;
 
+import com.creativemd.littletiles.common.api.ILittlePlacer;
 import com.creativemd.littletiles.common.block.BlockTile;
 import com.creativemd.littletiles.common.event.LittleEventHandler;
 import com.creativemd.littletiles.common.structure.LittleStructure;
@@ -7,7 +8,6 @@ import com.creativemd.littletiles.common.structure.exception.CorruptedConnection
 import com.creativemd.littletiles.common.structure.exception.NotYetConnectedException;
 import com.creativemd.littletiles.common.tileentity.TileEntityLittleTiles;
 import com.creativemd.littletiles.common.util.place.PlacementHelper;
-import com.littleforge.common.api.ILittleItem;
 import com.littleforge.common.item.placeable.weapon.PremadePlaceableItemWeapon;
 import com.littleforge.common.strucutres.type.premade.interactive.InteractiveAnvilPremade;
 
@@ -63,7 +63,7 @@ public class LittleForgeEventHandler extends LittleEventHandler {
 		
 		ItemStack stack = event.getEntityPlayer().getHeldItem(EnumHand.MAIN_HAND);
 		
-		ILittleItem iTile = (ILittleItem) PlacementHelper.getLittleInterface(stack);
+		ILittlePlacer iTile = PlacementHelper.getLittleInterface(stack);
 		
 		if (iTile != null) {
 			if (event.getHand() == EnumHand.MAIN_HAND && event.getWorld().isRemote)
@@ -72,7 +72,7 @@ public class LittleForgeEventHandler extends LittleEventHandler {
 		}
 	}
 	
-	public void onRightInteractClient(ILittleItem iTile, EntityPlayer player, EnumHand hand, World world, ItemStack stack, BlockPos pos, EnumFacing facing) {
+	public void onRightInteractClient(ILittlePlacer iTile, EntityPlayer player, EnumHand hand, World world, ItemStack stack, BlockPos pos, EnumFacing facing) {
 		super.onRightInteractClient(iTile, player, hand, world, stack, pos, facing);
 	}
 	

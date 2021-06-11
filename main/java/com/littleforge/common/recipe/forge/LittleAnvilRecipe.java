@@ -4,15 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.creativemd.creativecore.common.utils.mc.InventoryUtils;
-import com.creativemd.creativecore.common.utils.stack.InfoItemStack;
 import com.creativemd.creativecore.common.utils.stack.InfoStack;
 import com.creativemd.littletiles.common.action.LittleActionException;
 import com.creativemd.littletiles.common.util.ingredient.NotEnoughIngredientsException;
-import com.littleforge.LittleForge;
 
-import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class LittleAnvilRecipe {
@@ -23,10 +21,10 @@ public class LittleAnvilRecipe {
 		recipes.add(recipe);
 	}
 	
-	public static List<LittleAnvilRecipe> matchingRecipes(IInventory inventory) {
+	public static List<LittleAnvilRecipe> matchingRecipes(IInventory inventory, Item hardyTool) {
 		List<LittleAnvilRecipe> results = new ArrayList<>();
 		for (LittleAnvilRecipe recipe : recipes)
-			if (recipe.canComsume(inventory))
+			if (recipe.canComsume(inventory, hardyTool))
 				results.add(recipe);
 		return results;
 	}
@@ -40,37 +38,43 @@ public class LittleAnvilRecipe {
 	public final ItemStack result;
 	public final MetalTemperature temperature;
 	public final int hits;
+	public final Item hardyTool;
 	
-	public LittleAnvilRecipe(ItemStack result, int hits, MetalTemperature temperature, InfoStack... ingredients) {
+	public LittleAnvilRecipe(ItemStack result, int hits, MetalTemperature temperature, Item hardyTool, InfoStack... ingredients) {
+		this.hardyTool = hardyTool;
 		this.ingredients = ingredients;
 		this.result = result;
 		this.hits = hits;
 		this.temperature = temperature;
+		id = recipes.size();
+		//System.out.println("\n\n\n\n\n" + this.id);
 	}
 	
 	public int getId() {
 		return id;
 	}
 	
-	public boolean canComsume(IInventory inventory) {
-		InventoryBasic simulation = new InventoryBasic("test", false, inventory.getSizeInventory());
-		for (int i = 0; i < simulation.getSizeInventory(); i++)
+	public boolean canComsume(IInventory inventory, Item hardyTool) {
+		InventoryBasic simulation = new InventoryBasic("comsumeTest", false, inventory.getSizeInventory());
+		for (int i = 0; i < simulation.getSizeInventory(); i++) {
 			simulation.setInventorySlotContents(i, inventory.getStackInSlot(i).copy());
+		}
 		try {
-			consume(simulation);
+			consume(simulation, hardyTool);
 			return true;
 		} catch (LittleActionException e) {
 		}
 		return false;
 	}
 	
-	public void consume(IInventory inventory) throws LittleActionException {
-		for (InfoStack info : ingredients)
+	public void consume(IInventory inventory, Item hardyTool) throws LittleActionException {
+		for (InfoStack info : ingredients) {
 			if (InventoryUtils.consumeInfoStack(info, inventory) > 0)
 				throw new NotEnoughIngredientsException(info.getItemStack());
+			if (this.hardyTool != null)
+				if (!hardyTool.equals(this.hardyTool))
+					throw new NotEnoughIngredientsException(info.getItemStack());
+		}
 	}
 	
-	static {
-		registerRecipe(new LittleAnvilRecipe(new ItemStack(Items.IRON_INGOT), 10, MetalTemperature.RED, new InfoItemStack(new ItemStack(LittleForge.tongs, 1, 0), 1)));
-	}
 }

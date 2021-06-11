@@ -2,19 +2,28 @@ package com.littleforge.common.recipe.forge;
 
 public enum MetalTemperature {
 	
-	NULL(0, 0, 0xffffffff, "null"),
+	BLACK(0, 199, 0x11111111, "null"),
 	STRAW(200, 240, 0xfff3ae53, "straw"),
-	BROWN(250, 260, 0xffad662e, "brown"),
-	PURPLE(270, 290, 0xff925382, "purple"),
-	BLUE(300, 410, 0xff7078a6, "blue"),
-	GRAY(420, 600, 0xffdfb6b6, "gray"),
-	RED(610, 700, 0xff70001a, "red"),
-	BRIGHT_RED(710, 810, 0xffcb1922, "bright red"),
-	ORANGE(820, 930, 0xfff55821, "orange"),
-	BRIGHT_ORANGE(940, 980, 0xfff38321, "bright orange"),
-	YELLOW(990, 1040, 0xfffab335, "yellow"),
-	BRIGHT_YELLOW(1050, 1090, 0xfffff277, "bright yellow"),
-	WHITE(1090, 1200, 0xfffffbd8, "white");
+	BROWN(241, 260, 0xffad662e, "brown"),
+	PURPLE(261, 290, 0xff925382, "purple"),
+	BLUE(291, 410, 0xff7078a6, "blue"),
+	GRAY(411, 600, 0xffdfb6b6, "gray"),
+	RED(601, 700, 0xff70001a, "red"),
+	BRIGHT_RED(701, 810, 0xffcb1922, "bright red"),
+	ORANGE(811, 930, 0xfff55821, "orange"),
+	BRIGHT_ORANGE(931, 980, 0xfff38321, "bright orange"),
+	YELLOW(981, 1040, 0xfffab335, "yellow"),
+	BRIGHT_YELLOW(1041, 1090, 0xfffff277, "bright yellow"),
+	WHITE(1091, 1200, 0xfffffbd8, "white");
+	// 261
+	//-291
+	//----
+	//  30
+	
+	// 270
+	//-261
+	//----
+	//   9
 	
 	private int temperatureMin;
 	private int temperatureMax;
@@ -28,12 +37,44 @@ public enum MetalTemperature {
 		this.color = color;
 	}
 	
+	public MetalTemperature getNext() {
+		if (this == STRAW) {
+			return BROWN;
+		} else if (this == BROWN) {
+			return PURPLE;
+		} else if (this == PURPLE) {
+			return BLUE;
+		} else if (this == BLUE) {
+			return GRAY;
+		} else if (this == GRAY) {
+			return RED;
+		} else if (this == RED) {
+			return BRIGHT_RED;
+		} else if (this == BRIGHT_RED) {
+			return ORANGE;
+		} else if (this == ORANGE) {
+			return BRIGHT_ORANGE;
+		} else if (this == BRIGHT_ORANGE) {
+			return YELLOW;
+		} else if (this == YELLOW) {
+			return BRIGHT_YELLOW;
+		} else if (this == BRIGHT_YELLOW) {
+			return WHITE;
+		} else if (this == WHITE) {
+			return WHITE;
+		} else if (this == BLACK) {
+			return STRAW;
+		}
+		return null;
+	}
+	
 	public static MetalTemperature getEnumFromTemperature(int temperature) {
-		if (temperature >= STRAW.getTemperatureMin() && temperature <= STRAW.getTemperatureMax()) {
+		if (temperature >= BLACK.getTemperatureMin() && temperature <= BLACK.getTemperatureMax()) {
+			return BLACK;
+		} else if (temperature >= STRAW.getTemperatureMin() && temperature <= STRAW.getTemperatureMax()) {
 			return STRAW;
 		} else if (temperature >= BROWN.getTemperatureMin() && temperature <= BROWN.getTemperatureMax()) {
 			return BROWN;
-			
 		} else if (temperature >= PURPLE.getTemperatureMin() && temperature <= PURPLE.getTemperatureMax()) {
 			return PURPLE;
 			
@@ -63,9 +104,8 @@ public enum MetalTemperature {
 			
 		} else if (temperature >= WHITE.getTemperatureMin() && temperature <= WHITE.getTemperatureMax()) {
 			return WHITE;
-			
 		}
-		return NULL;
+		return null;
 	}
 	
 	public int getTemperatureMax() {
