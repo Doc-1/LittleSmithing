@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.creativemd.creativecore.client.rendering.RenderBox;
 import com.creativemd.creativecore.client.rendering.model.ICreativeRendered;
+import com.creativemd.littletiles.LittleTiles;
 import com.creativemd.littletiles.client.gui.configure.SubGuiConfigure;
 import com.creativemd.littletiles.client.gui.configure.SubGuiModeSelector;
 import com.creativemd.littletiles.client.render.cache.ItemModelCache;
@@ -51,6 +52,7 @@ public class PremadePlaceableItem extends Item implements ILittlePlacer, ICreati
 		setUnlocalizedName(unlocalizedName);
 		setRegistryName(registryName);
 		hasSubtypes = true;
+		setCreativeTab(LittleTiles.littleTab);
 	}
 	
 	@Override

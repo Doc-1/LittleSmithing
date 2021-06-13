@@ -142,7 +142,7 @@ public class LittleForge {
 		LittleStructurePremade.registerPremadeStructureType("blueprint_flat", LittleForge.MODID, PickupItemPremade.class, LittleStructureAttribute.PREMADE);
 		
 		LittleStructurePremade.registerPremadeStructureType("blueprint_rolled", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
-		LittleStructurePremade.registerPremadeStructureType("mushroom_horn", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
+		LittleStructurePremade.registerPremadeStructureType("mushroom_horn", LittleForge.MODID, PickupItemPremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setNotSnapToGrid();
 		
 		LittleStructurePremade.registerPremadeStructureType("vending", LittleForge.MODID, VendingMachineInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
 		
