@@ -129,7 +129,7 @@ public class LittleForge {
 		LittleStructurePremade.registerPremadeStructureType("metal_block", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
 		
 		LittleStructurePremade.registerPremadeStructureType("brick_forge_coal_burning", LittleForge.MODID, BurningCoalStructurePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setNotSnapToGrid().setFieldDefault("west", EnumFacing.WEST).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
-		LittleStructurePremade.registerPremadeStructureType("brick_forge_coal", LittleForge.MODID, CoalStructurePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setNotSnapToGrid().setFieldDefault("west", EnumFacing.WEST).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
+		LittleStructurePremade.registerPremadeStructureType("brick_forge_coal", LittleForge.MODID, CoalStructurePremade.class, LittleStructureAttribute.PREMADE).setNotSnapToGrid().setFieldDefault("west", EnumFacing.WEST).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
 		
 		LittleStructurePremade.registerPremadeStructureType("soda", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
 		LittleStructurePremade.registerPremadeStructureType("serpent_sword", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();

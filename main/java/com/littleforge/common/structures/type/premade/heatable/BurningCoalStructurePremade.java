@@ -6,11 +6,15 @@ import com.creativemd.creativecore.common.world.IOrientatedWorld;
 import com.creativemd.littletiles.common.item.ItemLittleWrench;
 import com.creativemd.littletiles.common.particle.LittleParticle;
 import com.creativemd.littletiles.common.particle.LittleParticlePresets;
+import com.creativemd.littletiles.common.structure.attribute.LittleStructureAttribute;
+import com.creativemd.littletiles.common.structure.exception.CorruptedConnectionException;
+import com.creativemd.littletiles.common.structure.exception.NotYetConnectedException;
 import com.creativemd.littletiles.common.structure.registry.LittleStructureType;
 import com.creativemd.littletiles.common.structure.type.premade.LittleParticleEmitter.ParticleSettings;
 import com.creativemd.littletiles.common.tile.parent.IStructureTileList;
 import com.littleforge.common.strucutres.type.premade.interactive.InteractivePremade;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -23,6 +27,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BurningCoalStructurePremade extends InteractivePremade {
 	
 	int tick = 0;
+	public boolean stopTicking = false;
 	
 	public BurningCoalStructurePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
@@ -39,6 +44,12 @@ public class BurningCoalStructurePremade extends InteractivePremade {
 	protected void writeToNBTExtra(NBTTagCompound nbt) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public void onStructureDestroyed() {
+		//stopTicking();
+		super.onStructureDestroyed();
 	}
 	
 	@Override
@@ -113,7 +124,32 @@ public class BurningCoalStructurePremade extends InteractivePremade {
 	
 	@Override
 	public void onPremadeActivated(EntityPlayer playerIn, ItemStack heldItem) {
-		// TODO Auto-generated method stub
+		stopTicking();
+	}
+	
+	public void stopTicking() {
+		try {
+			World world = getWorld();
+			stopTicking = true;
+			this.tryAttributeChangeForBlocks();
+			for (IStructureTileList list : this.blocksList()) {
+				IBlockState state = world.getBlockState(list.getPos());
+				world.notifyBlockUpdate(list.getPos(), state, state, 2);
+			}
+			this.mainBlock.getTe().updateBlock();
+			this.mainBlock.getTe().updateNeighbour();
+			this.updateStructure();
+		} catch (CorruptedConnectionException | NotYetConnectedException e) {
+			e.printStackTrace();
+		}
 		
+	}
+	
+	@Override
+	public int getAttribute() {
+		if (stopTicking)
+			return LittleStructureAttribute.PREMADE;
+		else
+			return LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING;
 	}
 }

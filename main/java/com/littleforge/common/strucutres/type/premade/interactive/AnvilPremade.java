@@ -53,7 +53,7 @@ public class AnvilPremade extends InteractivePremade {
 			AddStructure.editArea = new LittleBox(4, 19, 37, 0, 0, 0);
 			AddStructure.toPremade(this, playerIn);
 			
-		}
-		LittleStructureGuiHandler.openGui("anvil", new NBTTagCompound(), playerIn, this);
+		} else
+			LittleStructureGuiHandler.openGui("anvil", new NBTTagCompound(), playerIn, this);
 	}
 }

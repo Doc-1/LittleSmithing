@@ -220,6 +220,8 @@ public abstract class AddStructure {
 			PlacementResult result = place.tryPlace();
 			if (result != null) {
 				premade.linkStructure(result.parentStructure, premade.direction);
+				premade.mainBlock.getTe().updateBlock();
+				premade.mainBlock.getTe().updateNeighbour();
 				premade.updateStructure();
 				return true;
 			} else {

@@ -37,7 +37,7 @@ public class CoalStructurePremade extends PickupItemPremade {
 			this.removeStructure();
 			if (parent != null) {
 				AddStructure.editArea = new LittleBox(0, 12, 3, 0, 0, 0);
-				AddStructure.setPremadeID("brick_forge_coal");
+				AddStructure.setPremadeID("brick_forge_coal_burning");
 				AddStructure.toPremade((InteractivePremade) parent, playerIn);
 			}
 			return true;

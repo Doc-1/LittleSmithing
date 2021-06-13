@@ -51,8 +51,8 @@ public class BrickForgePremade extends InteractivePremade {
 			AddStructure.setPremadeID("brick_forge_coal");
 			if (AddStructure.toPremade(this, playerIn))
 				takeFuel(playerIn);
+			
 		}
-		
 		//editArea = new LittleBox(0, 0, 0, 34, 8, 16);
 		//BuildProgress.forPremade(this);
 	}
