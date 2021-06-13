@@ -1,7 +1,6 @@
 package com.littleforge;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import com.littleforge.common.recipe.LittleForgeRecipes;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class LittleSmithingConfig {
@@ -57,15 +55,15 @@ public class LittleSmithingConfig {
 		}
 		
 		private void setBrickForgeRecipie() {
-			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_2, "brickForgeBasic_2", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
-			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_3, "brickForgeBasic_3", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
-			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_4, "brickForgeBasic_4", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
-			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_5, "brickForgeBasic_5", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
-			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_6, "brickForgeBasic_6", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
-			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_7, "brickForgeBasic_7", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
-			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_8, "brickForgeBasic_8", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
-			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_9, "brickForgeBasic_9", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
-			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_10, "brickForgeBasic_10", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
+			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_2, "brickForgeBasic_1", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
+			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_3, "brickForgeBasic_2", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
+			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_4, "brickForgeBasic_3", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
+			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_5, "brickForgeBasic_4", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
+			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_6, "brickForgeBasic_5", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
+			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_7, "brickForgeBasic_6", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
+			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_8, "brickForgeBasic_7", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
+			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_9, "brickForgeBasic_8", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
+			LittleForgeRecipes.registerRecipeFromConfig(brickForgeBasic, brickForge_10, "brickForgeBasic_9", new ItemStack(Items.BRICK, 25), new ItemStack(Items.CLAY_BALL, 15));
 		}
 		
 	}

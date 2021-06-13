@@ -8,12 +8,14 @@ import org.lwjgl.util.Color;
 
 import com.creativemd.creativecore.client.rendering.RenderBox;
 import com.creativemd.creativecore.common.utils.mc.ColorUtils;
+import com.creativemd.littletiles.client.render.cache.ItemModelCache;
 import com.creativemd.littletiles.common.structure.registry.LittleStructureRegistry;
 import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade;
 import com.creativemd.littletiles.common.structure.type.premade.LittleStructurePremade.LittleStructureTypePremade;
 import com.creativemd.littletiles.common.tile.preview.LittlePreview;
 import com.creativemd.littletiles.common.tile.preview.LittlePreviews;
 import com.creativemd.littletiles.common.util.grid.LittleGridContext;
+import com.creativemd.littletiles.common.util.place.PlacementPosition;
 import com.littleforge.common.item.placeable.PremadePlaceableItem;
 import com.littleforge.common.recipe.forge.MetalTemperature;
 
@@ -23,24 +25,24 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class PremadeForgeableItem extends PremadePlaceableItem {
+public class PremadeTongsItem extends PremadePlaceableItem {
 	
-	public PremadeForgeableItem(String unlocalizedName, String registryName, String premadeToRender, String premadeToPlace) {
+	public String heldItem;
+	
+	public PremadeTongsItem(String unlocalizedName, String registryName, String premadeToRender, String premadeToPlace) {
 		super(unlocalizedName, registryName, premadeToRender, premadeToPlace);
-		
+		placeFromNBT = true;
 	}
 	
 	/*
@@ -62,6 +64,11 @@ public class PremadeForgeableItem extends PremadePlaceableItem {
 		stack.setTagCompound(nbt);
 		
 	 */
+	@Override
+	public boolean onRightClick(World world, EntityPlayer player, ItemStack stack, PlacementPosition position, RayTraceResult result) {
+		
+		return super.onRightClick(world, player, stack, position, result);
+	}
 	
 	@Override
 	public void applyCustomOpenGLHackery(ItemStack stack, TransformType cameraTransformType) {
@@ -89,38 +96,49 @@ public class PremadeForgeableItem extends PremadePlaceableItem {
 	@SideOnly(Side.CLIENT)
 	public List<RenderBox> getRenderingCubes(IBlockState state, TileEntity te, ItemStack stack) {
 		
-		LittleStructureTypePremade premade = (LittleStructureTypePremade) LittleStructureRegistry.getStructureType("wooden_tongs");
-		LittleStructureTypePremade premade2 = (LittleStructureTypePremade) LittleStructureRegistry.getStructureType("dirty_iron");
+		LittleStructureTypePremade premade = (LittleStructureTypePremade) LittleStructureRegistry.getStructureType(premadeToRender);
 		LittlePreviews previews = new LittlePreviews(LittleStructurePremade.getPreviews(premade.id)).copy();
-		LittlePreviews previews2 = new LittlePreviews(LittleStructurePremade.getPreviews(premade2.id)).copy();
 		
-		//Changes color based off of NBT data. Gets color from MetalTemperature Enum.
-		for (LittlePreview preview : previews2) {
-			preview.getBox().add(6, 12, -7);
-			if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Temperature")) {
-				
-				int nbtTemperature = stack.getTagCompound().getInteger("Temperature");
-				MetalTemperature temperature = MetalTemperature.getEnumFromTemperature(nbtTemperature);
-				MetalTemperature temperatureNext = temperature.getNext();
-				Color color1 = ColorUtils.IntToRGBA(temperature.getColor());
-				Color color2 = ColorUtils.IntToRGBA(temperatureNext.getColor());
-				int steps = temperatureNext.getTemperatureMin() - temperature.getTemperatureMin();
-				
-				if (temperature == MetalTemperature.WHITE)
-					steps = temperature.getTemperatureMax() - temperature.getTemperatureMin();
-				
-				int stepAt = nbtTemperature - temperature.getTemperatureMin();
-				double ratio = (double) stepAt / (double) steps;
-				
-				int red = (int) (color2.getRed() * ratio + color1.getRed() * (1 - ratio));
-				int green = (int) (color2.getGreen() * ratio + color1.getGreen() * (1 - ratio));
-				int blue = (int) (color2.getBlue() * ratio + color1.getBlue() * (1 - ratio));
-				Color stepColor = new Color(red, green, blue);
-				//System.out.println(stepColor);
-				preview.setColor(ColorUtils.RGBAToInt(stepColor));
-			}
-			previews.addPreview(null, preview, LittleGridContext.get(8));
+		LittlePreviews previews2 = null;
+		NBTTagCompound nbt = stack.getTagCompound();
+		String heldItem = "";
+		if (stack.hasTagCompound() && nbt.hasKey("heldItem")) {
+			heldItem = nbt.getString("heldItem");
 		}
+		if (LittleStructureRegistry.getStructureType(heldItem).id != "fixed") {
+			LittleStructureTypePremade premade2 = (LittleStructureTypePremade) LittleStructureRegistry.getStructureType(heldItem);
+			previews2 = new LittlePreviews(LittleStructurePremade.getPreviews(premade2.id)).copy();
+		}
+		//Changes color based off of NBT data. Gets color from MetalTemperature Enum.
+		
+		if (previews2 != null)
+			for (LittlePreview preview : previews2) {
+				preview.getBox().add(6, 12, -7);
+				if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Temperature")) {
+					
+					int nbtTemperature = stack.getTagCompound().getInteger("Temperature");
+					MetalTemperature temperature = MetalTemperature.getEnumFromTemperature(nbtTemperature);
+					MetalTemperature temperatureNext = temperature.getNext();
+					Color color1 = ColorUtils.IntToRGBA(temperature.getColor());
+					Color color2 = ColorUtils.IntToRGBA(temperatureNext.getColor());
+					int steps = temperatureNext.getTemperatureMin() - temperature.getTemperatureMin();
+					
+					if (temperature == MetalTemperature.WHITE)
+						steps = temperature.getTemperatureMax() - temperature.getTemperatureMin();
+					
+					int stepAt = nbtTemperature - temperature.getTemperatureMin();
+					double ratio = (double) stepAt / (double) steps;
+					
+					int red = (int) (color2.getRed() * ratio + color1.getRed() * (1 - ratio));
+					int green = (int) (color2.getGreen() * ratio + color1.getGreen() * (1 - ratio));
+					int blue = (int) (color2.getBlue() * ratio + color1.getBlue() * (1 - ratio));
+					Color stepColor = new Color(red, green, blue);
+					//System.out.println(stepColor);
+					preview.setColor(ColorUtils.RGBAToInt(stepColor));
+				}
+				previews.addPreview(null, preview, LittleGridContext.get(8));
+			}
+		
 		List<RenderBox> cubes = null;
 		if (cubes == null) {
 			cubes = new ArrayList<>();
@@ -137,41 +155,36 @@ public class PremadeForgeableItem extends PremadePlaceableItem {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void saveCachedModel(EnumFacing facing, BlockRenderLayer layer, List<BakedQuad> cachedQuads, IBlockState state, TileEntity te, ItemStack stack, boolean threaded) {
-		
+		getRenderingCubes(state, te, stack);
+		ItemModelCache.cacheModel(stack, facing, cachedQuads);
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public List<BakedQuad> getCachedModel(EnumFacing facing, BlockRenderLayer layer, IBlockState state, TileEntity te, ItemStack stack, boolean threaded) {
-		return null;
+		
+		return ItemModelCache.requestCache(stack, facing);
 	}
 	
 	@Override
-	public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+	public boolean containsIngredients(ItemStack stack) {
+		System.out.println(stack.getCount());
 		
-	}
-	
-	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-		
-		NBTTagCompound nbt;
-		ItemStack stack = playerIn.getHeldItem(handIn);
-		if (stack.hasTagCompound())
+		NBTTagCompound nbt = new NBTTagCompound();
+		if (stack.hasTagCompound()) {
 			nbt = stack.getTagCompound();
-		else
-			nbt = new NBTTagCompound();
+			if (stack.getCount() == 1 && !nbt.getString("heldItem").equals("")) {
+				stack.grow(1);
+				nbt.setString("heldItem", "");
+			}
+		}
 		
-		if (nbt.hasKey("Temperature")) {
-			if (nbt.getInteger("Temperature") >= 1200)
-				nbt.setInteger("Temperature", 0);
-			else
-				nbt.setInteger("Temperature", nbt.getInteger("Temperature") + 20);
-			
-		} else
-			nbt.setInteger("Temperature", 0);
-		stack.setTagCompound(nbt);
-		
-		return super.onItemRightClick(worldIn, playerIn, handIn);
+		return true;
+	}
+	
+	@Override
+	public boolean shouldCache() {
+		return true;
 	}
 	
 	@Override

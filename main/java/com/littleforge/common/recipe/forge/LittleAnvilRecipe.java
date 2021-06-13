@@ -3,7 +3,6 @@ package com.littleforge.common.recipe.forge;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.creativemd.creativecore.common.utils.mc.InventoryUtils;
 import com.creativemd.creativecore.common.utils.stack.InfoStack;
 import com.creativemd.littletiles.common.action.LittleActionException;
 import com.creativemd.littletiles.common.util.ingredient.NotEnoughIngredientsException;
@@ -69,12 +68,39 @@ public class LittleAnvilRecipe {
 	
 	public void consume(IInventory inventory, Item hardyTool) throws LittleActionException {
 		for (InfoStack info : ingredients) {
-			if (InventoryUtils.consumeInfoStack(info, inventory) > 0)
+			if (consumeInfoStack(info, inventory) > 0)
 				throw new NotEnoughIngredientsException(info.getItemStack());
 			if (this.hardyTool != null)
 				if (!hardyTool.equals(this.hardyTool))
 					throw new NotEnoughIngredientsException(info.getItemStack());
 		}
+	}
+	
+	public static int consumeInfoStack(InfoStack info, IInventory inventory) {
+		return consumeInfoStack(info, inventory, null);
+	}
+	
+	public static int consumeInfoStack(InfoStack info, IInventory inventory, ArrayList<ItemStack> consumed) {
+		ArrayList<ItemStack> stacks = new ArrayList<ItemStack>();
+		int stackSize = info.stackSize;
+		for (int i = 0; i < inventory.getSizeInventory(); i++) {
+			ItemStack stack = inventory.getStackInSlot(i);
+			stack.getItem().setDamage(stack, 0);
+			if (!stack.isEmpty() && info.isInstanceIgnoreSize(stack)) {
+				
+				int used = Math.min(stackSize, stack.getCount());
+				stack.shrink(used);
+				stackSize -= used;
+				ItemStack stackCopy = stack.copy();
+				stackCopy.setCount(used);
+				stacks.add(stackCopy);
+				if (stackSize <= 0)
+					break;
+			}
+		}
+		if (consumed != null)
+			consumed.addAll(stacks);
+		return stackSize;
 	}
 	
 }

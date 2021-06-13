@@ -29,6 +29,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -42,6 +43,7 @@ public class PremadePlaceableItem extends Item implements ILittlePlacer, ICreati
 	public String premadeToPlace = "";
 	public String premadeToRender = "";
 	public boolean isShifting = false;
+	public boolean placeFromNBT = false;
 	
 	public PremadePlaceableItem(String unlocalizedName, String registryName, String premadeToRender, String premadeToPlace) {
 		this.premadeToPlace = premadeToPlace;
@@ -54,6 +56,7 @@ public class PremadePlaceableItem extends Item implements ILittlePlacer, ICreati
 	@Override
 	@SideOnly(Side.CLIENT)
 	public List<RenderBox> getRenderingCubes(IBlockState state, TileEntity te, ItemStack stack) {
+		
 		LittleStructureTypePremade premade = (LittleStructureTypePremade) LittleStructureRegistry.getStructureType(premadeToRender);
 		LittlePreviews previews = LittleStructurePremade.getPreviews(premade.id).copy();
 		List<RenderBox> cubes = premade.getRenderingCubes(previews);
@@ -74,6 +77,11 @@ public class PremadePlaceableItem extends Item implements ILittlePlacer, ICreati
 	@Override
 	public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
 		isShifting = entityIn.isSneaking();
+	}
+	
+	@Override
+	public boolean snapToGridByDefault(ItemStack stack) {
+		return false;
 	}
 	
 	@Override
@@ -132,6 +140,13 @@ public class PremadePlaceableItem extends Item implements ILittlePlacer, ICreati
 	@Override
 	public LittlePreviews getLittlePreview(ItemStack stack) {
 		String id = getPremadeId(LittleStructurePremade.tryGetPremadeStack(this.premadeToPlace));
+		if (placeFromNBT) {
+			NBTTagCompound nbt = stack.getTagCompound();
+			if (stack.hasTagCompound() && nbt.hasKey("heldItem"))
+				if (!nbt.getString("heldItem").equals(""))
+					id = getPremadeId(LittleStructurePremade.tryGetPremadeStack(nbt.getString("heldItem")));
+				
+		}
 		if (cachedPreviews.containsKey(id))
 			return cachedPreviews.get(id).copy();
 		return LittleStructurePremade.getPreviews(id).copy();
@@ -139,7 +154,13 @@ public class PremadePlaceableItem extends Item implements ILittlePlacer, ICreati
 	
 	@Override
 	public void saveLittlePreview(ItemStack stack, LittlePreviews previews) {
-		cachedPreviews.put(getPremadeId(LittleStructurePremade.tryGetPremadeStack(this.premadeToPlace)), previews);
+		if (!placeFromNBT)
+			cachedPreviews.put(getPremadeId(LittleStructurePremade.tryGetPremadeStack(this.premadeToPlace)), previews);
+		else {
+			NBTTagCompound nbt = stack.getTagCompound();
+			if (stack.hasTagCompound() && nbt.hasKey("heldItem"))
+				cachedPreviews.put(getPremadeId(LittleStructurePremade.tryGetPremadeStack(nbt.getString("heldItem"))), previews);
+		}
 	}
 	
 	@Override

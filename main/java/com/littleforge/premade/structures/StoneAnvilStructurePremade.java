@@ -4,6 +4,7 @@ import com.creativemd.littletiles.common.structure.registry.LittleStructureType;
 import com.creativemd.littletiles.common.tile.parent.IStructureTileList;
 import com.littleforge.common.strucutres.type.premade.interactive.InteractivePremade;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -22,8 +23,9 @@ public class StoneAnvilStructurePremade extends InteractivePremade {
 	}
 	
 	@Override
-	public void onPremadeActivated(ItemStack heldItem) {
+	public void onPremadeActivated(EntityPlayer playerIn, ItemStack heldItem) {
 		// TODO Auto-generated method stub
 		
 	}
+	
 }

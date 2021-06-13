@@ -4,6 +4,7 @@ import com.creativemd.creativecore.common.config.holder.CreativeConfigRegistry;
 import com.creativemd.creativecore.common.gui.container.SubContainer;
 import com.creativemd.creativecore.common.gui.container.SubGui;
 import com.creativemd.creativecore.common.gui.opener.GuiHandler;
+import com.creativemd.creativecore.common.packet.CreativeCorePacket;
 import com.creativemd.creativecore.common.utils.stack.InfoItemStack;
 import com.creativemd.littletiles.client.gui.handler.LittleStructureGuiHandler;
 import com.creativemd.littletiles.common.structure.LittleStructure;
@@ -15,19 +16,21 @@ import com.littleforge.client.gui.SubGuiAnvil;
 import com.littleforge.common.container.SubContainerAnvil;
 import com.littleforge.common.item.ItemStructurePremade;
 import com.littleforge.common.item.PremadeItemHammer;
-import com.littleforge.common.item.PremadeItemIronSludgeHammer;
+import com.littleforge.common.item.PremadeItemHammer.HammerType;
 import com.littleforge.common.item.drink.PremadeItemDrink;
 import com.littleforge.common.item.placeable.PremadePlaceableItem;
-import com.littleforge.common.item.placeable.forgeable.PremadeForgeableItem;
+import com.littleforge.common.item.placeable.forgeable.PremadeTongsItem;
 import com.littleforge.common.item.placeable.weapon.PremadeItemSword45;
 import com.littleforge.common.item.placeable.weapon.PremadeWeaponBlueprint;
 import com.littleforge.common.item.placeable.weapon.PremadeWeaponSerpentSword;
+import com.littleforge.common.packet.PacketUpdateNBT;
+import com.littleforge.common.packet.PacketUpdateStructureFromClient;
 import com.littleforge.common.recipe.forge.LittleAnvilRecipe;
 import com.littleforge.common.recipe.forge.MetalTemperature;
 import com.littleforge.common.structure.registry.LittleStructurePickupType;
 import com.littleforge.common.structures.type.premade.heatable.DirtyIronStructurePremade;
-import com.littleforge.common.strucutres.type.premade.interactive.BrickForgeInteractivePremade;
-import com.littleforge.common.strucutres.type.premade.interactive.InteractiveAnvilPremade;
+import com.littleforge.common.strucutres.type.premade.assambly.BrickForgePremade;
+import com.littleforge.common.strucutres.type.premade.interactive.AnvilPremade;
 import com.littleforge.common.strucutres.type.premade.interactive.PickupItemPremade;
 import com.littleforge.common.strucutres.type.premade.interactive.VendingMachineInteractivePremade;
 import com.littleforge.multitile.strucutres.ClaySmelteryInteractiveMultiTilePremade;
@@ -70,9 +73,8 @@ public class LittleForge {
 	public static ItemSword sword, serpentSword;
 	public static ItemSword rolledUpBlueprint;
 	public static Item testMetal;
-	public static Item hammer;
+	public static Item ballPeen;
 	public static Item mushroomHorn;
-	public static Item ironHammer;
 	public static Item tongs;
 	public static Item soda;
 	public static final ToolMaterial Test = EnumHelper.addToolMaterial(MODID, 3, 250, 8.0F, 100.0F, 10);
@@ -87,18 +89,17 @@ public class LittleForge {
 		sword = new PremadeItemSword45(Test, "Sword", "Sword", "sword", "sword");
 		serpentSword = new PremadeWeaponSerpentSword(Test, "SerpentSword", "SerpentSword", "serpent_sword", "serpent_sword");
 		
-		testMetal = new PremadeForgeableItem("Metal", "Metal", "metal_block", "metal_block");
+		testMetal = new PremadeTongsItem("Metal", "Metal", "metal_block", "metal_block");
 		
-		hammer = new PremadeItemHammer("StoneHammer", "stone_hammer");
-		ironHammer = new PremadeItemIronSludgeHammer("IronHammer", "iron_sludge_hammer");
-		tongs = new PremadeForgeableItem("WoodenTongs", "wooden_tongs", "wooden_tongs", "wooden_tongs");
+		ballPeen = new PremadeItemHammer("ballpeen_hammer", "ballpeen_hammer", HammerType.BALLPEEN, 250);
+		tongs = new PremadeTongsItem("WoodenTongs", "wooden_tongs", "wooden_tongs", "wooden_tongs");
 		
-		LittleForgeClient.addItemToRenderTiles(soda, mushroomHorn, rolledUpBlueprint, sword, serpentSword, testMetal, hammer, ironHammer, tongs);
+		LittleForgeClient.addItemToRenderTiles(soda, mushroomHorn, rolledUpBlueprint, sword, serpentSword, testMetal, ballPeen, tongs);
 	}
 	
 	@SubscribeEvent
 	public static void registerItems(RegistryEvent.Register<Item> event) {
-		event.getRegistry().registerAll(testMetal, mushroomHorn, serpentSword, sword, hammer, tongs, ironHammer, soda, rolledUpBlueprint);
+		event.getRegistry().registerAll(testMetal, mushroomHorn, serpentSword, sword, ballPeen, tongs, soda, rolledUpBlueprint);
 		proxy.loadSide();
 	}
 	
@@ -116,35 +117,34 @@ public class LittleForge {
 		CreativeConfigRegistry.ROOT.registerValue(MODID, CONFIG = new LittleSmithingConfig());
 		
 		LittleAnvilRecipe.registerRecipe(new LittleAnvilRecipe(new ItemStack(Items.IRON_INGOT), 10, MetalTemperature.RED, null, new InfoItemStack(new ItemStack(LittleForge.tongs, 1, 0), 1)));
-		LittleAnvilRecipe.registerRecipe(new LittleAnvilRecipe(new ItemStack(sword), 10, MetalTemperature.BRIGHT_YELLOW, null, new InfoItemStack(new ItemStack(LittleForge.tongs, 1, 0), 1), new InfoItemStack(new ItemStack(LittleForge.hammer, 1, 0), 1)));
+		LittleAnvilRecipe.registerRecipe(new LittleAnvilRecipe(new ItemStack(sword), 10, MetalTemperature.BRIGHT_YELLOW, null, new InfoItemStack(new ItemStack(LittleForge.tongs, 1, 0), 1), new InfoItemStack(new ItemStack(LittleForge.ballPeen, 1, 0), 1)));
 		LittleAnvilRecipe.registerRecipe(new LittleAnvilRecipe(new ItemStack(Items.IRON_SHOVEL), 10, MetalTemperature.YELLOW, LittleForge.mushroomHorn, new InfoItemStack(new ItemStack(LittleForge.tongs, 1, 0), 1), new InfoItemStack(new ItemStack(Items.IRON_INGOT, 1, 0), 1)));
 		
-		LittleStructurePremade.registerPremadeStructureType("dirty_iron", LittleForge.MODID, DirtyIronStructurePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING);
+		LittleStructurePremade.registerPremadeStructureType("dirty_iron", LittleForge.MODID, DirtyIronStructurePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setNotSnapToGrid();
 		
-		LittleStructurePremade.registerPremadeStructureType("stone_anvil", LittleForge.MODID, InteractiveAnvilPremade.class);
-		LittleStructurePremade.registerPremadeStructureType("iron_anvil", LittleForge.MODID, InteractiveAnvilPremade.class).setFieldDefault("west", EnumFacing.WEST).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
+		LittleStructurePremade.registerPremadeStructureType("stone_anvil", LittleForge.MODID, AnvilPremade.class).setNotSnapToGrid();
+		LittleStructurePremade.registerPremadeStructureType("iron_anvil", LittleForge.MODID, AnvilPremade.class).setNotSnapToGrid().setFieldDefault("west", EnumFacing.WEST).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
 		
-		LittleStructurePremade.registerPremadeStructureType("metal_block", LittleForge.MODID, PickupItemPremade.class);
+		LittleStructurePremade.registerPremadeStructureType("metal_block", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
 		
-		LittleStructurePremade.registerPremadeStructureType("soda", LittleForge.MODID, PickupItemPremade.class);
-		LittleStructurePremade.registerPremadeStructureType("serpent_sword", LittleForge.MODID, PickupItemPremade.class);
-		LittleStructurePremade.registerPremadeStructureType("sword", LittleForge.MODID, PickupItemPremade.class);
+		LittleStructurePremade.registerPremadeStructureType("soda", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
+		LittleStructurePremade.registerPremadeStructureType("serpent_sword", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
+		LittleStructurePremade.registerPremadeStructureType("sword", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
 		
-		LittleStructurePremade.registerPremadeStructureType("stone_hammer", LittleForge.MODID, ItemStructurePremade.class);
-		LittleStructurePremade.registerPremadeStructureType("iron_sludge_hammer", LittleForge.MODID, ItemStructurePremade.class);
-		LittleStructurePremade.registerPremadeStructureType("wooden_tongs", LittleForge.MODID, ItemStructurePremade.class);
+		LittleStructurePremade.registerPremadeStructureType("ballpeen_hammer", LittleForge.MODID, ItemStructurePremade.class).setNotSnapToGrid();
+		LittleStructurePremade.registerPremadeStructureType("wooden_tongs", LittleForge.MODID, ItemStructurePremade.class).setNotSnapToGrid();
 		LittleStructurePremade.registerPremadeStructureType("wooden_tongs_dirtyiron", LittleForge.MODID, ItemStructurePremade.class);
 		
 		LittleStructurePremade.registerPremadeStructureType(new LittleStructurePickupType("blueprint_flat", LittleForge.MODID, PickupItemPremade.class, LittleStructureAttribute.PREMADE, this.rolledUpBlueprint));
 		
-		LittleStructurePremade.registerPremadeStructureType("blueprint_rolled", LittleForge.MODID, PickupItemPremade.class);
-		LittleStructurePremade.registerPremadeStructureType("mushroom_horn", LittleForge.MODID, PickupItemPremade.class);
+		LittleStructurePremade.registerPremadeStructureType("blueprint_rolled", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
+		LittleStructurePremade.registerPremadeStructureType("mushroom_horn", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
 		
 		LittleStructurePremade.registerPremadeStructureType("vending", LittleForge.MODID, VendingMachineInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
 		
-		LittleStructurePremade.registerPremadeStructureType("brickForgeBasic", LittleForge.MODID, BrickForgeInteractivePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setFieldDefault("west", EnumFacing.WEST).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
+		LittleStructurePremade.registerPremadeStructureType("brickForgeBasic", LittleForge.MODID, BrickForgePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setFieldDefault("west", EnumFacing.WEST).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
 		
-		LittleStructurePremade.registerPremadeStructureType("testing", LittleForge.MODID, BrickForgeInteractivePremade.class).setFieldDefault("facing", EnumFacing.UP);
+		LittleStructurePremade.registerPremadeStructureType("testing", LittleForge.MODID, BrickForgePremade.class).setFieldDefault("facing", EnumFacing.UP);
 		
 		LittleStructurePremade.registerPremadeStructureType("clayForge_1", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);
 		LittleStructurePremade.registerPremadeStructureType("clayForge_2", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);
@@ -164,6 +164,8 @@ public class LittleForge {
 		
 		proxy.loadSidePost();
 		
+		CreativeCorePacket.registerPacket(PacketUpdateStructureFromClient.class);
+		CreativeCorePacket.registerPacket(PacketUpdateNBT.class);
 		//LittleStructurePremade.registerPremadeStructureType("clayForge_6", LittleForge.MODID, MultiTileClayForge.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING );
 		
 		//MultiTileStructureRegistry.registerPremadeStructureType("clayForge", LittleForge.MODID, LittlePhotoImporter.class,6); 
@@ -182,12 +184,12 @@ public class LittleForge {
 			@Override
 			@SideOnly(Side.CLIENT)
 			public SubGui getGui(EntityPlayer player, NBTTagCompound nbt, LittleStructure structure) {
-				return new SubGuiAnvil((InteractiveAnvilPremade) structure);
+				return new SubGuiAnvil((AnvilPremade) structure);
 			}
 			
 			@Override
 			public SubContainer getContainer(EntityPlayer player, NBTTagCompound nbt, LittleStructure structure) {
-				return new SubContainerAnvil(player, (InteractiveAnvilPremade) structure);
+				return new SubContainerAnvil(player, (AnvilPremade) structure);
 			}
 		});
 	}

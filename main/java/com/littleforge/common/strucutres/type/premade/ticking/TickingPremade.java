@@ -16,7 +16,6 @@ import com.creativemd.littletiles.common.util.place.PlacementPreview;
 import com.creativemd.littletiles.common.util.vec.SurroundingBox;
 import com.littleforge.common.strucutres.type.premade.interactive.InteractivePremade;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -30,11 +29,6 @@ public abstract class TickingPremade extends InteractivePremade {
 		super(type, mainBlock);
 		tickMax = tickMaxium;
 		seriesMaxium = seriesMax;
-	}
-	
-	@Override
-	public void onPremadeActivated(ItemStack heldItem) {
-		
 	}
 	
 	@Override

@@ -1,5 +1,6 @@
 package com.littleforge.common.strucutres.type.premade.interactive;
 
+import com.creativemd.creativecore.common.packet.PacketHandler;
 import com.creativemd.littletiles.common.action.LittleActionException;
 import com.creativemd.littletiles.common.action.block.LittleActionActivated;
 import com.creativemd.littletiles.common.structure.LittleStructure;
@@ -7,11 +8,13 @@ import com.creativemd.littletiles.common.structure.registry.LittleStructureType;
 import com.creativemd.littletiles.common.tile.LittleTile;
 import com.creativemd.littletiles.common.tile.parent.IStructureTileList;
 import com.littleforge.LittleForge;
+import com.littleforge.common.packet.PacketUpdateNBT;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -49,11 +52,28 @@ public class PickupItemPremade extends InteractivePremade {
 		else {
 			stack = new ItemStack(Item.getByNameOrId(LittleForge.MODID + ":" + this.type.id));
 		}
-		System.out.println(LittleForge.MODID + ":" + this.type.id);
+		//System.out.println(LittleForge.MODID + ":" + this.type.id);
 		
 		if (playerIn.inventory.getCurrentItem().getItem() == Items.AIR) {
 			int currentSlot = playerIn.inventory.currentItem;
 			playerIn.inventory.setInventorySlotContents(currentSlot, stack);
+			if (getParent() != null) {
+				LittleStructure parent = getParent().getStructure();
+				parent.removeDynamicChild(getParent().childId);
+				parent.updateStructure();
+			}
+			this.removeStructure();
+		} else if (playerIn.inventory.getCurrentItem().getItem() == LittleForge.tongs) {
+			ItemStack stack2 = playerIn.getHeldItemMainhand();
+			NBTTagCompound nbt = new NBTTagCompound();
+			if (stack2.getTagCompound() != null)
+				nbt = stack2.getTagCompound();
+			
+			System.out.println(this.type.id);
+			nbt.setString("heldItem", this.type.id);
+			stack2.setTagCompound(nbt);
+			PacketHandler.sendPacketToServer(new PacketUpdateNBT(playerIn.getHeldItemMainhand()));
+			
 			if (getParent() != null) {
 				LittleStructure parent = getParent().getStructure();
 				parent.removeDynamicChild(getParent().childId);
@@ -65,7 +85,7 @@ public class PickupItemPremade extends InteractivePremade {
 	}
 	
 	@Override
-	public void onPremadeActivated(ItemStack heldItem) {
+	public void onPremadeActivated(EntityPlayer playerIn, ItemStack heldItem) {
 		// TODO Auto-generated method stub
 		
 	}

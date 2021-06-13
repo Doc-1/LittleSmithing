@@ -33,20 +33,29 @@ import net.minecraft.world.World;
 public abstract class InteractivePremade extends LittleStructurePremade {
 	
 	protected int seriesMaxium;
-	protected int seriesAt = 0;
+	protected int seriesAt = 1;
+	
+	private boolean leftClick = false;
 	
 	protected Map<LittleBox, LittleTile> tilePosList = new HashMap<LittleBox, LittleTile>();
 	protected LittleBox editArea;
 	public AxisAlignedBB absolutePos;
 	public LittleBox relativeBox;
 	
-	public LittleBox linkedBox;
+	public Map<String, List<ItemStack>> assemblyRecipe = new HashMap<String, List<ItemStack>>();
 	
 	public InteractivePremade(LittleStructureType type, IStructureTileList mainBlock) {
 		super(type, mainBlock);
-		
 		//seriesName = type.id.toString().split("_")[0];
 		//seriesAt = Integer.parseInt(this.type.id.toString().split("_")[1]);
+	}
+	
+	public boolean isLeftClick() {
+		return leftClick;
+	}
+	
+	public void leftClickListener(boolean leftClick) {
+		this.leftClick = leftClick;
 	}
 	
 	@StructureDirectional
@@ -66,11 +75,18 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	
 	@Override
 	protected void loadFromNBTExtra(NBTTagCompound nbt) {
+		if (nbt.hasKey("at"))
+			seriesAt = nbt.getInteger("at");
 		
 	}
 	
 	@Override
 	protected void writeToNBTExtra(NBTTagCompound nbt) {
+		nbt.setInteger("at", seriesAt);
+		nbt.setInteger("max", assemblyRecipe.size());
+	}
+	
+	public void onLeftClickStructure(World world, EntityPlayer player, LittleStructure structure) {
 		
 	}
 	
@@ -214,13 +230,13 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 				e.printStackTrace();
 			}
 			
-			onPremadeActivated(heldItem);
+			onPremadeActivated(playerIn, heldItem);
 		}
 		
 		return true;
 	}
 	
-	public abstract void onPremadeActivated(ItemStack heldItem);
+	public abstract void onPremadeActivated(EntityPlayer playerIn, ItemStack heldItem);
 	
 	public LittleBox getEditArea() {
 		return editArea;

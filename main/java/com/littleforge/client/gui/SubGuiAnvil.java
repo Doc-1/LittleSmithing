@@ -1,6 +1,5 @@
 package com.littleforge.client.gui;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.creativemd.creativecore.common.gui.GuiControl;
@@ -15,25 +14,28 @@ import com.creativemd.creativecore.common.gui.controls.container.client.GuiSlotC
 import com.creativemd.creativecore.common.gui.controls.gui.GuiScrollBox;
 import com.creativemd.creativecore.common.gui.controls.gui.GuiTextBox;
 import com.creativemd.creativecore.common.gui.event.gui.GuiControlChangedEvent;
+import com.creativemd.creativecore.common.packet.PacketHandler;
 import com.creativemd.creativecore.common.utils.mc.ColorUtils;
 import com.littleforge.LittleForge;
+import com.littleforge.common.packet.PacketUpdateStructureFromClient;
 import com.littleforge.common.recipe.forge.LittleAnvilRecipe;
 import com.littleforge.common.recipe.forge.MetalTemperature;
-import com.littleforge.common.strucutres.type.premade.interactive.InteractiveAnvilPremade;
+import com.littleforge.common.strucutres.type.premade.interactive.AnvilPremade;
 import com.n247s.api.eventapi.eventsystem.CustomEventSubscribe;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.Slot;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
 public class SubGuiAnvil extends SubGui {
 	
 	private static final DisplayStyle SELECTED_DISPLAY = new ColoredDisplayStyle(ColorUtils.YELLOW);
-	private InteractiveAnvilPremade anvil;
+	private AnvilPremade anvil;
 	
-	public SubGuiAnvil(InteractiveAnvilPremade anvil) {
+	public SubGuiAnvil(AnvilPremade anvil) {
 		super(260, 180);
 		this.anvil = anvil;
 		
@@ -41,8 +43,7 @@ public class SubGuiAnvil extends SubGui {
 	
 	@Override
 	public void createControls() {
-		List<String> lines = new ArrayList<String>();
-		lines.add("Da");
+		
 		GuiScrollBox selector = new GuiScrollBox("preview", 0, 20, 250, 75);
 		GuiTextBox temperatureText = new GuiTextBox("temperature", "Temperature", 0, 0, 80);
 		GuiTextBox hitText = new GuiTextBox("hit", "Hits", 71, 0, 80);
@@ -58,20 +59,30 @@ public class SubGuiAnvil extends SubGui {
 		selector.controls.add(hitText);
 		List<LittleAnvilRecipe> recipes = LittleAnvilRecipe.matchingRecipes(this.getPlayer().inventory, LittleForge.mushroomHorn);
 		for (int i = 0; i < recipes.size(); i++) {
-			selector.controls.add(new GuiAnvilRecipeSelector("recipe" + i, LittleAnvilRecipe.getRecipe(recipes.get(i).getId()), 1, ((i % 5) * 28) + 15, 240, 20));
+			GuiAnvilRecipeSelector select = new GuiAnvilRecipeSelector("recipe" + recipes.get(i).getId(), LittleAnvilRecipe.getRecipe(recipes.get(i).getId()), 1, ((i % 5) * 28) + 15, 240, 20);
+			selector.controls.add(select);
+			if (anvil.getRecipeID() == recipes.get(i).getId()) {
+				select.selected = true;
+			}
 		}
 		controls.add(selector);
-		
 	}
 	
 	@CustomEventSubscribe
 	public void onChanged(GuiControlChangedEvent event) {
 		if (event.source.name.contains("recipe")) {
+			System.out.println(event.source.name);
 			GuiScrollBox selector = (GuiScrollBox) get("preview");
 			for (GuiControl ctrl : selector.controls) {
 				if (ctrl.name.contains("recipe") && !ctrl.name.equals(event.source.name)) {
 					((GuiAnvilRecipeSelector) ctrl).selected = false;
 				}
+			}
+			if (selector.get(event.source.name) != null) {
+				NBTTagCompound nbt = new NBTTagCompound();
+				anvil.writeToNBT(nbt);
+				nbt.setInteger("recipeID", ((GuiAnvilRecipeSelector) selector.get(event.source.name)).index);
+				PacketHandler.sendPacketToServer(new PacketUpdateStructureFromClient(anvil.getStructureLocation(), nbt));
 			}
 		}
 	}
@@ -120,7 +131,7 @@ public class SubGuiAnvil extends SubGui {
 		
 		@Override
 		public boolean mousePressed(int posX, int posY, int button) {
-			System.out.println(index);
+			//System.out.println(index);
 			selected = true;
 			playSound(SoundEvents.UI_BUTTON_CLICK);
 			raiseEvent(new GuiControlChangedEvent(this));

@@ -31,10 +31,9 @@ public abstract class LittleForgeRecipes {
 		return null;
 	}
 	
-	public static boolean takeIngredients(EntityPlayer playerIn, String id, int seriesMax, int seriesAt) {
-		LittleIngredients ingredients = new LittleIngredients(getIngredientsFromConfig(id));
+	public static boolean takeIngredients(EntityPlayer playerIn, String id, int seriesAt, Map<String, List<ItemStack>> recipes) {
+		LittleIngredients ingredients = new LittleIngredients(getIngredientsFromConfig(id, seriesAt, recipes));
 		LittleInventory inventory = new LittleInventory(playerIn);
-		getIngredientsFromConfig(id);
 		try {
 			LittleAction.checkAndTake(playerIn, inventory, ingredients);
 			return true;
@@ -48,16 +47,13 @@ public abstract class LittleForgeRecipes {
 		}
 	}
 	
-	public static StackIngredient getIngredientsFromConfig(String id) {
-		/*
-		String seriesName = id.toString().split("_")[0];
-		int nextSeries = Integer.parseInt(id.toString().split("_")[1]) + 1;
-		String nextSeriesName = seriesName + "_" + nextSeries;
-		Map<String, List<ItemStack>> structureIngredientList = LittleSmithingConfig.brickForgeRecipe.brickForgeBasic;
-		if (structureIngredientList.containsKey(nextSeriesName)) {
-			List<ItemStack> itemStackList = structureIngredientList.get(nextSeriesName);
+	public static StackIngredient getIngredientsFromConfig(String id, int seriesAt, Map<String, List<ItemStack>> recipes) {
+		int nextSeries = seriesAt;
+		String nextSeriesName = id + "_" + nextSeries;
+		if (recipes.containsKey(nextSeriesName)) {
+			List<ItemStack> itemStackList = recipes.get(nextSeriesName);
 			return new StackIngredient(itemStackList);
-		}*/
+		}
 		return null;
 	}
 	
@@ -67,7 +63,6 @@ public abstract class LittleForgeRecipes {
 			infoStack.add(InfoStack.parseObject(itemStack));
 			itemStacks.add(itemStack);
 		}
-		
 		structureIngredientList.put(id, itemStacks);
 	}
 }

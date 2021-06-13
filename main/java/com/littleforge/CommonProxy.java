@@ -1,9 +1,5 @@
 package com.littleforge;
 
-import java.io.File;
-
-import com.littleforge.config.Config;
-
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;

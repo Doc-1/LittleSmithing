@@ -15,7 +15,6 @@ import com.creativemd.littletiles.common.util.place.Placement;
 import com.creativemd.littletiles.common.util.place.PlacementMode;
 import com.creativemd.littletiles.common.util.place.PlacementPreview;
 import com.creativemd.littletiles.common.util.place.PlacementResult;
-import com.littleforge.common.recipe.LittleForgeRecipes;
 import com.littleforge.common.strucutres.type.premade.interactive.InteractivePremade;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -116,114 +115,116 @@ public abstract class AddStructure {
 	}
 	
 	public static void toPremade(InteractivePremade premade, EntityPlayer player) {
-		if (LittleForgeRecipes.takeIngredients(player, premade.type.id, premade.getSeriesMaxium(), premade.getSeriesAt())) {
-			try {
-				long minX = premade.getSurroundingBox().getMinX();
-				long minY = premade.getSurroundingBox().getMinY();
-				long minZ = premade.getSurroundingBox().getMinZ();
+		try {
+			long minX = premade.getSurroundingBox().getMinX();
+			long minY = premade.getSurroundingBox().getMinY();
+			long minZ = premade.getSurroundingBox().getMinZ();
+			
+			LittleGridContext context = premade.getSurroundingBox().getContext();
+			BlockPos min = new BlockPos(context.toBlockOffset(minX), context.toBlockOffset(minY), context.toBlockOffset(minZ));
+			LittleVecContext minVec = new LittleVecContext(new LittleVec((int) (minX - (long) min.getX() * (long) context.size), (int) (minY - (long) min.getY() * (long) context.size), (int) (minZ - (long) min.getZ() * (long) context.size)), context);
+			
+			LittlePreviews previews = LittleStructurePremade.getStructurePremadeEntry(premadeID).previews.copy(); // Change this line to support different states
+			LittlePreviews previewsPreade = LittleStructurePremade.getStructurePremadeEntry(premade.type.id).previews.copy(); // Change this line to support different states
+			
+			LittleVec previewMinVec = previews.getMinVec();
+			LittlePreview preview = null;
+			
+			LittleVec previewSize = previews.getSize().copy();
+			
+			int editX = premade.getEditArea().minX;
+			int editY = premade.getEditArea().minY;
+			int editZ = premade.getEditArea().minZ;
+			
+			previews = adjustPreviews(premade, previews);
+			
+			minVec.forceContext(previews);
+			for (LittlePreview prev : previews) {
+				prev.box.sub(previewMinVec);
+				prev.box.add(minVec.getVec());
 				
-				LittleGridContext context = premade.getSurroundingBox().getContext();
-				BlockPos min = new BlockPos(context.toBlockOffset(minX), context.toBlockOffset(minY), context.toBlockOffset(minZ));
-				LittleVecContext minVec = new LittleVecContext(new LittleVec((int) (minX - (long) min.getX() * (long) context.size), (int) (minY - (long) min.getY() * (long) context.size), (int) (minZ - (long) min.getZ() * (long) context.size)), context);
-				
-				LittlePreviews previews = LittleStructurePremade.getStructurePremadeEntry(premadeID).previews.copy(); // Change this line to support different states
-				LittlePreviews previewsPreade = LittleStructurePremade.getStructurePremadeEntry(premade.type.id).previews.copy(); // Change this line to support different states
-				
-				LittleVec previewMinVec = previews.getMinVec();
-				LittlePreview preview = null;
-				
-				LittleVec previewSize = previews.getSize().copy();
-				
-				int editX = premade.getEditArea().minX;
-				int editY = premade.getEditArea().minY;
-				int editZ = premade.getEditArea().minZ;
-				
-				previews = adjustPreviews(premade, previews);
-				
-				minVec.forceContext(previews);
-				for (LittlePreview prev : previews) {
-					prev.box.sub(previewMinVec);
-					prev.box.add(minVec.getVec());
-					
-					switch (premade.direction) {
-					case NORTH:
-						prev.box.sub(0, 0, editZ);
-						prev.box.add(editX, editY, 0);
-						prev.box.sub(0, 0, previewSize.z);
-						break;
-					case EAST:
-						prev.box.add(editZ, editY, editX);
-						break;
-					case SOUTH:
-						prev.box.sub(editX, 0, 0);
-						prev.box.add(0, editY, editZ);
-						prev.box.sub(previewSize.x, 0, 0);
-						break;
-					case WEST:
-						prev.box.add(0, editY, 0);
-						prev.box.sub(editZ, 0, editX);
-						//prev.box.sub(previewSize.z, 0, previewSize.z);
-						break;
-					default:
-						break;
-					}
-					preview = prev;
+				switch (premade.direction) {
+				case NORTH:
+					prev.box.sub(0, 0, editZ);
+					prev.box.add(editX, editY, 0);
+					prev.box.sub(0, 0, previewSize.z);
+					break;
+				case EAST:
+					prev.box.add(editZ, editY, editX);
+					break;
+				case SOUTH:
+					prev.box.sub(editX, 0, 0);
+					prev.box.add(0, editY, editZ);
+					prev.box.sub(previewSize.x, 0, 0);
+					break;
+				case WEST:
+					prev.box.add(0, editY, 0);
+					prev.box.sub(editZ, 0, editX);
+					//prev.box.sub(previewSize.z, 0, previewSize.z);
+					break;
+				default:
+					break;
 				}
-				
-				StructureRelative previewRelative = new StructureRelative(previews.getSurroundingBox(), previews.getContext());
-				LittleVec doubledCenterPreview = previewRelative.getDoubledCenterVec();
-				
-				LittlePreviews premadePreview = LittleStructurePremade.getPreviews(premade.type.id);
-				StructureRelative premadeRelative = new StructureRelative(premadePreview.getSurroundingBox(), premadePreview.getContext());
-				LittleVec doubledCenterPremade = premadeRelative.getDoubledCenterVec();
-				
-				int xMod = Math.abs(doubledCenterPreview.x - doubledCenterPremade.x);
-				int zMod = Math.abs(doubledCenterPremade.x - doubledCenterPreview.z);
-				System.out.println(xMod);
-				System.out.println(zMod);
-				
-				for (LittlePreview prev : previews) {
-					switch (premade.direction) {
-					case NORTH:
-						if (premade.west.equals(EnumFacing.WEST))
-							prev.box.add(Math.abs(doubledCenterPreview.x - doubledCenterPremade.x), 0, 0);
-						break;
-					case EAST:
-						if (premade.west.equals(EnumFacing.NORTH))
-							prev.box.add(0, 0, zMod);
-						break;
-					case SOUTH:
-						if (premade.west.equals(EnumFacing.EAST))
-							prev.box.sub(Math.abs(doubledCenterPreview.x - doubledCenterPremade.x), 0, 0);
-						break;
-					case WEST:
-						if (premade.west.equals(EnumFacing.SOUTH))
-							prev.box.sub(0, 0, zMod);
-						break;
-					default:
-						break;
-					}
-					preview = prev;
-				}
-				
-				previews.convertToSmallest();
-				
-				/*
-				if (removeStructure) {
-					premade.removeStructure();
-				}
-				*/
-				PlacementPreview nextPremade = new PlacementPreview(premade.getWorld(), previews, PlacementMode.all, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);
-				Placement place = new Placement(null, nextPremade);
-				PlacementResult result = place.tryPlace();
-				if (result != null)
-					premade.linkStructure(result.parentStructure, premade.direction);
-				else
-					player.sendStatusMessage(new TextComponentTranslation("structure.interaction.structurecollision").appendText(" " + place.pos.toString()), true);
-				
-			} catch (CorruptedConnectionException | NotYetConnectedException e1) {
-				e1.printStackTrace();
+				preview = prev;
 			}
+			
+			StructureRelative previewRelative = new StructureRelative(previews.getSurroundingBox(), previews.getContext());
+			LittleVec doubledCenterPreview = previewRelative.getDoubledCenterVec();
+			
+			LittlePreviews premadePreview = LittleStructurePremade.getPreviews(premade.type.id);
+			//premade.getPreviews(new BlockPos(0, 0, 0));
+			
+			StructureRelative premadeRelative = new StructureRelative(premade.getSurroundingBox().getAbsoluteBox().box, premadePreview.getContext());
+			LittleVec doubledCenterPremade = premadeRelative.getDoubledCenterVec();
+			
+			int xMod = Math.abs(doubledCenterPreview.x - doubledCenterPremade.x);
+			int zMod = Math.abs(doubledCenterPremade.z - doubledCenterPreview.z);
+			
+			System.out.println(premade.getSurroundingBox().getAbsoluteBox().box);
+			System.out.println(premadePreview.getSurroundingBox());
+			
+			for (LittlePreview prev : previews) {
+				switch (premade.direction) {
+				case NORTH:
+					if (premade.west.equals(EnumFacing.WEST))
+						prev.box.add(Math.abs(doubledCenterPreview.x - doubledCenterPremade.x), 0, 0);
+					break;
+				case EAST:
+					if (premade.west.equals(EnumFacing.NORTH))
+						prev.box.add(0, 0, zMod);
+					break;
+				case SOUTH:
+					if (premade.west.equals(EnumFacing.EAST))
+						prev.box.sub(Math.abs(doubledCenterPreview.x - doubledCenterPremade.x), 0, 0);
+					break;
+				case WEST:
+					if (premade.west.equals(EnumFacing.SOUTH))
+						prev.box.sub(0, 0, zMod);
+					break;
+				default:
+					break;
+				}
+				preview = prev;
+			}
+			
+			previews.convertToSmallest();
+			
+			/*
+			if (removeStructure) {
+				premade.removeStructure();
+			}
+			*/
+			PlacementPreview nextPremade = new PlacementPreview(premade.getWorld(), previews, PlacementMode.all, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);
+			Placement place = new Placement(null, nextPremade);
+			PlacementResult result = place.tryPlace();
+			if (result != null)
+				premade.linkStructure(result.parentStructure, premade.direction);
+			else
+				player.sendStatusMessage(new TextComponentTranslation("structure.interaction.structurecollision").appendText(" " + place.pos.toString()), true);
+			
+		} catch (CorruptedConnectionException | NotYetConnectedException e1) {
+			e1.printStackTrace();
 		}
 	}
+	
 }

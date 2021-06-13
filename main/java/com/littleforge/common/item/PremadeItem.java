@@ -68,7 +68,6 @@ public class PremadeItem extends Item implements ICreativeRendered {
 			cubes = new ArrayList<>();
 			for (LittlePreview preview : previews.allPreviews())
 				cubes.add(preview.getCubeBlock(previews.getContext()));
-			
 			LittlePreview.shrinkCubesToOneBlock(cubes);
 		}
 		

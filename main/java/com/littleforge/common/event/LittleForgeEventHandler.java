@@ -9,7 +9,7 @@ import com.creativemd.littletiles.common.structure.exception.NotYetConnectedExce
 import com.creativemd.littletiles.common.tileentity.TileEntityLittleTiles;
 import com.creativemd.littletiles.common.util.place.PlacementHelper;
 import com.littleforge.common.item.placeable.weapon.PremadePlaceableItemWeapon;
-import com.littleforge.common.strucutres.type.premade.interactive.InteractiveAnvilPremade;
+import com.littleforge.common.strucutres.type.premade.interactive.InteractivePremade;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -103,9 +103,10 @@ public class LittleForgeEventHandler extends LittleEventHandler {
 			}
 		}
 		if (structure != null) {
-			if (structure instanceof InteractiveAnvilPremade) {
-				((InteractiveAnvilPremade) structure).onLeftClickStructure(world, player, structure);
-			}
+			if (structure instanceof InteractivePremade)
+				if (((InteractivePremade) structure).isLeftClick())
+					((InteractivePremade) structure).onLeftClickStructure(world, player, structure);
+				
 		}
 		//}
 	}
