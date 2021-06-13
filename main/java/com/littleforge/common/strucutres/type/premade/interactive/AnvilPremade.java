@@ -50,7 +50,7 @@ public class AnvilPremade extends InteractivePremade {
 		if (playerIn.getHeldItemMainhand().getItem().equals(LittleForge.mushroomHorn)) {
 			
 			AddStructure.setPremadeID("mushroom_horn");
-			editArea = new LittleBox(4, 19, 37, 0, 0, 0);
+			AddStructure.editArea = new LittleBox(4, 19, 37, 0, 0, 0);
 			AddStructure.toPremade(this, playerIn);
 			
 		}

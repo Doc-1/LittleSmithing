@@ -27,12 +27,13 @@ import com.littleforge.common.packet.PacketUpdateNBT;
 import com.littleforge.common.packet.PacketUpdateStructureFromClient;
 import com.littleforge.common.recipe.forge.LittleAnvilRecipe;
 import com.littleforge.common.recipe.forge.MetalTemperature;
-import com.littleforge.common.structure.registry.LittleStructurePickupType;
+import com.littleforge.common.structures.type.premade.heatable.BurningCoalStructurePremade;
 import com.littleforge.common.structures.type.premade.heatable.DirtyIronStructurePremade;
 import com.littleforge.common.strucutres.type.premade.assambly.BrickForgePremade;
 import com.littleforge.common.strucutres.type.premade.interactive.AnvilPremade;
-import com.littleforge.common.strucutres.type.premade.interactive.PickupItemPremade;
 import com.littleforge.common.strucutres.type.premade.interactive.VendingMachineInteractivePremade;
+import com.littleforge.common.strucutres.type.premade.pickup.CoalStructurePremade;
+import com.littleforge.common.strucutres.type.premade.pickup.PickupItemPremade;
 import com.littleforge.multitile.strucutres.ClaySmelteryInteractiveMultiTilePremade;
 import com.littleforge.multitile.strucutres.ClaySmelteryTickingMultiTilePremade;
 
@@ -127,6 +128,9 @@ public class LittleForge {
 		
 		LittleStructurePremade.registerPremadeStructureType("metal_block", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
 		
+		LittleStructurePremade.registerPremadeStructureType("brick_forge_coal_burning", LittleForge.MODID, BurningCoalStructurePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setNotSnapToGrid().setFieldDefault("west", EnumFacing.WEST).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
+		LittleStructurePremade.registerPremadeStructureType("brick_forge_coal", LittleForge.MODID, CoalStructurePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setNotSnapToGrid().setFieldDefault("west", EnumFacing.WEST).setFieldDefault("facing", EnumFacing.UP).setFieldDefault("direction", EnumFacing.SOUTH);
+		
 		LittleStructurePremade.registerPremadeStructureType("soda", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
 		LittleStructurePremade.registerPremadeStructureType("serpent_sword", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
 		LittleStructurePremade.registerPremadeStructureType("sword", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
@@ -135,7 +139,7 @@ public class LittleForge {
 		LittleStructurePremade.registerPremadeStructureType("wooden_tongs", LittleForge.MODID, ItemStructurePremade.class).setNotSnapToGrid();
 		LittleStructurePremade.registerPremadeStructureType("wooden_tongs_dirtyiron", LittleForge.MODID, ItemStructurePremade.class);
 		
-		LittleStructurePremade.registerPremadeStructureType(new LittleStructurePickupType("blueprint_flat", LittleForge.MODID, PickupItemPremade.class, LittleStructureAttribute.PREMADE, this.rolledUpBlueprint));
+		LittleStructurePremade.registerPremadeStructureType("blueprint_flat", LittleForge.MODID, PickupItemPremade.class, LittleStructureAttribute.PREMADE);
 		
 		LittleStructurePremade.registerPremadeStructureType("blueprint_rolled", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
 		LittleStructurePremade.registerPremadeStructureType("mushroom_horn", LittleForge.MODID, PickupItemPremade.class).setNotSnapToGrid();
@@ -146,21 +150,21 @@ public class LittleForge {
 		
 		LittleStructurePremade.registerPremadeStructureType("testing", LittleForge.MODID, BrickForgePremade.class).setFieldDefault("facing", EnumFacing.UP);
 		
-		LittleStructurePremade.registerPremadeStructureType("clayForge_1", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);
-		LittleStructurePremade.registerPremadeStructureType("clayForge_2", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);
-		LittleStructurePremade.registerPremadeStructureType("clayForge_3", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);
-		LittleStructurePremade.registerPremadeStructureType("clayForge_4", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);
-		LittleStructurePremade.registerPremadeStructureType("clayForge_5", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);
-		LittleStructurePremade.registerPremadeStructureType("clayForge_6", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);
-		LittleStructurePremade.registerPremadeStructureType("clayForge_7", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class);
+		LittleStructurePremade.registerPremadeStructureType("clayForge_1", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class).setNotShowCreativeTab();
+		LittleStructurePremade.registerPremadeStructureType("clayForge_2", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class).setNotShowCreativeTab();
+		LittleStructurePremade.registerPremadeStructureType("clayForge_3", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class).setNotShowCreativeTab();
+		LittleStructurePremade.registerPremadeStructureType("clayForge_4", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class).setNotShowCreativeTab();
+		LittleStructurePremade.registerPremadeStructureType("clayForge_5", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class).setNotShowCreativeTab();
+		LittleStructurePremade.registerPremadeStructureType("clayForge_6", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class).setNotShowCreativeTab();
+		LittleStructurePremade.registerPremadeStructureType("clayForge_7", LittleForge.MODID, ClaySmelteryInteractiveMultiTilePremade.class).setNotShowCreativeTab();
 		
 		//LittleStructurePremade.registerPremadeStructureType("clayForge_7", LittleForge.MODID, MultiTileClayForge.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING);
-		LittleStructurePremade.registerPremadeStructureType("clayForge_8", LittleForge.MODID, ClaySmelteryTickingMultiTilePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING);
-		LittleStructurePremade.registerPremadeStructureType("clayForge_9", LittleForge.MODID, ClaySmelteryTickingMultiTilePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING);
-		LittleStructurePremade.registerPremadeStructureType("clayForge_10", LittleForge.MODID, ClaySmelteryTickingMultiTilePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING);
-		LittleStructurePremade.registerPremadeStructureType("clayForge_11", LittleForge.MODID, ClaySmelteryTickingMultiTilePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING);
-		LittleStructurePremade.registerPremadeStructureType("clayForge_12", LittleForge.MODID, ClaySmelteryTickingMultiTilePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING);
-		LittleStructurePremade.registerPremadeStructureType("clayForge_13", LittleForge.MODID, ClaySmelteryTickingMultiTilePremade.class);
+		LittleStructurePremade.registerPremadeStructureType("clayForge_8", LittleForge.MODID, ClaySmelteryTickingMultiTilePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setNotShowCreativeTab();
+		LittleStructurePremade.registerPremadeStructureType("clayForge_9", LittleForge.MODID, ClaySmelteryTickingMultiTilePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setNotShowCreativeTab();
+		LittleStructurePremade.registerPremadeStructureType("clayForge_10", LittleForge.MODID, ClaySmelteryTickingMultiTilePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setNotShowCreativeTab();
+		LittleStructurePremade.registerPremadeStructureType("clayForge_11", LittleForge.MODID, ClaySmelteryTickingMultiTilePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setNotShowCreativeTab();
+		LittleStructurePremade.registerPremadeStructureType("clayForge_12", LittleForge.MODID, ClaySmelteryTickingMultiTilePremade.class, LittleStructureAttribute.PREMADE | LittleStructureAttribute.TICKING).setNotShowCreativeTab();
+		LittleStructurePremade.registerPremadeStructureType("clayForge_13", LittleForge.MODID, ClaySmelteryTickingMultiTilePremade.class).setNotShowCreativeTab();
 		
 		proxy.loadSidePost();
 		

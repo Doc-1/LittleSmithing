@@ -38,7 +38,6 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	private boolean leftClick = false;
 	
 	protected Map<LittleBox, LittleTile> tilePosList = new HashMap<LittleBox, LittleTile>();
-	protected LittleBox editArea;
 	public AxisAlignedBB absolutePos;
 	public LittleBox relativeBox;
 	
@@ -88,12 +87,6 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	
 	public void onLeftClickStructure(World world, EntityPlayer player, LittleStructure structure) {
 		
-	}
-	
-	/** @param box
-	 *            Set it to the area you want to edit. */
-	public void setEditArea(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-		editArea = new LittleBox(minX, minY, minZ, maxX, maxY, maxZ);
 	}
 	
 	/** @return
@@ -237,10 +230,6 @@ public abstract class InteractivePremade extends LittleStructurePremade {
 	}
 	
 	public abstract void onPremadeActivated(EntityPlayer playerIn, ItemStack heldItem);
-	
-	public LittleBox getEditArea() {
-		return editArea;
-	}
 	
 	public Map<LittleBox, LittleTile> getTilePosList() {
 		return tilePosList;

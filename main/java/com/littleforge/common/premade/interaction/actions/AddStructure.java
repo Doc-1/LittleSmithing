@@ -26,6 +26,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 public abstract class AddStructure {
 	
 	private static String premadeID;
+	public static LittleBox editArea;
 	
 	public static String getPremadeID() {
 		return premadeID;
@@ -114,7 +115,7 @@ public abstract class AddStructure {
 		return previews;
 	}
 	
-	public static void toPremade(InteractivePremade premade, EntityPlayer player) {
+	public static boolean toPremade(InteractivePremade premade, EntityPlayer player) {
 		try {
 			long minX = premade.getSurroundingBox().getMinX();
 			long minY = premade.getSurroundingBox().getMinY();
@@ -132,9 +133,9 @@ public abstract class AddStructure {
 			
 			LittleVec previewSize = previews.getSize().copy();
 			
-			int editX = premade.getEditArea().minX;
-			int editY = premade.getEditArea().minY;
-			int editZ = premade.getEditArea().minZ;
+			int editX = editArea.minX;
+			int editY = editArea.minY;
+			int editZ = editArea.minZ;
 			
 			previews = adjustPreviews(premade, previews);
 			
@@ -217,13 +218,17 @@ public abstract class AddStructure {
 			PlacementPreview nextPremade = new PlacementPreview(premade.getWorld(), previews, PlacementMode.all, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);
 			Placement place = new Placement(null, nextPremade);
 			PlacementResult result = place.tryPlace();
-			if (result != null)
+			if (result != null) {
 				premade.linkStructure(result.parentStructure, premade.direction);
-			else
+				premade.updateStructure();
+				return true;
+			} else {
 				player.sendStatusMessage(new TextComponentTranslation("structure.interaction.structurecollision").appendText(" " + place.pos.toString()), true);
-			
+				return false;
+			}
 		} catch (CorruptedConnectionException | NotYetConnectedException e1) {
 			e1.printStackTrace();
+			return false;
 		}
 	}
 	
