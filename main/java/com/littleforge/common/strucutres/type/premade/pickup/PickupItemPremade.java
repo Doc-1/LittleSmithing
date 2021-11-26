@@ -25,73 +25,73 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class PickupItemPremade extends InteractivePremade {
-	
-	public ItemStack itemToPickup;
-	
-	public PickupItemPremade(LittleStructureType type, IStructureTileList mainBlock) {
-		super(type, mainBlock);
-	}
-	
-	@Override
-	public ItemStack getStructureDrop() {
-		if (itemToPickup != null)
-			return this.itemToPickup;
-		
-		return new ItemStack(Item.getByNameOrId(LittleForge.MODID + ":" + this.type.id));
-	}
-	
-	@Override
-	public boolean onBlockActivated(World worldIn, LittleTile tile, BlockPos pos, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ, LittleActionActivated action) throws LittleActionException {
-		if (worldIn.isRemote)
-			return true;
-		ItemStack stack = null;
-		
-		if (itemToPickup != null)
-			stack = this.itemToPickup;
-		else {
-			stack = new ItemStack(Item.getByNameOrId(LittleForge.MODID + ":" + this.type.id));
-		}
-		
-		LittleIngredients ingredients = new LittleIngredients();
-		StackIngredient ingredient = new StackIngredient(stack);
-		ingredients.add(ingredient);
-		LittleInventory inventory = new LittleInventory(playerIn);
-		
-		if (playerIn.inventory.getCurrentItem().getItem() == LittleForge.tongs) {
-			ItemStack stack2 = playerIn.getHeldItemMainhand();
-			NBTTagCompound nbt = new NBTTagCompound();
-			if (stack2.getTagCompound() != null)
-				nbt = stack2.getTagCompound();
-			
-			nbt.setString("heldItem", this.type.id);
-			stack2.setTagCompound(nbt);
-			PacketHandler.sendPacketToServer(new PacketUpdateNBT(playerIn.getHeldItemMainhand()));
-			
-			if (getParent() != null) {
-				LittleStructure parent = getParent().getStructure();
-				parent.removeDynamicChild(getParent().childId);
-				parent.updateStructure();
-			}
-			this.removeStructure();
-			
-		} else if (LittleAction.canGive(playerIn, inventory, ingredients)) {
-			int currentSlot = playerIn.inventory.currentItem;
-			LittleAction.give(playerIn, inventory, ingredients);
-			if (getParent() != null) {
-				LittleStructure parent = getParent().getStructure();
-				parent.removeDynamicChild(getParent().childId);
-				parent.updateStructure();
-			}
-			this.removeStructure();
-			
-		}
-		return true;
-	}
-	
-	@Override
-	public void onPremadeActivated(EntityPlayer playerIn, ItemStack heldItem) {
-		// TODO Auto-generated method stub
-		
-	}
-	
+    
+    public ItemStack itemToPickup;
+    
+    public PickupItemPremade(LittleStructureType type, IStructureTileList mainBlock) {
+        super(type, mainBlock);
+    }
+    
+    @Override
+    public ItemStack getStructureDrop() {
+        if (itemToPickup != null)
+            return this.itemToPickup;
+        
+        return new ItemStack(Item.getByNameOrId(LittleForge.MODID + ":" + this.type.id));
+    }
+    
+    @Override
+    public boolean onBlockActivated(World worldIn, LittleTile tile, BlockPos pos, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ, LittleActionActivated action) throws LittleActionException {
+        if (worldIn.isRemote)
+            return true;
+        ItemStack stack = null;
+        
+        if (itemToPickup != null)
+            stack = this.itemToPickup;
+        else {
+            stack = new ItemStack(Item.getByNameOrId(LittleForge.MODID + ":" + this.type.id));
+        }
+        
+        LittleIngredients ingredients = new LittleIngredients();
+        StackIngredient ingredient = new StackIngredient(stack);
+        ingredients.add(ingredient);
+        LittleInventory inventory = new LittleInventory(playerIn);
+        
+        if (playerIn.inventory.getCurrentItem().getItem() == LittleForge.tongs) {
+            ItemStack stack2 = playerIn.getHeldItemMainhand();
+            NBTTagCompound nbt = new NBTTagCompound();
+            if (stack2.getTagCompound() != null)
+                nbt = stack2.getTagCompound();
+            
+            nbt.setString("heldItem", this.type.id);
+            stack2.setTagCompound(nbt);
+            PacketHandler.sendPacketToServer(new PacketUpdateNBT(playerIn.getHeldItemMainhand()));
+            
+            if (getParent() != null) {
+                LittleStructure parent = getParent().getStructure();
+                parent.removeDynamicChild(getParent().childId);
+                parent.updateStructure();
+            }
+            this.onLittleTileDestroy();
+            
+        } else if (LittleAction.canGive(playerIn, inventory, ingredients)) {
+            int currentSlot = playerIn.inventory.currentItem;
+            LittleAction.give(playerIn, inventory, ingredients);
+            if (getParent() != null) {
+                LittleStructure parent = getParent().getStructure();
+                parent.removeDynamicChild(getParent().childId);
+                parent.updateStructure();
+            }
+            this.onLittleTileDestroy();
+            
+        }
+        return true;
+    }
+    
+    @Override
+    public void onPremadeActivated(EntityPlayer playerIn, ItemStack heldItem) {
+        // TODO Auto-generated method stub
+        
+    }
+    
 }

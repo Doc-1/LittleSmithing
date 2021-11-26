@@ -21,66 +21,67 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 
 public abstract class TickingPremade extends InteractivePremade {
-	
-	private int tick = 0;
-	protected int tickMax;
-	
-	public TickingPremade(LittleStructureType type, IStructureTileList mainBlock, int tickMaxium, int seriesMax) {
-		super(type, mainBlock);
-		tickMax = tickMaxium;
-		seriesMaxium = seriesMax;
-	}
-	
-	@Override
-	protected void loadFromNBTExtra(NBTTagCompound nbt) {
-		tick = nbt.getInteger("tick");
-	}
-	
-	@Override
-	protected void writeToNBTExtra(NBTTagCompound nbt) {
-		nbt.setInteger("tick", tick);
-	}
-	
-	@Override
-	public void tick() {
-		if (getWorld().isRemote)
-			return;
-		if (tickMax != 0) {
-			tick++;
-			try {
-				if (tick >= tickMax) {
-					tick = 0;
-					SurroundingBox box = getSurroundingBox();
-					long minX = box.getMinX();
-					long minY = box.getMinY();
-					long minZ = box.getMinZ();
-					LittleGridContext context = box.getContext();
-					BlockPos min = new BlockPos(context.toBlockOffset(minX), context.toBlockOffset(minY), context.toBlockOffset(minZ));
-					LittleVecContext minVec = new LittleVecContext(new LittleVec((int) (minX - (long) min.getX() * (long) context.size), (int) (minY - (long) min.getY() * (long) context.size), (int) (minZ - (long) min.getZ() * (long) context.size)), context);
-					
-					LittlePreviews previews = getStructurePremadeEntry(nextSeries()).previews.copy(); // Change this line to support different states
-					LittleVec previewMinVec = previews.getMinVec();
-					LittlePreview preview = null;
-					minVec.forceContext(previews);
-					for (LittlePreview prev : previews) {
-						prev.box.sub(previewMinVec);
-						prev.box.add(minVec.getVec());
-						preview = prev;
-					}
-					previews.convertToSmallest();
-					//previews = updateStructureDirection(previews, box, min);
-					
-					this.removeStructure();
-					PlacementPreview nextPremade = new PlacementPreview(this.getWorld(), previews, PlacementMode.normal, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);
-					Placement place = new Placement(null, nextPremade);
-					place.place();
-				}
-			} catch (CorruptedConnectionException | NotYetConnectedException e1) {
-				e1.printStackTrace();
-			} catch (LittleActionException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
+    
+    private int tick = 0;
+    protected int tickMax;
+    
+    public TickingPremade(LittleStructureType type, IStructureTileList mainBlock, int tickMaxium, int seriesMax) {
+        super(type, mainBlock);
+        tickMax = tickMaxium;
+        seriesMaxium = seriesMax;
+    }
+    
+    @Override
+    protected void loadFromNBTExtra(NBTTagCompound nbt) {
+        tick = nbt.getInteger("tick");
+    }
+    
+    @Override
+    protected void writeToNBTExtra(NBTTagCompound nbt) {
+        nbt.setInteger("tick", tick);
+    }
+    
+    @Override
+    public void tick() {
+        if (getWorld().isRemote)
+            return;
+        if (tickMax != 0) {
+            tick++;
+            try {
+                if (tick >= tickMax) {
+                    tick = 0;
+                    SurroundingBox box = getSurroundingBox();
+                    long minX = box.getMinX();
+                    long minY = box.getMinY();
+                    long minZ = box.getMinZ();
+                    LittleGridContext context = box.getContext();
+                    BlockPos min = new BlockPos(context.toBlockOffset(minX), context.toBlockOffset(minY), context.toBlockOffset(minZ));
+                    LittleVecContext minVec = new LittleVecContext(new LittleVec((int) (minX - (long) min.getX() * (long) context.size), (int) (minY - (long) min
+                        .getY() * (long) context.size), (int) (minZ - (long) min.getZ() * (long) context.size)), context);
+                    
+                    LittlePreviews previews = getStructurePremadeEntry(nextSeries()).previews.copy(); // Change this line to support different states
+                    LittleVec previewMinVec = previews.getMinVec();
+                    LittlePreview preview = null;
+                    minVec.forceContext(previews);
+                    for (LittlePreview prev : previews) {
+                        prev.box.sub(previewMinVec);
+                        prev.box.add(minVec.getVec());
+                        preview = prev;
+                    }
+                    previews.convertToSmallest();
+                    //previews = updateStructureDirection(previews, box, min);
+                    
+                    this.onLittleTileDestroy();
+                    PlacementPreview nextPremade = new PlacementPreview(this.getWorld(), previews, PlacementMode.normal, preview.box, false, min, LittleVec.ZERO, EnumFacing.NORTH);
+                    Placement place = new Placement(null, nextPremade);
+                    place.place();
+                }
+            } catch (CorruptedConnectionException | NotYetConnectedException e1) {
+                e1.printStackTrace();
+            } catch (LittleActionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
 }
